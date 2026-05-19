@@ -25,6 +25,13 @@ INTER_COMPANY_ACCOUNT_TYPE_CONFIG = {
 class AccountReport(models.AbstractModel):
     _inherit = 'account.report'
 
+    def _is_aged_payable_report(self):
+        self.ensure_one()
+        return (
+            self.filter_account_type == 'payable'
+            and self.custom_handler_model_name == 'account.aged.payable.report.handler'
+        )
+
     def _get_inter_company_account_type_for_report(self):
         self.ensure_one()
         for account_type_id, config in INTER_COMPANY_ACCOUNT_TYPE_CONFIG.items():
@@ -34,6 +41,11 @@ class AccountReport(models.AbstractModel):
 
     def _init_options_account_type(self, options, previous_options):
         super()._init_options_account_type(options, previous_options)
+        if self._is_aged_payable_report():
+            for account_type in options.get('account_type', []):
+                if account_type['id'] == 'trade_payable':
+                    account_type['name'] = _('Publisher Payable')
+
         inter_company_account_type_id = self._get_inter_company_account_type_for_report()
         if not inter_company_account_type_id:
             return
@@ -69,9 +81,54 @@ class AccountReport(models.AbstractModel):
         ])
 
     @api.model
+    def _get_publisher_payable_domain(self):
+        """Trade payables on vendor bills only, excluding inter-company (company) partners."""
+        company_partner_ids = self._get_inter_company_partner_ids()
+        exclude_partners = company_partner_ids or [0]
+        return Domain([
+            ('account_id.non_trade', '=', False),
+            ('account_id.account_type', '=', 'liability_payable'),
+            ('move_id.move_type', 'in', ('in_invoice', 'in_refund')),
+            ('partner_id', 'not in', exclude_partners),
+        ])
+
+    @api.model
+    def _get_aged_payable_account_type_domain(self, options):
+        domain_by_id = {
+            'trade_payable': self._get_publisher_payable_domain(),
+            'non_trade_payable': Domain([
+                ('account_id.non_trade', '=', True),
+                ('account_id.account_type', '=', 'liability_payable'),
+            ]),
+            INTER_COMPANY_PAYABLE_ACCOUNT_TYPE: self._get_inter_company_account_type_domain(
+                INTER_COMPANY_PAYABLE_ACCOUNT_TYPE,
+            ),
+        }
+        selected_domains = []
+        all_domains = []
+        for account_type in options.get('account_type', []):
+            domain = domain_by_id.get(account_type['id'])
+            if domain is None:
+                continue
+            if account_type['selected']:
+                selected_domains.append(domain)
+            all_domains.append(domain)
+        if not all_domains:
+            return super()._get_options_account_type_domain(options)
+        return Domain.OR(selected_domains or all_domains)
+
+    @api.model
     def _get_options_account_type_domain(self, options):
         if not options.get('account_type'):
             return super()._get_options_account_type_domain(options)
+
+        report = (
+            self.env['account.report'].browse(options['report_id'])
+            if options.get('report_id')
+            else self.env['account.report']
+        )
+        if report and report.filter_account_type == 'payable' and report.custom_handler_model_name == 'account.aged.payable.report.handler':
+            return self._get_aged_payable_account_type_domain(options)
 
         selected_inter_company_types = [
             account_type['id']
