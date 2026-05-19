@@ -8,14 +8,48 @@
 #
 ##############################################################################
 from odoo import models, fields, api, _
+from odoo.addons.account_reports.models.account_aged_partner_balance import (
+    AccountAgedPartnerBalanceReportHandler as BaseAgedPartnerBalanceReportHandler,
+)
 from odoo.tools.misc import format_date, DEFAULT_SERVER_DATE_FORMAT, formatLang
 from datetime import timedelta
 from odoo.tools import SQL
 from dateutil.relativedelta import relativedelta
 from itertools import chain
 
+class AccountAgedReceivableReportHandler(models.AbstractModel):
+    _inherit = 'account.aged.receivable.report.handler'
+
+    def open_journal_items(self, options, params):
+        if self._skip_default_trade_account_type(options, 'inter_company_receivable'):
+            return super(
+                BaseAgedPartnerBalanceReportHandler,
+                self,
+            ).open_journal_items(options, params)
+        return super().open_journal_items(options, params)
+
+
+class AccountAgedPayableReportHandler(models.AbstractModel):
+    _inherit = 'account.aged.payable.report.handler'
+
+    def open_journal_items(self, options, params):
+        if self._skip_default_trade_account_type(options, 'inter_company_payable'):
+            return super(
+                BaseAgedPartnerBalanceReportHandler,
+                self,
+            ).open_journal_items(options, params)
+        return super().open_journal_items(options, params)
+
+
 class AccountAgedPartner(models.AbstractModel):
     _inherit = 'account.aged.partner.balance.report.handler'
+
+    def _skip_default_trade_account_type(self, options, inter_company_account_type_id):
+        return inter_company_account_type_id in {
+            account_type['id']
+            for account_type in options.get('account_type', [])
+            if account_type.get('selected')
+        }
 
     def _custom_options_initializer(self, report, options, previous_options):
         if report.custom_handler_model_name == 'account.aged.receivable.report.handler':
