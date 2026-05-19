@@ -1,0 +1,53 @@
+<odoo>
+    <record id="delivery_carrier_form_inherit" model="ir.ui.view">
+        <field name="name">panworld.delivery.carrier.form.inherit</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="attributes">
+                <attribute name="domain">[('type','=','service')]</attribute>
+            </field>
+            <field name="company_id" position="after">
+                <field name="shipping_option_id" />
+                <field name="carrier_type" />
+                <field name="company_id" />
+            </field>
+            <xpath expr="//page[@name='pricing']" position="after">
+                <page
+                    name="additional_services"
+                    string="Additional Services"
+                    invisible="carrier_type == 'sale'"
+                >
+                    <field name="additional_service_ids">
+                        <list editable="bottom">
+                            <field name="product_id" />
+                            <field name="product_qty" />
+                            <field name="price_unit" />
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='destination']" position="after">
+                <page name="warehouse_address" string="Warehouse Address" invisible="carrier_type == 'sale'">
+                    <group>
+                        <group>
+                            <label for="street" string="Address"/>
+                            <div class="o_address_format">
+                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                <field name="street1" placeholder="Street 1..." class="o_address_street"/>
+                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                <field name="city" placeholder="City" class="o_address_city"/>
+                                <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                <field name="telephone" placeholder="Telephone ..." class="o_address_street"/>
+                            </div>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <template id="report_purchasequotation_document" inherit_id="purchase_stock.report_purchasequotation_document">
+        <xpath expr="/t[1]/t[1]/t[5]/t[1]/div[1]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="/t[1]/t[1]/t[5]/t[1]/div[2]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="/t[1]/t[1]/t[5]/t[1]/strong[1]" position="replace">
+        </xpath>
+        <xpath expr="/t[1]/t[1]/t[3]/div[1]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="/t[1]/t[1]/t[3]/div[1]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//t[@t-if='not order_line.display_type']/td[3]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('page')]/table[1]/thead[1]" position="attributes">
+            <attribute name="style">display: ;</attribute>
+        </xpath>
+        <xpath expr="//t[@t-set='layout_document_title']" position="replace">
+            <h2 class="text-center" style="color: black !important;">Inquiry <span t-field="o.name" style="display: none"/></h2>
+            <div id="partner" class="row" style="background-color: #F8F5F7;">
+                <div class="col-7">
+                    <div>
+                        <strong t-field="o.partner_id.name"/>
+                        <div t-field="o.partner_id"
+                        t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                        <p t-if="o.partner_id.vat"><t t-esc="o.company_id.account_fiscal_country_id.vat_label or 'Tax ID'"/>: <span t-field="o.partner_id.vat"/></p>
+                    </div>
+                    <div>
+                        <span>Account Number :</span>
+                        <span t-field="o.partner_id.purchase_account_number"/>
+                    </div>
+                    <div>
+                        <span>Publisher :</span>
+                        <span t-field="o.publisher_id.name"/>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div>
+                        <span>
+                            Date:
+                        </span>
+                        <span t-field="o.date_order"/>
+                    </div>
+                    <div>
+                        <span>
+                            Doc Number:
+                        </span>
+                        <span t-esc="o.name"/>
+                    </div>
+                    <div>
+                        <span>
+                            Reference:
+                        </span>
+                        <span t-esc="o.partner_ref"/>
+                    </div>
+                </div>
+            </div>
+            <div id="address" style="margin-bottom: 32px;"/>
+        </xpath>
+         <xpath expr="//th[@name='th_description']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_expected_date']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_expected_date']" position="before">
+            <th name="th_sr"><strong>S No.</strong></th>
+            <th name="th_description"><strong>ISBN</strong></th>
+            <th name="th_description"><strong>Title</strong></th>
+        </xpath>
+        <th name="th_quantity" position="after">
+            <th name="th_remark" style="width:20%;"><strong>Remarks</strong></th>
+        </th>
+        <xpath expr="//t[@t-as='order_line']" position="before">
+            <t t-set="count" t-value="0"/>
+            <t t-set="total_qty" t-value="0"/>
+        </xpath>
+        <xpath expr="//t[@t-as='order_line']" position="inside">
+            <t t-set="total_qty" t-value="total_qty+order_line.rfq_qty" />
+        </xpath>
+        <xpath expr="//t[@t-as='order_line']" position="after">
+            <tr>
+                <td name="td_total_unit" colspan="4" align="right">
+                    <strong style="color:#808080 !important;">Total Units</strong>
+                </td>
+                <td class="text-right">
+                    <strong t-esc="total_qty" t-options="{'widget': 'float', 'precision': 0}"/>
+                </td>
+            </tr>
+        </xpath>
+        <xpath expr="//td[@id='product']" position="before">
+            <td id="s_no">
+                <t t-set="count" t-value="count+1" />
+                <t t-esc="count"/>
+            </td>
+            <td id="product_code">
+                <span t-field="order_line.product_id.default_code"/>
+            </td>
+            <td id="title">
+                <span t-field="order_line.product_id.name"/>
+            </td>
+            <td style="text-align: right;">
+                <span t-field="order_line.rfq_qty" t-options="{'widget': 'float', 'precision': 0}"/>
+            </td>
+        </xpath>
+        <xpath expr="//td[@id='product']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//t[@t-as='order_line']/tr/t/td[hasclass('text-center')]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//span[@t-field='order_line.product_qty']/.." position="after">
+            <td id="remark">
+                <span t-field="order_line.remarks"/>
+            </td>
+        </xpath>
+        <t t-set="o" position="after">
+            <t t-set="custom_footer">
+                <div class="text-center" style="border-top: 1px solid black; border-bottom: 1px solid black;">
+                    <ul class="list-inline mb4">
+                        <span style="color: #808080;"> <t t-esc="o.company_id.phone"/> | <t t-esc="o.company_id.email"/> | </span> <span style="color: #0E81FF;"> <t t-esc="o.company_id.website"/> </span> <span style="color: #808080;"> | VAT NO: <t t-esc="o.company_id.partner_id.vat"/></span>
+                    </ul>
+                </div>
+                <div class="text-muted text-center">
+                  Page: <span class="page"/> / <span class="topage"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

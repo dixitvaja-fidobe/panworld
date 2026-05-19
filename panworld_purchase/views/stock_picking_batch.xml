@@ -1,0 +1,26 @@
+ <!-- /////////////////////////////////////////////////
+ Not Required now : Commented on request of client
+ //////////////////////////////////////////////////////////////////////////////////////// -->
+<!-- <odoo>
+    <record id="stock_picking_batch_form_extended_panworld" model="ir.ui.view">
+        <field name="name">stock.picking.batch.extended.panworld</field>
+        <field name="model">stock.picking.batch</field>
+        <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form" />
+        <field name="arch" type="xml">
+            <field name="scheduled_date" position="after">
+                <field name="picking_type_id" position="move" />
+                <field name="company_id" position="move" />
+            </field>
+            <field name="user_id" position="after">
+                <field name="purchase_order_ids" widget="many2many_tags" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+            </field>
+            <field name="picking_ids" position="attributes">
+                <attribute
+                    name="context"
+                >{'form_view_ref': 'stock_picking_batch.view_picking_form_inherited', 'tree_view_ref': 'stock_picking_batch.view_picking_tree_batch',
+                'from_pw_batch': True,
+                'purchase_order_ids':purchase_order_ids}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo> -->

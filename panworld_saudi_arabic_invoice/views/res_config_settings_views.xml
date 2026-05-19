@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit_panworld_bank" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.panworld.bank</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']//block[@id='invoicing_settings']" position="inside">
+                <setting id="bank_details_setting" title="Bank Details (English)" help="Enter bank details (English) to be displayed on the invoice">
+                    <div class="content-group">
+                        <strong>Bank Details (English)</strong>
+                        <field name="bank_details" class="w-100" placeholder="Enter English bank details..."/>
+                    </div>
+                </setting>
+                <setting id="bank_details_ar_setting" title="Bank Details (Arabic)" help="Enter bank details (Arabic) to be displayed on the invoice">
+                    <div class="content-group">
+                        <strong style="display: block; text-align: right;">(Arabic) تفاصيل البنك</strong>
+                        <field name="bank_details_ar" class="w-100" placeholder="...أدخل تفاصيل البنك بالعربية" dir="rtl"/>
+                    </div>
+                </setting>
+                <setting id="payment_term_condition_ar_setting" title="Payment Term Condition (Arabic)" help="Enter additional payment term condition (Arabic) to be displayed on the invoice">
+                    <div class="content-group">
+                        <strong style="display: block; text-align: right;">(Arabic) شروط وأحكام الدفع</strong>
+                        <field name="payment_term_condition_ar" class="w-100" placeholder="...أدخل شروط وأحكام الدفع بالعربية" dir="rtl"/>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

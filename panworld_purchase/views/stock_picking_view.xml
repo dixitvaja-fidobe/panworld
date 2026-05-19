@@ -1,0 +1,178 @@
+<odoo>
+    <!-- Inherited stock.picking Form -->
+    <record id="view_stock_picking_form_inherit" model="ir.ui.view">
+        <field name="name">view.stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+             <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="picking_sequence_code" invisible="1"/>
+                <field name="picking_type_code" invisible="1"/>
+                <button string="Related GRN" type="object" icon="fa-truck"
+                        name="action_view_grn_picking"
+                        invisible="picking_type_code not in 'internal' or state not in ('done', 'cancel') or picking_sequence_code != 'SHIP'">
+                </button>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="update_to_po" string="Update QTY to PO Lines"
+                        groups="base.group_user" type="object" data-hotkey="z" confirm="Are you sure to update all PO lines??"/>
+<!--                <button class="oe_highlight" name="action_done_qty_update" string="Update To-Be-Received Qty"-->
+<!--                        type="object"-->
+<!--                        invisible="is_received_qty == False or state not in ('assigned', 'confirmed', 'draft', 'waiting')"/>-->
+                <button class="oe_highlight"
+                        name="action_done_qty_update"
+                        string="Update To-Be-Received Qty"
+                        type="object"
+                        invisible="is_received_qty == False"/>
+                <button class="oe_highlight"
+                        name="action_set_quantity"
+                        string="Set Quantity"
+                        type="object"
+                        invisible="is_received_qty == False or state in ('done', 'cancel')"/>
+                <button name="action_reset_quantity"
+                        string="Reset Quantity"
+                        type="object"
+                        invisible="is_received_qty == False or state in ('done', 'cancel')"/>
+            </xpath>
+            <button name="action_cancel" position="before">
+                 <button name="custom_action_cancel"
+                         invisible="state not in ('assigned', 'confirmed', 'draft', 'waiting')"
+                         string="Cancel" groups="base.group_user" type="object" data-hotkey="z"/>
+            </button>
+            <button name="action_cancel" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+            <xpath expr="//field[@name='date_deadline']" position="after">
+                <field name="picking_sequence_code" invisible="1" force_save="1"/>
+                <field name="vendor_dispatch_date" string="Vendor Dispatch Date"
+                       invisible = "picking_sequence_code != 'SHIP'"/>
+                <field name="shp_wh_dispatch_date"
+                       invisible="picking_sequence_code != 'SHIP'"/>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="is_received_qty" invisible="1"/>
+                <field name="customer_sales_order"/>
+                <field name="partner_bill_id"
+                       readonly="state == 'done'"
+                       invisible="picking_type_code not in ['incoming', 'internal'] or rma_id != False"
+                       required="rma_id == False and picking_type_code == 'incoming' and state not in ['done', 'cancel']"/>
+                <field name="total_bill_quantity"
+                       invisible="picking_type_code not in ['incoming', 'internal']"/>
+                <field name="is_carrier_tracking_required" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='location_id']" position="after">
+                <field name="uae_wh_receiving_date"
+                       invisible="picking_sequence_code != 'SHIP'"/>
+                <field name="consolidated_weight" readonly='1' force_save='1' invisible="1"/>
+            </xpath>
+            <field name="carrier_tracking_ref" position="attributes">
+                <attribute name="required">is_carrier_tracking_required == True</attribute>
+            </field>
+            <xpath
+                expr="//field[@name='move_ids']//list//field[@name='product_id']"
+                position="after">
+                <field name="customer_name" width="100px" optional="hide"/>
+                <field name="customer_sales_order" width="100px" optional="hide"/>
+            </xpath>
+            <xpath expr="//page[@name='note']" position="after">
+                <page name="bill_info" string="Bill Info">
+                    <group>
+                        <group>
+                            <field name="doc_nb_console"/>
+                            <field name="bill_nb"/>
+                            <field name="bill_date"/>
+                            <field name="po_currency_id"/>
+                        </group>
+                        <group>
+                            <field name="bill_value"/>
+                            <field name="other_bill_charges"/>
+<!--                            <field name="bill_quantity" readonly="1"/>-->
+                        </group>
+                    </group>
+                </page>
+                <page name="shipping_info" string="Shipping Info">
+                    <group>
+                        <group>
+                            <field name="carrier_id"/>
+                            <field name="ship_no"/>
+                            <field name="carrier_tracking_ref"/>
+                        </group>
+                        <group>
+                            <field name="consolidated_weight_shipping"  force_save='1'/>
+                            <field name="boe_no"/>
+                            <field name="boe_date" readonly="1"/>
+                            <field name="ready_for_scan_1" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_move_line_detailed_operation_tree_panworld" model="ir.ui.view">
+            <field name="name">stock.move.line.operations.tree.panworld</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree" />
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="customer_name" />
+                    <field name="customer_sales_order" />
+                </xpath>
+            </field>
+    </record>
+
+<!--    <record id="view_picking_withcarrier_out_form" model="ir.ui.view">-->
+<!--        <field name="name">view.stock.order.form.inherit</field>-->
+<!--        <field name="model">stock.picking</field>-->
+<!--        <field name="inherit_id" ref="stock_delivery.view_picking_withcarrier_out_form" />-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//label[@for='weight']" position="attributes">-->
+<!--                <attribute name="invisible">picking_sequence_code == 'IN'</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//label[@for='shipping_weight']" position="attributes">-->
+<!--                <attribute name="invisible">picking_sequence_code == 'IN'</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//group[@name='carrier_data']/div[2]" position="attributes">-->
+<!--                <attribute name="invisible">picking_sequence_cod == 'IN'</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//group[@name='carrier_data']/div[3]" position="attributes">-->
+<!--                <attribute name="invisible">picking_sequence_code == 'IN'</attribute>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="vpicktree_inherit_bill_shipping_fields" model="ir.ui.view">
+        <field name="name">vpicktree.inherit.add.bill.shipping.fileds</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_id']" position="before">
+                <field name="doc_nb_console" optional="show"/>
+                <field name="boe_date" optional="show"/>
+                <field name="boe_no" optional="show"/>
+                <field name="bill_nb" optional="show"/>
+                <field name="ship_no" optional="show"/>
+                <field name="ready_for_scan_1" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='location_dest_id']" position="after">
+<!--                <field name="bill_quantity" optional="show"/>-->
+                <field name="bill_value" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_internal_search_panworld_purchase" model="ir.ui.view">
+        <field name="name">stock.picking.search.panworld.search</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <field name="picking_type_id" position="after">
+                <field name="ship_no"/>
+            </field>
+<!--            <filter name="picking_type" position="after">-->
+<!--                <filter string="Division Type" name="division_type" domain="[]" context="{'group_by':'division_type_id'}"/>-->
+<!--            </filter>-->
+        </field>
+    </record>
+</odoo>

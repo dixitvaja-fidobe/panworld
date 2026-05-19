@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_fs_stock_quant_xlsx_update_wizard_form" model="ir.ui.view">
+        <field name="name">fs.stock.quant.xlsx.update.wizard.form</field>
+        <field name="model">fs.stock.quant.xlsx.update.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update Stock Quants via XLSX">
+                <div class="alert alert-info" role="alert">
+                    <strong>Instructions:</strong>
+                    <ul>
+                        <li>The XLSX file must have a header row with the following exact names (any order):</li>
+                        <li><strong>Product:</strong> Product Code (Internal Reference)</li>
+                        <li><strong>Location:</strong> Location (Complete Name, e.g., WH/Stock)</li>
+                        <li><strong>Qty:</strong> Stock Quantity</li>
+                    </ul>
+                </div>
+                <group>
+                    <field name="excel_file" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_apply" string="Apply" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fs_stock_quant_xlsx_update_wizard" model="ir.actions.act_window">
+        <field name="name">FS Update Stock Quants (XLSX)</field>
+        <field name="res_model">fs.stock.quant.xlsx.update.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_fs_stock_quant_xlsx_update_wizard"
+              name="FS Update Stock (XLSX Import)"
+              parent="stock.menu_stock_warehouse_mgmt"
+              action="action_fs_stock_quant_xlsx_update_wizard"
+              sequence="110"
+              groups="panworld_stock.fs_group_allow_grn_stock_quant_update"/>
+</odoo>

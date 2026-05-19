@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo> 
+    <data>
+        <!-- Add this field for translate -->
+        <record id="view_company_form_inherit_panworld_saudi_arabic_invoice" model="ir.ui.view">
+            <field name="name">view.company.form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form" />
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='general_info']" position="after">
+                    <page string="Arabic Translate" name="arabic_translate">
+                        <group>
+                            <group>
+                                <field name="crn_number"/>
+                                <field name="address_arabic"/>
+                                <field name="add_line_1_ar" string=""/>
+                                <field name="add_line_2_ar" string=""/>
+                                <field name="add_line_3_ar" string=""/>
+                                <field name="add_line_4_ar" string=""/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="More Info" name="bank_details">
+                        <label for="bank_details" string="Bank Details (English)" style="font-weight: bold; font-size: 16px; display: block; margin-top: 10px; margin-bottom: 5px;"/>
+                        <field name="bank_details" nolabel="1" placeholder="Enter English bank details..." class="w-100" style="min-height: 250px;"/>
+                        
+                        <label for="bank_details_ar" string="Bank Details (Arabic) تفاصيل البنك" style="font-weight: bold; font-size: 16px; display: block; margin-top: 20px; margin-bottom: 5px; text-align: right;"/>
+                        <field name="bank_details_ar" nolabel="1" placeholder="...أدخل تفاصيل البنك بالعربية" dir="rtl" class="w-100" style="min-height: 250px;"/>
+
+                        <label for="payment_term_condition_ar" string="Terms and Conditions (Arabic) شروط وأحكام الدفع" style="font-weight: bold; font-size: 16px; display: block; margin-top: 20px; margin-bottom: 5px; text-align: right;"/>
+                        <field name="payment_term_condition_ar" nolabel="1" placeholder="...أدخل شروط وأحكام الدفع بالعربية" dir="rtl" class="w-100" style="min-height: 250px;"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <!-- Add this invisible field for translate -->
+        <record model="ir.ui.view" id="view_partner_form_panworld_saudi_arabic">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="name" invisible="1"/>
+                </field>
+                <xpath expr="//notebook/page[@name='internal_notes']" position="after">
+                    <page string="More Info" name="more_info">
+                        <group>
+                            <group>
+                                <field name="crn_number"/>
+                                <field name="address_arabic"/>
+                                <field name="add_line_1_ar" string=""/>
+                                <field name="add_line_2_ar" string=""/>
+                                <field name="add_line_3_ar" string=""/>
+                                <field name="add_line_4_ar" string=""/>
+                                <label for="summary" string="Summary"
+                                       style="font-weight: bold; font-size: 16px; display: block; margin-top: 10px; margin-bottom: 5px;"/>
+                                <field name="summary" nolabel="1" placeholder="Enter Summary for this partner"
+                                       class="w-100" style="min-height: 250px;"/>
+                                <label for="summary_ar" string="Summary (Arabic)"
+                                       style="font-weight: bold; font-size: 16px; display: block; margin-top: 10px; margin-bottom: 5px;"/>
+                                <field name="summary_ar" nolabel="1" placeholder="Enter Summary for this partner in Arabic"
+                                       class="w-100" style="min-height: 250px;"/>
+                                <label for="payment_term_condition" string="Terms &amp; Conditions"
+                                       style="font-weight: bold; font-size: 16px; display: block; margin-top: 10px; margin-bottom: 5px;"/>
+                                <field name="payment_term_condition" nolabel="1" placeholder="Enter Terms and Conditions specific for this partner"
+                                       class="w-100" style="min-height: 250px;"/>
+                                <label for="payment_term_condition_ar" string="Terms &amp; Conditions (Arabic)"
+                                       style="font-weight: bold; font-size: 16px; display: block; margin-top: 10px; margin-bottom: 5px;"/>
+                                <field name="payment_term_condition_ar" nolabel="1" placeholder="Enter Terms and Conditions in Arabic specific for this partner"
+                                       class="w-100" style="min-height: 250px;"/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

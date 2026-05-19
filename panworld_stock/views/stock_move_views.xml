@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherited stock Move Form -->
+    <record id="stock_move_purchase_inherit_panworld_stock" model="ir.ui.view">
+        <field name="name">stock.move.form</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="purchase_stock.stock_move_purchase" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='purchase_line_id']" position="attributes">
+                <attribute name="force_save">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

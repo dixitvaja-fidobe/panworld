@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_register_report_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.register.report.wizard.form</field>
+        <field name="model">purchase.register.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Register Report">
+                <group>
+                    <group>
+                        <field name="date_range"/>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                    </group>
+                    <group>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="customer_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="company_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="import_file" filename="import_file_name"/>
+                        <field name="import_file_name" invisible="1"/>
+                        <button name="action_import_xlsx" string="Load Products from XLSX" type="object" class="btn-secondary" invisible="not import_file"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_export_xlsx" string="Export XLSX" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_purchase_register_report_wizard" model="ir.actions.act_window">
+        <field name="name">Purchase Register Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.register.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_purchase_register_report"
+              name="Purchase Register Report"
+              parent="account.menu_finance_reports"
+              action="action_purchase_register_report_wizard"
+              sequence="100"/>
+</odoo>

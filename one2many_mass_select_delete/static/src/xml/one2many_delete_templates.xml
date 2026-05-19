@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <!-- Beautifully Aligned Mass Actions for X2Many Lists -->
+    <t t-name="one2many_mass_select_delete.X2ManyFieldButtons" t-inherit="web.X2ManyField" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_x2m_control_panel')]" position="inside">
+            <div class="o_mass_delete_actions dlt_btn d-flex align-items-center gap-2 ms-auto" t-if="!props.readonly and props.viewMode === 'list'">
+                <!-- Delete Selected Action -->
+                <button t-if="hasSelected" class="btn btn-danger btn-sm fw-bold shadow-sm" t-on-click="deleteSelected" title="Delete only the selected items">
+                    <i class="fa fa-trash-o me-1"/>Delete Selected Entries
+                </button>
+            </div>
+        </xpath>
+    </t>
+</templates>

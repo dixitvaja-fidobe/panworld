@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Res Company Form View -->
+        <record id="res_company_inherit_form" model="ir.ui.view">
+            <field name="name">res.company.inherit.form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page name="Configuration Sale Tracker" string="Configuration Sale Tracker">
+                        <field name="sale_tracker_warehouse_fields"/>
+                    </page>
+                </xpath>
+                <field name="currency_id" position="after">
+                    <field name="picking_type_ids" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
+        <record id="inherit_stock_view_warehouse" model="ir.ui.view">
+            <field name="name">inherit.stock.view.warehouse</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='pbm_loc_id']" position="after">
+                    <field name="sale_tracker_report_code"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Inherit LineComponent to add customer info after Lot section-->
+    <t t-inherit="stock_barcode.LineComponent" t-inherit-mode="extension">
+        <xpath expr="//t[@t-call='stock_barcode.LineLot']" position="after">
+            <div>
+                <i class="fa fa-fw fa-user"></i>
+                <span style="color:#017e84;"><t t-esc="this.line.customer_name"/></span>
+            </div>
+            <div>
+                <i class="fa fa-list fa-fw"></i>
+                <span style="color:#017e84;"><t t-esc="this.line.customer_sales_order"/></span>
+            </div>
+        </xpath>
+    </t>
+
+    <!-- Inherit LineLowerButtons to add manual qty input -->
+    <t t-inherit="stock_barcode.LineLowerButtons" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('gap-2')]" position="inside">
+            <input class="o_line_button o_edit ms-2 o_field_float o_field_number o_field_widget text-end"
+                   name="manual_qty_change" placeholder="Qty"
+                   type="number" autocomplete="off"
+                   t-on-change="addQuantityChange"
+                   t-att-value="qtyDone"
+                   style="width: 4rem;"/>
+        </xpath>
+    </t>
+
+    <!-- Inherit MainComponent for Save button and Total Scan -->
+    <t t-inherit="stock_barcode.MainComponent" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('o_add_line')]" position="before">
+            <button class="o_save_line btn btn-secondary text-uppercase" t-on-click="saveProductPage">
+                <i class="fa fa-save mr-1"/> Save
+            </button>
+        </xpath>
+        <xpath expr="//div[@name='barcode_messages']" position="before">
+            <div class="position-relative text-left mt-2 mb-1 ml-2">
+                Total Scan<br/>
+                <t t-esc="totalScan"/>
+            </div>
+        </xpath>
+    </t>
+</templates>

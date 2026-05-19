@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_assign_acc_no" model="ir.actions.server">
+            <field name="name">Assign Account Number</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">
+                for record in records:
+                    if record.is_company and not record.acc_no:
+                        record.write({'acc_no': env['ir.sequence'].next_by_code('panworld.contact.acc_no')})
+            </field>
+        </record>
+    </data>
+</odoo>

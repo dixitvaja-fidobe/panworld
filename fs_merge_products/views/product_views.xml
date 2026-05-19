@@ -1,0 +1,71 @@
+<odoo>
+    <record id="view_merge_products_wizard_form" model="ir.ui.view">
+        <field name="name">merge.products.wizard.form</field>
+        <field name="model">merge.products.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Merge Products">
+                <sheet>
+                    <group>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="destination_product_id" options="{'no_create': True}"/>
+                        <field name="archive_origin"/>
+                    </group>
+                    <p class="text-muted">
+                        All related records (Sales, Purchases, Inventory, etc.) will be moved to the destination product.
+                        The first selected product is used as the default destination.
+                    </p>
+                </sheet>
+                <footer>
+                    <button name="action_merge" string="Merge Products" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for the wizard -->
+    <record id="action_merge_products_wizard" model="ir.actions.act_window">
+        <field name="name">Merge Products</field>
+        <field name="res_model">merge.products.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_product_ids': active_ids}</field>
+    </record>
+
+    <!-- Server action for Product Template -->
+    <record id="action_merge_products_template_server" model="ir.actions.server">
+        <field name="name">Merge Products</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.action_merge_products()
+        </field>
+    </record>
+
+    <!-- Server action for Product Product -->
+    <record id="action_merge_products_variant_server" model="ir.actions.server">
+        <field name="name">Merge Products</field>
+        <field name="model_id" ref="product.model_product_product"/>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = {
+                    'name': 'Merge Products',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'merge.products.wizard',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {'default_product_ids': records.ids},
+                }
+        </field>
+    </record>
+
+    <menuitem id="menu_merge_products" 
+              name="Merge Products" 
+              parent="stock.menu_product_in_config_stock"
+              action="action_merge_products_wizard"
+              sequence="100"/>
+</odoo>

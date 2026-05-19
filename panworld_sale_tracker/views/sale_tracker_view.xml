@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="sale_tracker_view_tree" model="ir.ui.view">
+        <field name="name">sale_tracker_view_tree</field>
+        <field name="model">sales.tracker.report</field>
+        <field name="arch" type="xml">
+            <list string="sale_tracker_tree" create="false" edit="false">
+                <field name="sale_tat"/>
+                <field name="so_date"/>
+                <field name="so_id"/>
+                <field name="sol_id" column_invisible="1"/>
+                <field name="cus_id" optional="show"/>
+                <field name="customer_account" optional="show"/>
+                <field name="div_type_id" optional="show"/>
+                <field name="so_no" optional="show"/>
+                <field name="product_barcode" optional="show"/>
+                <field name="asin" optional="show"/>
+                <field name="product_id" optional="hide"/>
+                <field name="product_name" optional="show"/>
+                <field name="sale_price" optional="show"/>
+                <field name="sales_price" optional="show"/>
+                <field name="po_target_price" optional="show"/>
+                <field name="so_qty" optional="show"/>
+                <field name="so_confirm_qty" optional="show"/>
+                <field name="so_cancel_qty" optional="show"/>
+                <field name="so_cancellation_reason" optional="show"/>
+                <field name="wh1_stock" optional="show"/>
+                <field name="wh2_stock" optional="show"/>
+                <field name="wh3_stock" optional="show"/>
+                <field name="wh4_stock" optional="show"/>
+                <field name="wh5_stock" optional="show"/>
+                <field name="wh6_stock" optional="show"/>
+                <field name="pending_so_qty" optional="show"/>
+                <field name="stock_status" optional="show"/>
+                <field name="po_id" optional="show"/>
+                <field name="pol_po_qty" optional="show"/>
+                <field name="vendor_id" optional="show"/>
+                <field name="vendor_type_id" optional="show"/>
+                <field name="publisher_id" optional="show"/>
+                <field name="invoiced_qty" optional="show"/>
+                <field name="po_back_order_qty" optional="show"/>
+                <field name="po_cancelled_qty" optional="show"/>
+                <field name="po_pending_qty" optional="show"/>
+                <field name="grn_picking_id" optional="show"/>
+                <field name="mat_received_qty" optional="show"/>
+                <field name="mat_received_date" optional="show"/>
+                <field name="po_currency_id" optional="show"/>
+                <field name="bill_list_price" optional="show"/>
+                <field name="bill_dis" optional="show"/>
+                <field name="bill_unit_price" optional="show"/>
+                <field name="bill_unit_price_currency" optional="show"/>
+                <field name="carrier_id" optional="show"/>
+                <field name="processed_qty" optional="show"/>
+                <field name="non_processed_qty" optional="show"/>
+                <field name="inv_qty" optional="show"/>
+                <!--                <field name="customer_invoice_qty" optional="show"/>-->
+                <field name="pending_customer_invoice_qty" optional="show"/>
+                <field name="company_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="sale_tracker_report_search" model="ir.ui.view">
+        <field name="name">Sale Tracker Report</field>
+        <field name="model">sales.tracker.report</field>
+        <field name="arch" type="xml">
+            <search string="Sale Tracker Report">
+                <field name="so_id"/>
+                <field name="so_date"/>
+                <filter name="filter_so_date" string="Current month" date="so_date" default_period="month"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="sale_tracker_action" model="ir.actions.act_window">
+        <field name="name">Sale Tracker Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sales.tracker.report</field>
+        <field name="view_mode">list</field>
+         <field name="context">{'search_default_filter_so_date': 1}</field>
+    </record>
+
+    <!-- This Menu Item must have a parent and an action -->
+<!--    <menuitem id="sale_tracker" name="Sale Tracker" parent="sale.menu_sale_report" action="sale_tracker_action"-->
+<!--              sequence="300"/>-->
+
+<!--     <record id="sale_tracker_report_view_form" model="ir.ui.view">-->
+<!--        <field name="name">sale.order.status.report.view.form</field>-->
+<!--        <field name="model">sale.order.status.report</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form>-->
+<!--                <sheet>-->
+<!--                    <group>-->
+<!--                        <group>-->
+<!--                            <field name="start_date"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <field name="end_date"/>-->
+<!--                        </group>-->
+<!--                    </group>-->
+<!--                    <group>-->
+<!--&lt;!&ndash;                        <field name="so_ids" widget="many2many_tags"/>&ndash;&gt;-->
+<!--                        <field name="so_tracking_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True}"/>-->
+<!--                    </group>-->
+<!--                </sheet>-->
+<!--                <footer>-->
+<!--                    <button name="view_sale_tracker_report" string="Sale Tracker" type="object"-->
+<!--                               class="oe_highlight"/>-->
+<!--                    <button special="cancel" string="Cancel"/>-->
+<!--                </footer>-->
+<!--            </form>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="sale_tracker_report_action" model="ir.actions.act_window">-->
+<!--        <field name="name">Sale Trucker Report</field>-->
+<!--        <field name="res_model">sale.order.status.report</field>-->
+<!--        <field name="view_mode">form</field>-->
+<!--        <field name="view_id" ref="sale_tracker_report_view_form"/>-->
+<!--        <field name="target">new</field>-->
+<!--    </record>-->
+
+<!--    <menuitem id="sale_tracker" name="Sale Tracker" parent="sale.menu_sale_report" action="panworld_sale.sale_tracker_report_action"-->
+<!--              sequence="300"/>-->
+</odoo>

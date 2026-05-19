@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_landed_cost_batch_payment_form" model="ir.ui.view">
+        <field name="name">landed.cost.batch.payment.form</field>
+        <field name="model">landed.cost.batch.payment</field>
+        <field name="arch" type="xml">
+            <form string="Batch Payment">
+                <group>
+                    <group>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="journal_id" options="{'no_create': True}"/>
+                        <field name="payment_method_line_id" required="1" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="amount" readonly="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="payment_date"/>
+                        <field name="communication"/>
+                    </group>
+                </group>
+                <group>
+                     <field name="landed_cost_ids" widget="many2many_tags" readonly="1"/>
+                </group>
+                <footer>
+                    <button string="Create Payment" type="object" name="action_create_payment" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_landed_cost_batch_payment" model="ir.actions.act_window">
+        <field name="name">Batch Payment</field>
+        <field name="res_model">landed.cost.batch.payment</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="stock_landed_costs.model_stock_landed_cost"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

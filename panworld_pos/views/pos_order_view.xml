@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_pos_pos_form_inherit" model="ir.ui.view">
+        <field name="name">pos.order.form.inherit.panworld</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_invoice_payments" type="object" class="oe_stat_button" icon="fa-money" invisible="not account_move">
+                    <field name="payment_count" widget="statinfo" string="Payments"/>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

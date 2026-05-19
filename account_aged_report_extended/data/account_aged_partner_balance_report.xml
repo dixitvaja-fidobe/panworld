@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Adjust sequences for Aged Receivable to place new column near "amount_currency" -->
+    <record id="account_reports.aged_receivable_report_invoice_date" model="account.report.column">
+        <field name="sequence">-5</field>
+    </record>
+    <record id="account_reports.aged_receivable_report_amount_currency" model="account.report.column">
+        <field name="sequence">-4</field>
+    </record>
+    
+    <record id="aged_receivable_report_amount_currency_no_symbol" model="account.report.column">
+        <field name="name">Total Amount Currency</field>
+        <field name="expression_label">amount_currency_no_symbol</field>
+        <field name="figure_type">float</field>
+        <field name="sortable" eval="True"/>
+        <field name="sequence">-3</field>
+        <field name="report_id" ref="account_reports.aged_receivable_report"/>
+    </record>
+    
+    <record id="account_reports.aged_receivable_report_currency" model="account.report.column">
+        <field name="sequence">-2</field>
+    </record>
+    <record id="account_reports.aged_receivable_report_account_name" model="account.report.column">
+        <field name="sequence">-1</field>
+    </record>
+
+    <!-- Adjust sequences for Aged Payable -->
+    <record id="account_reports.aged_payable_report_invoice_date" model="account.report.column">
+        <field name="sequence">-5</field>
+    </record>
+    <record id="account_reports.aged_payable_report_amount_currency" model="account.report.column">
+        <field name="sequence">-4</field>
+    </record>
+
+    <record id="aged_payable_report_amount_currency_no_symbol" model="account.report.column">
+        <field name="name">Total Amount Currency</field>
+        <field name="expression_label">amount_currency_no_symbol</field>
+        <field name="figure_type">float</field>
+        <field name="sortable" eval="True"/>
+        <field name="sequence">-3</field>
+        <field name="report_id" ref="account_reports.aged_payable_report"/>
+    </record>
+    
+    <record id="account_reports.aged_payable_report_currency" model="account.report.column">
+        <field name="sequence">-2</field>
+    </record>
+    <record id="account_reports.aged_payable_report_account_name" model="account.report.column">
+        <field name="sequence">-1</field>
+    </record>
+
+    <!-- Expressions -->
+    <record id="aged_receivable_line_amount_currency_no_symbol" model="account.report.expression">
+        <field name="label">amount_currency_no_symbol</field>
+        <field name="engine">custom</field>
+        <field name="formula">_report_custom_engine_aged_receivable</field>
+        <field name="subformula">amount_currency</field>
+        <field name="auditable" eval="False"/>
+        <field name="report_line_id" ref="account_reports.aged_receivable_line"/>
+    </record>
+
+    <record id="aged_payable_line_amount_currency_no_symbol" model="account.report.expression">
+        <field name="label">amount_currency_no_symbol</field>
+        <field name="engine">custom</field>
+        <field name="formula">_report_custom_engine_aged_payable</field>
+        <field name="subformula">amount_currency</field>
+        <field name="auditable" eval="False"/>
+        <field name="report_line_id" ref="account_reports.aged_payable_line"/>
+    </record>
+</odoo>

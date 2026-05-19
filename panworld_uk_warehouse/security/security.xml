@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="group_uk_warehouse_user_uk" model="res.groups">
+        <field name="name">Uk Warehouse User</field>
+    </record>
+</odoo>

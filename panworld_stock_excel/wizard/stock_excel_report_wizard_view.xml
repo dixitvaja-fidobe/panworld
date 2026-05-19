@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_excel_report_wizard_view_form" model="ir.ui.view">
+        <field name="name">stock.excel.report.wizard.view.form</field>
+        <field name="model">stock.excel.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Download Stock Excel Report">
+                <p>Select a product to filter the report, or leave it empty to download the report for all products.</p>
+                <group>
+                    <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
+                </group>
+                <footer>
+                    <button name="action_download_xlsx" string="Download Excel" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_stock_excel_report_wizard" model="ir.actions.act_window">
+        <field name="name">Stock Excel Report</field>
+        <field name="res_model">stock.excel.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_stock_excel_report"
+              name="Stock Excel Report"
+              parent="stock.menu_warehouse_report"
+              action="action_stock_excel_report_wizard"
+              sequence="100"/>
+</odoo>

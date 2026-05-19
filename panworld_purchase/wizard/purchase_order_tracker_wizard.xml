@@ -1,0 +1,39 @@
+<odoo>
+    <record id="purchase_order_tracker_wizard_view_form" model="ir.ui.view">
+        <field name="name">purchase.order.tracker.wizard.view.form</field>
+        <field name="model">purchase.order.tracker.wizard</field>
+        <field name="arch" type="xml">
+            <form string="purchase_order_tracker_wizard_form">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="po_ids" widget="many2many_tags" options="{'no_edit': True, 'no_create': True}"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="view_purchase_tracker_report" string="Export" class="oe_highlight" type="object"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="purchase_order_tracker_wizard_action" model="ir.actions.act_window">
+        <field name="name">Purchase tracker wizard</field>
+        <field name="res_model">purchase.order.tracker.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!--  Replace main manu of purchase tracker   -->
+    <menuitem id="purchase_tracker" name="Purchase Tracker" parent="purchase.purchase_report_main"
+              action="panworld_purchase.purchase_order_tracker_wizard_action" sequence="4"/>
+
+</odoo>

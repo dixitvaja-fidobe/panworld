@@ -1,0 +1,141 @@
+<odoo>
+    <!-- Wiz sale purchase form view -->
+    <record id="view_wiz_sale_purchase_order_form" model="ir.ui.view">
+        <field name="name">wiz.sale.purchase.order.form.view</field>
+        <field name="model">wiz.sale.purchase</field>
+        <field name="arch" type="xml">
+            <form string="Create Purchase Order">
+                <sheet>
+                    <group>
+                        <group>
+                            <field
+                                name="vendor_option"
+                                widget="radio"
+                                class="oe_inline"
+                            />
+                            <field
+                                name="vendor_id"
+                                context="{'res_partner_search_mode': 'supplier'}"
+                                invisible="vendor_option == 'multi'"
+                                required="vendor_option == 'single'"
+                            />
+                        </group>
+                        <group>
+                            <field name="schedule_date" required="1" />
+                            <field name="order_selection" required="1" invisible='1'/>
+                            <field name="company_id" invisible="1" />
+                            <field name="l10n_in_company_country_code" invisible="1" />
+                            <field name="l10n_in_gst_treatment"
+                                   invisible="l10n_in_company_country_code != 'IN' or l10n_in_purchase != True or vendor_option != 'single'"
+                                   required="l10n_in_company_country_code == 'IN' and l10n_in_purchase == True and vendor_option == 'single'"/>
+                            <field name="l10n_in_purchase" invisible="1" />
+                            <field name="l10n_in_sale" invisible="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Orders" name="order_page">
+                            <field name="order_lines_ids">
+                                <list editable="bottom">
+                                    <field name="product_id" domain="[('purchase_ok', '=', True)]" required="1"/>
+                                    <field name="wiz_sale_purchase_id" column_invisible="1" />
+                                    <field name="name" required="1" />
+                                    <field name="vendor_id" context="{'res_partner_search_mode': 'supplier','product_id': product_id}"
+                                        column_invisible="parent.vendor_option == 'single'"
+                                        required="parent.vendor_option == 'multi'"/>
+                                    <field name="sale_reference" />
+                                    <field
+                                        name="l10n_in_company_country_code"
+                                        column_invisible="1"
+                                    />
+                                    <field name="l10n_in_purchase" column_invisible="1" />
+                                    <field name="l10n_in_sale" column_invisible="1" />
+                                    <field
+                                        name="l10n_in_gst_treatment"
+                                        column_invisible="parent.l10n_in_company_country_code != 'IN' or parent.l10n_in_purchase != True or parent.vendor_option != 'multi'"
+                                        required="parent.l10n_in_company_country_code == 'IN' and parent.l10n_in_purchase == True and parent.vendor_option == 'single'"/>
+                                    <field name="qty" />
+                                    <field name="uom_id" required="1" />
+                                    <field name="price_unit" />
+                                    <field
+                                        name="taxes_id"
+                                        widget="many2many_tags"
+                                        domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id)]"
+                                        context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}"
+                                        options="{'no_create': True}"
+                                    />
+                                    <field name="subtotal" readonly="1" />
+                                    <field name="sale_line_id" column_invisible="1" />
+                                </list>
+                                <form string="Order lines">
+                                    <group>
+                                        <group>
+                                            <field
+                                                name="product_id"
+                                                domain="[('purchase_ok', '=', True)]"
+                                                required="1"
+                                            />
+                                            <field
+                                                name="wiz_sale_purchase_id"
+                                                invisible="1"
+                                            />
+                                            <field name="name" required="1" />
+                                            <field
+                                                name="vendor_id"
+                                                context="{'res_partner_search_mode': 'supplier'}"
+                                                column_invisible="parent.vendor_option == 'single'"
+                                                required="parent.vendor_option == 'multi'"
+                                            />
+                                            <field
+                                                name="l10n_in_company_country_code"
+                                                column_invisible="1"
+                                            />
+                                            <field
+                                                name="l10n_in_purchase"
+                                                column_invisible="1"
+                                            />
+                                            <field name="l10n_in_sale" column_invisible="1" />
+                                            <field
+                                                name="l10n_in_gst_treatment"
+                                                column_invisible="l10n_in_company_country_code != 'IN' or l10n_in_purchase != True"
+                                                required="l10n_in_company_country_code == 'IN' and l10n_in_purchase == True"
+                                            />
+                                        </group>
+                                        <group>
+                                            <field name="qty" />
+                                            <field name="uom_id" required="1" />
+                                            <field name="price_unit" />
+                                            <field
+                                                name="taxes_id"
+                                                widget="many2many_tags"
+                                                domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id)]"
+                                                context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}"
+                                                options="{'no_create': True}"
+                                            />
+                                            <field name="subtotal" readonly="1" />
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button
+                        string="Create Purchase order"
+                        name="action_create_purchase_order"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button string="Cancel" class="btn btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <!-- Action of Wizard create purchase order -->
+    <record id="action_view_wiz_sale_purchase" model="ir.actions.act_window">
+        <field name="name">Create Purchase Order</field>
+        <field name="res_model">wiz.sale.purchase</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

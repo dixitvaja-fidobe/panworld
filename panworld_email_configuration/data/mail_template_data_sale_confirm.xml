@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data"  search="[('name', '=', 'mail_template_sale_confirmation'), ('module', '=', 'sale')]"/>
+        <value eval="{
+            'noupdate': False,
+        }"/>
+    </function>
+
+    <record id="sale.mail_template_sale_confirmation" model="mail.template">
+        <field name="report_template_ids" eval="[]"/>
+        <field name="name"></field>
+    </record>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data"  search="[('name', '=', 'mail_template_sale_confirmation'), ('module', '=', 'sale')]"/>
+        <value eval="{
+            'noupdate': True,
+        }"/>
+    </function>
+</odoo>

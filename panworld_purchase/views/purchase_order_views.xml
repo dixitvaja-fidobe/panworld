@@ -1,0 +1,198 @@
+<odoo>
+    <record id="purchase_order_kpis_tree_panworld" model="ir.ui.view">
+        <field name="name">purchase.order.tree.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="priority">8</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="rejected" invisible="1" />
+                <field name="validated" invisible="1" />
+            </field>
+            <list position="attributes">
+                <attribute name="decoration-danger">rejected==True</attribute>
+                <attribute name="decoration-success">validated==True</attribute>
+            </list>
+            <xpath expr="//field[@name='amount_total']" position="before">
+                <field name="po_total"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="po_pending_qty" optional="hide"/>
+                <field name="po_status"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="shipping_location_id"/>
+            </xpath>
+            <xpath expr="//field[@name='company_id'][@groups='base.group_multi_company']" position="attributes">
+                <attribute name="width">300px</attribute>
+                <attribute name="optional">show</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="purchase_order_form_panworld" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_rfq_send']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <button name="button_cancel" position="before">
+                <button
+                    type="object"
+                    string="Create RMA"
+                    name="create_purchase_return"
+                    class="oe_highlight"
+                    invisible="state not in ['purchase','done']"
+                />
+            </button>
+            <field name="picking_type_id" position="after">
+                <field
+                    name="shipping_option_id"
+                    readonly="state in ['purchase','done','cancel']"
+                    invisible="is_service_quotation"
+                    required="is_service_quotation == False"
+                    options="{'no_open': True, 'no_create': True}"
+                />
+                <field
+                    name="carrier_id"
+                    readonly="state in ('purchase','done','cancel')"
+                    invisible="is_service_quotation != False"
+                    context="{'from_purchase_order':True, 'partner_id': partner_id}"
+                />
+                <field name="shipping_option_id" position="move" />
+            </field>
+            <field name="partner_id" position="after">
+                    <field name="shipping_location_id"/>
+                    <field name="is_service_quotation" invisible="1"/>
+                    <field name="po_pending_qty" invisible="1"/>
+                    <field name="po_status" invisible="1"/>
+                </field>
+            <field name="picking_type_id" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </field>
+            <field name="currency_id" position="after">
+                <label for="consolidated_weight" />
+                <div class="o_row">
+                    <field name="consolidated_weight" readonly='1' force_save='1'/>
+                    <span>
+                        <field name="consolidated_weight_uom" />
+                    </span>
+                </div>
+                <label for="total_weight" />
+                <div class="o_row">
+                    <field name="total_weight" />
+                    <span>
+                        <field name="weight_uom_name" />
+                    </span>
+                </div>
+                <xpath expr="//field[@name='origin']" position="move"/>
+            </field>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="customer_sales_order"/>
+                <field name="customer_so_date"/>
+                <field name="is_carrier_tracking_required" invisible='1'/>
+                <field name="carrier_tracking_ref"/>
+            </xpath>
+            <field name="partner_ref" position="before">
+                <field name="publisher_id" options="{'no_create': True}"/>
+            </field>
+            <!-- Purchase Order Lines -->
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_uom_id']" position="after">
+            	<field name="list_price" string="Bill List Price" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_qty']" position="attributes">
+            	<attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_id']" position="attributes">
+            	<attribute name="width">150px</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='name']" position="attributes">
+            	<attribute name="width">120px</attribute>
+            	<attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='price_subtotal']" position="attributes">
+                <attribute name="string">Bill Subtotal</attribute>
+            </xpath>
+<!--            <xpath expr="//field[@name='tax_totals']" position="after">-->
+<!--                <div class="oe_subtotal_footer_separator oe_right_align" style="display: table; width: 100%;">-->
+<!--                    <label for="po_total" string="PO Total" style="display: table-cell; text-align: right; padding-right: 10px;"/>-->
+<!--                    <field name="po_total" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}" style="display: table-cell; text-align: right; font-weight: bold;"/>-->
+<!--                </div>-->
+<!--            </xpath>-->
+            <xpath expr="//field[@name='order_line']//form//field[@name='product_uom_id']" position="after">
+            	<field name="list_price"/>
+            </xpath>
+             <xpath expr="//field[@name='order_line']//list//field[@name='price_subtotal']" position="after">
+                <field name="customer_sales_order" string="CSO" optional="hide"/>
+                <field name="customer_name" optional="hide"/>
+                <field name="remarks" optional="hide"/>
+            </xpath>
+            <field name="date_order" position="attributes">
+                <attribute name="string">Order Date</attribute>
+                <attribute name="widget">date</attribute>
+            </field>
+            <xpath expr="//label[@for='date_planned']" position="attributes">
+                <attribute name="string">Expected Receipt Date</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_id']" position="attributes">
+                <attribute name="context">
+                    {'is_service_quotation' : parent.is_service_quotation}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='date_planned']" position="before">
+                <field name="related_so" options="{'no_open': False}" required="1" width="120px"/>
+            </xpath>
+            <field name="partner_id" position="attributes">
+                <attribute name="domain">['|', ('company_id', '=', False), ('company_id', '=', company_id), ('parent_id', '=', False)]</attribute>
+            </field>
+            <xpath expr="//field[@name='effective_date']" position="after">
+                <field name="amount_total" string="Purchase Estimation"/>
+                <field name="company_currency_id" invisible="1"/>
+                <field name="total_additional_amount_order_currency" invisible="1"/>
+                <field
+                    name="total_additional_amount"
+                    options="{'currency_field': 'company_currency_id'}"
+                    string="Shipment Estimation"
+                />
+                <field name="total_estimated_cost" />
+                <field name="total_order_quantity" />
+                <field name="is_service_quotation" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//page[@name='products']" position="after">
+                <page name="additional_services" string="Additional Services"
+                      invisible="is_service_quotation != False">
+                    <field name="additional_po_service_ids">
+                        <list editable="bottom">
+                            <field name="product_id" width="120px" />
+                            <field name="product_qty" width="80px" optional="hide"/>
+                            <field
+                                name="product_uom"
+                                groups="uom.group_uom"
+                                force_save="1"
+                                optional="show"
+                                width="80px"
+                            />
+                            <field name="consolidated_price" optional="hide" width="80px"/>
+                            <field name="price_unit" optional="hide" width="80px"/>
+                            <field
+                                name="taxes_id"
+                                widget="many2many_tags"
+                                domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id), ('country_id', '=', parent.tax_country_id)]"
+                                context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}"
+                                options="{'no_create': True}"
+                                optional="show"
+                                width="80px"
+                            />
+                            <field name="price_subtotal" widget="monetary" optional="hide" width="80px"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

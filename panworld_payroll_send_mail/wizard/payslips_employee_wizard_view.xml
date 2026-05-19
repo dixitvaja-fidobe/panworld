@@ -1,0 +1,29 @@
+<odoo>
+    <data>
+        <record id="panworld_payroll_send_mail" model="ir.ui.view">
+            <field name="name">send.mail.wizard.view.form</field>
+            <field name="model">payslips.employee</field>
+            <field name="arch" type="xml">
+                <form string="Import User">
+                    <sheet>
+                        <group>
+                            <field name="user_email"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="send_mail_employee" string="Send" type="object" class="oe_highlight"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="send_mail_wizard_view_form_action" model="ir.actions.act_window">
+            <field name="name">Send Mail</field>
+            <field name="res_model">payslips.employee</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="panworld_payroll_send_mail.panworld_payroll_send_mail"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

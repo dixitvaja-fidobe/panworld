@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_order_form_inherit_panworld" model="ir.ui.view">
+        <field name="name"> sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+
+            <button name="action_preview_sale_order" position="before">
+                <button
+                    type="object"
+                    string="Create RMA"
+                    name="create_sale_return"
+                    class="oe_highlight"
+                    invisible="state not in ['sale']"
+                />
+            </button>
+            <xpath expr="//button[@id='quotation_send_primary']" position="replace">
+                <button
+                string="Send"
+                id="quotation_send_primary"
+                name="action_quotation_send"
+                type="object"
+                context="{'validate_analytic': True, 'check_document_layout': True}"
+                class="btn-primary"
+                data-hotkey="g"
+                invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@id='quotation_send']" position="replace">
+                <button
+                    string="Send"
+                    id="quotation_send"
+                    name="action_quotation_send"
+                    type="object"
+                    context="{'validate_analytic': True, 'check_document_layout': True}"
+                    data-hotkey="g"
+                    invisible="1"/>
+            </xpath>
+
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="class">btn-primary</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="customer_sales_order" required="1"/>
+                <field name="customer_so_date" required="1"/>
+                <field name="total_weight" />
+                <field name="customer_account" />
+                <field name="sales_manager_id"
+                       widget="many2one"
+                       options="{'no_create': True, 'no_open': True}"/>
+                <field name="pending_qty" invisible="1"/>
+                <field name="so_status" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='rma_done']" position="after">
+                <field name="academic_year_id" widget="selection" required="1"/>
+                <field name="total_order_quantity"/>
+                <field name="total_est_sales" invisible="1" />
+                <field name="total_est_landed_cost" invisible="1"/>
+                <field name="total_est_dcost" invisible="1" />
+                <field name="total_cost" invisible="1"/>
+                <field name="gp_percentage" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='total_weight']" position="after">
+                <field name="analytic_account_id"/>
+                <field name="division_type_id"/>
+            </xpath>
+              <xpath expr="//form[1]" position="attributes">
+                <attribute name="create">true</attribute>
+              </xpath>
+              <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='order_lines']/field[@name='order_line']/list/field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">qty_invoiced &gt; 0</attribute>
+              </xpath>
+              <xpath expr="//field[@name='journal_id']" position="before">
+                <field name="internal_ref_no" string="Internal Ref. No."/>
+              </xpath>
+            <!-- Sale Order Lines -->
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_template_id']" position="attributes">
+                <attribute name="width">150px</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_id']" position="attributes">
+                <attribute name="width">150px</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='name']" position="attributes">
+                <attribute name="width">120px</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_uom_id']"
+                position="after">
+                <field name="available_qty_stock" optional="show" />
+                <field name="weight" optional="hide" />
+                <field name="total_weight" optional="hide" />
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='customer_lead']"
+                position="after">
+                <xpath expr="//field[@name='order_line']//list//field[@name='price_unit']"
+                    position="move"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='price_unit']"
+                position="attributes">
+                <attribute name="string">List Price</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='price_unit']"
+                position="after">
+                <xpath expr="//field[@name='order_line']//list//field[@name='discount']"
+                    position="move"/>
+                <field name="list_price" string="Unit Price" />
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='price_subtotal']"
+                position="after">
+                <field name="uk_wholesaler_id" optional="hide"/>
+                <field name="subject_id" optional="hide"/>
+                <field name="format" optional="hide"/>
+                <field name="classification" optional="hide"/>
+                <field name="remarks" optional="hide" />
+                <field name="course_id" optional="hide" />
+                <field name="crn" optional="hide" />
+                <field name="landed_cost" optional="hide" />
+                <field name="marketplace_cost" optional="hide" />
+                <field name="shipping_cost" optional="hide" />
+                <field name="other_cost" optional="hide" />
+                <field name="subtotal_cost" optional="hide" />
+                <field name="gp_percentage" optional="hide"/>
+                <field name="lock_price_disc" column_invisible="1"/>
+            </xpath>
+            <field name="partner_id" position="attributes">
+                <attribute name="domain">[('type', '!=', 'private'), ('company_id', 'in', (False, company_id)), ('parent_id', '=', False)]</attribute>
+            </field>
+        </field>
+    </record>
+    <record id="view_sale_order_form_panworld_sale_inherit" model="ir.ui.view">
+        <field name="name">view.sale.order.form.panworld.sale.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <field name="currency_id" position='after'>
+                <field name="currency_id"/>
+                <field name="pick_type" />
+                <field
+                    name="carrier_id"
+                    invisible="pick_type == 'picked_by_customer'"
+                    domain="[('carrier_type','=','sale'),'|', ('company_id', '=', False), ('company_id', '=', company_id)]"
+                />
+                <field name="pw_shipping_cost" readonly="0" force_save='1' invisible="1"/>
+            </field>
+        </field>
+    </record>
+     <record id="view_sale_order_quotation_tree_inherit" model="ir.ui.view">
+        <field name="name">view.sale.order.form.panworld.sale.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding" />
+        <field name="arch" type="xml">
+            <field name="name" position='attributes'>
+                <attribute name="width">150px</attribute>
+            </field>
+            <field name="create_date" position='attributes'>
+                <attribute name="width">120px</attribute>
+            </field>
+        </field>
+    </record>
+    <record id="view_sale_order_sale_order_list_upload" model="ir.ui.view">
+        <field name="name">view.sale.order.form.panworld.sale.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_list_upload" />
+        <field name="arch" type="xml">
+            <field name="name" position='attributes'>
+                <attribute name="width">150px</attribute>
+            </field>
+            <field name="date_order" position='attributes'>
+                <attribute name="width">120px</attribute>
+            </field>
+        </field>
+    </record>
+
+     <record id="panworld_sale_view_inherit_view_quotation_tree" model="ir.ui.view">
+            <field name="name">panworld.sale.order.tree.inherit.quotation</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="internal_ref_no" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="pending_qty" optional="hide"/>
+                    <field name="so_status"/>
+                </xpath>
+                <xpath expr="//field[@name='create_date']" position="after">
+                    <field name="sales_manager_id" widget="many2one_avatar" optional="show"/>
+                    <field name="customer_so_date" optional="show"/>
+                    <field name="customer_sales_order" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="partner_shipping_id" optional="show"/>
+                    <field name="division_type_id" optional="show"/>
+                    <field name="message_attachment_count" optional="show"/>
+                    <field name="analytic_account_id" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="currency_rate" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+    <record id="view_sale_order_form_inherit_button_panworld_sale" model="ir.ui.view">
+        <field name="name">view.sale.order.tree.panworld.sale</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="sales_manager_id" widget="many2one_avatar" optional="show"/>
+            </xpath>
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button
+                        string="Update Order Date"
+                        type="object"
+                        name="action_view_wiz_update_order_date"
+                        groups="purchase.group_purchase_user"
+                    />
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sales_order_filter_inherit_manager" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.manager</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="customer_sales_order" string="CSO Reference"/>
+                <field name="sales_manager_id"/>
+            </xpath>
+            <xpath expr="//filter[@name='salesperson']" position="after">
+                <filter name="sales_manager" string="Sales Manager" context="{'group_by': 'sales_manager_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

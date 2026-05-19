@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_reports.partner_ledger_report_amount_currency" model="account.report.column">
+        <field name="sequence">80</field>
+    </record>
+    
+    <record id="partner_ledger_report_amount_currency_no_symbol" model="account.report.column">
+        <field name="name">Total Amount Currency</field>
+        <field name="expression_label">amount_currency_no_symbol</field>
+        <field name="figure_type">float</field>
+        <field name="sortable" eval="True"/>
+        <field name="sequence">90</field>
+        <field name="report_id" ref="account_reports.partner_ledger_report"/>
+    </record>
+
+    <record id="partner_ledger_report_bill_ref" model="account.report.column">
+        <field name="name">Bill Ref</field>
+        <field name="expression_label">bill_ref</field>
+        <field name="figure_type">string</field>
+        <field name="sortable" eval="True"/>
+        <field name="sequence">35</field>
+        <field name="report_id" ref="account_reports.partner_ledger_report"/>
+    </record>
+
+    <record id="account_reports.partner_ledger_report_balance" model="account.report.column">
+        <field name="sequence">100</field>
+    </record>
+</odoo>

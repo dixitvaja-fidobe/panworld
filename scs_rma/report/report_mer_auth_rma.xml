@@ -1,0 +1,727 @@
+<odoo>
+
+    <record id="paperformat_rma" model="report.paperformat">
+            <field name="name">Paper Format- RMA</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">34</field>
+            <field name="margin_bottom">32</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">54</field>
+            <field name="dpi">90</field>
+        </record>
+
+    <template id="report_rma_scs_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <h2 class="text-center">
+                    <t t-if="doc.rma_type=='customer'">
+                        <span>Sale Return </span>
+                    </t>
+                    <t t-if="doc.rma_type=='supplier'">
+                        <span>Purchase Return </span>
+                    </t>
+                    <t t-if="doc.rma_type=='direct'">
+                        <span>Puchase Direct Return </span>
+                    </t>
+                    <t t-if="doc.rma_type=='sale_direct'">
+                        <span>Sale Direct Return </span>
+                    </t>
+                    <t t-if="doc.rma_type=='invoice'">
+                        <span>Invoice Return </span>
+                    </t>
+                     <t t-if="doc.rma_type in ('picking','lot')">
+                        <span>RMA </span>
+                     </t>
+                </h2>
+                <!-- <h2 class="text-center">
+                    <span t-if="doc.rma_type == 'customer'">Customer Credit Note</span>
+                    <span t-if="doc.rma_type == 'sale_direct'">Direct Customer Credit Note</span>
+                    <span t-if="doc.rma_type == 'supplier'">Vendor Credit Note</span>
+                    <span t-if="doc.rma_type == 'direct'">Direct Vendor Credit Note</span>
+                    <span t-if="doc.rma_type == 'invoice'">Invoice Return</span>
+                    <t t-if="doc.rma_type in ('picking','lot')">
+                        <span>RMA </span>
+                    </t>
+                    <span t-if="doc.name != '/'" t-field="doc.name"/>
+                </h2> -->
+                <div class="oe_structure" />
+                <div class="row">
+                    <div class="col-6">
+                        <br />
+                        <t t-if="doc.rma_type in ('customer','sale_direct')">
+                            <div
+                                t-field="doc.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                            />
+                        </t>
+                        <t t-if="doc.rma_type in ('supplier','invoice','direct')">
+                            <div
+                                t-field="doc.supplier_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                            />
+                        </t>
+                        <t t-if="doc.rma_type=='picking'">
+                            <div
+                                t-field="doc.picking_partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                            />
+                        </t>
+                        <t t-if="doc.rma_type=='lot' and doc.lot_picking_id">
+                            <div
+                                t-esc="doc.lot_picking_id.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'
+                            />
+                        </t>
+                    </div>
+                </div>
+                <br />
+
+                    <div class="text-left"  style="margin-left:500px;">
+                        <strong>Vendor Credit Note # </strong>
+                        <span t-field="doc.name" />
+                        <br />
+                        <t t-if="doc.rma_date">
+                            <strong>Date : </strong>
+                            <span t-field="doc.rma_date" />
+                            <br />
+                            <t t-if="doc.sale_order_id">
+                                <strong>S/O : </strong>
+                                <span t-field="doc.sale_order_id.name" />
+                            </t>
+                            <t t-if="doc.purchase_order_id">
+                                <strong>P/O : </strong>
+                                <span t-field="doc.purchase_order_id.name" />
+                            </t>
+                            <t t-if="doc.rma_type=='picking'">
+                                <strong>Picking : </strong>
+                                <span t-field="doc.picking_rma_id.name" />
+                            </t>
+                            <t t-if="doc.rma_type=='lot'">
+                                <strong>Serial No: </strong>
+                                <span t-field="doc.rma_lot" />
+                            </t>
+                            <t t-if="doc.rma_type=='invoice'">
+                                <strong>Bill : </strong>
+                                <span t-field="doc.move_id.name" />
+                            </t>
+                            <br />
+                            <t t-if="doc.rma_type=='lot'">
+                                <strong>Picking : </strong>
+                                <span
+                                    t-field="doc.picking_rma_id.name or doc.lot_picking_id.name"
+                                />
+                            </t>
+                        </t>
+                    </div>
+                <br />
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Actions</th>
+                            <th class="text-center">Return Quantity</th>
+                            <th class="text-center">Unit Price</th>
+                            <th class="text-center">VAT</th>
+                            <th class="text-center">VAT Amount</th>
+                            <th class="text-center">Net Refund Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-if="doc.rma_type=='invoice'">
+                            <t t-foreach="doc.rma_inv_lines_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <span t-field="l.product_id.display_name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="l.type" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.refund_qty" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.price_unit" />
+                                    </td>
+                                    <td class="text-right">
+                                        <!-- <span
+                                            t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                        /> -->
+                                        <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
+                                            t-field="l.refund_price"
+                                            t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                        <t t-if="doc.rma_type=='direct'">
+                            <t t-foreach="doc.rma_direct_lines_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <span t-field="l.product_id.display_name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="l.type" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.refund_qty" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.price_unit" />
+                                    </td>
+                                    <td class="text-right">
+                                        <!-- <span
+                                            t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                        /> -->
+                                        <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
+                                            t-field="l.refund_price"
+                                            t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                        <t t-if="doc.rma_type=='sale_direct'">
+                            <t t-foreach="doc.rma_sale_direct_lines_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <span t-field="l.product_id.display_name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="l.type" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.refund_qty" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.price_unit" />
+                                    </td>
+                                    <td class="text-right">
+                                        <!-- <span
+                                            t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                        /> -->
+                                        <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
+                                            t-field="l.refund_price"
+                                            t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                        <t t-if="doc.rma_type=='customer'">
+                            <t t-foreach="doc.rma_sale_lines_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <span t-field="l.product_id.display_name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="l.type" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.refund_qty" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.price_unit" />
+                                    </td>
+                                    <td class="text-right">
+                                        <!-- <span
+                                            t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                        /> -->
+                                        <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="vat" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
+                                            t-field="l.refund_price"
+                                            t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                        />
+                                    </td>
+                                </tr>
+                                <t t-if="l.type=='exchange'">
+                                    <tr>
+                                        <td>
+                                            <span
+                                                t-field="l.exchange_product_id.display_name"
+                                            />
+                                        </td>
+                                        <td>
+                                            <span t-field="l.type" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.refund_qty" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.price_unit" />
+                                        </td>
+                                        <td class="text-right">
+                                            <!-- <span
+                                                t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                            /> -->
+                                            <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                        </td>
+                                        <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                        <td class="text-right">
+                                            <span
+                                                t-field="l.refund_price"
+                                                t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                            />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-if="doc.rma_type=='supplier'">
+                            <t t-foreach="doc.rma_purchase_lines_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <span t-field="l.product_id.display_name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="l.type" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.refund_qty" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.price_unit" />
+                                    </td>
+                                    <td class="text-right">
+                                        <!-- <span
+                                            t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                        /> -->
+                                        <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
+                                            t-field="l.refund_price"
+                                            t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                        />
+                                    </td>
+                                </tr>
+                                <t t-if="l.type=='exchange'">
+                                    <tr>
+                                        <td>
+                                            <span
+                                                t-field="l.exchange_product_id.display_name"
+                                            />
+                                        </td>
+                                        <td>
+                                            <span t-field="l.type" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.refund_qty" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.price_unit" />
+                                        </td>
+                                        <td class="text-right">
+                                            <!-- <span
+                                                t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                            /> -->
+                                            <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                        </td>
+                                        <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                        <td class="text-right">
+                                            <span
+                                                t-field="l.refund_price"
+                                                t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                            />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-if="doc.rma_type=='picking'">
+                            <t t-foreach="doc.rma_picking_lines_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <span t-field="l.product_id.display_name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="l.type" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.refund_qty" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.price_unit" />
+                                    </td>
+                                    <td class="text-right">
+                                       <!--  <span
+                                            t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                        /> -->
+                                        <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
+                                            t-field="l.refund_price"
+                                            t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                        />
+                                    </td>
+                                </tr>
+                                <t t-if="l.type=='exchange'">
+                                    <tr>
+                                        <td>
+                                            <span
+                                                t-field="l.exchange_product_id.display_name"
+                                            />
+                                        </td>
+                                        <td>
+                                            <span t-field="l.type" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.refund_qty" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.price_unit" />
+                                        </td>
+                                        <td class="text-right">
+                                            <!-- <span
+                                                t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                            /> -->
+                                            <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                        </td>
+                                        <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                        <td class="text-right">
+                                            <span
+                                                t-field="l.refund_price"
+                                                t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                            />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-if="doc.rma_type=='lot'">
+                            <t t-foreach="doc.rma_picking_lines_ids" t-as="l">
+                                <tr>
+                                    <td>
+                                        <span t-field="l.product_id.display_name" />
+                                    </td>
+                                    <td>
+                                        <span t-field="l.type" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.refund_qty" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="l.price_unit" />
+                                    </td>
+                                    <td class="text-right">
+                                        <!-- <span
+                                            t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                        /> -->
+                                        <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                    <td class="text-right">
+                                        <span
+                                            t-field="l.refund_price"
+                                            t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                        />
+                                    </td>
+                                </tr>
+                                <t t-if="l.type=='exchange'">
+                                    <tr>
+                                        <td>
+                                            <span
+                                                t-field="l.exchange_product_id.display_name"
+                                            />
+                                        </td>
+                                        <td>
+                                            <span t-field="l.type" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.refund_qty" />
+                                        </td>
+                                        <td class="text-center">
+                                            <span t-field="l.price_unit" />
+                                        </td>
+                                        <td class="text-right">
+                                           <!--  <span
+                                                t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"
+                                            /> -->
+                                            <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), l.tax_id))"/>
+                                        </td>
+                                        <td class="text-right">
+                                        <t t-set="vat_amount" t-value="sum(t.amount or 0.0 for t in l.tax_id)"/>
+                                        <t t-set="vat_amount" t-value="(l.refund_price or 0.0 * vat_amount or 0.0)/100"/>
+                                        <span
+                                            t-esc="vat_amount" t-options='{"widget": "float", "precision": 2}'
+                                        />
+                                    </td>
+                                        <td class="text-right">
+                                            <span
+                                                t-field="l.refund_price"
+                                                t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                            />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+                <br />
+                <div
+                    t-if="doc.rma_type in ('customer', 'sale_direct')"
+                    class="row float-right"
+                    name="total"
+                >
+                    <div class="col-md-8 float-right">
+                        <table class="table table-condensed">
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total Without Taxes</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.amount_untaxed"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Taxes</td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.amount_tax"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.amount_total"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div
+                    t-if="doc.rma_type in ('supplier', 'invoice', 'direct')"
+                    class="row float-right"
+                    name="total"
+                >
+                    <div class="col-md-8 float-right">
+                        <table class="table table-condensed">
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total Without Taxes</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.purchase_amount_untaxed"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Taxes</td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.purchase_amount_tax"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.purchase_amount_total"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div
+                    t-if="doc.rma_type=='picking'"
+                    class="row float-right"
+                    name="total"
+                >
+                    <div class="col-md-8 float-right">
+                        <table class="table table-condensed">
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total Without Taxes</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.picking_amount_untaxed"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Taxes</td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.picking_amount_tax"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.picking_amount_total"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div t-if="doc.rma_type=='lot'" class="row float-right" name="total">
+                    <div class="col-md-8 float-right">
+                        <table class="table table-condensed">
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total Without Taxes</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.picking_amount_untaxed"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Taxes</td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.picking_amount_tax"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td>
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span
+                                        t-field="doc.picking_amount_total"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <div t-if="not is_html_empty(doc.problem)" name="comment">
+                <span t-field="doc.problem"/>
+            </div>
+            </div>
+            
+        </t>
+    </template>
+    <template id="report_mer_auth_rma">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="scs_rma.report_rma_scs_document" />
+            </t>
+        </t>
+    </template>
+</odoo>

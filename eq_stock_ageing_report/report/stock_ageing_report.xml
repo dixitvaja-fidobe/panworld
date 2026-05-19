@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="stock_ageing_report_document">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <style>
+                        #table_css {
+                            border: 1px solid black
+                            border-collapse: collapse;
+                            border-spacing : 0px;
+                            border-top-spacing : 0px;
+                        }
+                        #table_css td, #table_css th {
+                            border: 1px solid black
+                        }
+                        #table_css tr: {
+                            border: 1px solid black
+                        }
+                        #table_css th {
+                            style="border: 1px solid black"
+                        }
+                    </style>
+                    <t t-foreach="docs.warehouse_ids" t-as="warehouse">
+                        <t t-if="docs.location_ids">
+                            <t t-set="location_ids" t-value="get_warehouse_wise_location(docs,warehouse)"/>
+                        </t>
+                        <div style="font-size:19px;font-weight:bold;text-align:center;">
+                            Stock Ageing Report
+                        </div>
+                        <div class="row">
+                            <span style="font-size:16px;text-align:left;padding-left:15px;">
+                                As of Date:
+                                <span t-esc="(docs.start_date).strftime('%d-%m-%Y')"/>
+                            </span>
+                            <span style="font-size:16px;text-align:right;padding-left:260px;">
+                                Warehouse: <span t-esc="warehouse.name"/>
+                            </span>
+
+                            <span t-set="periods" t-value="data['form']['period']"/>
+                        </div>
+
+                        <!-- Product Header -->
+                        <table class="table table-sm" id="table_css">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th t-if="docs.location_ids">Location</th>
+                                    <t t-foreach="sorted(data['form']['period'].keys(), reverse=True)" t-as="key">
+                                        <th><span t-esc="data['form']['period'][key]['name']"/></th>
+                                    </t>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="invoice_tbody">
+                                <t t-set="period_keys" t-value="sorted(data['form']['period'].keys(), reverse=True)"/>
+                                <t t-set="num_cols" t-value="len(period_keys)"/>
+                                <t t-set="grand_totals" t-value="[0.0] * (num_cols + 1)"/>
+
+                                <t t-if="not docs.group_by_categ">
+                                    <t t-if="docs.location_ids">
+                                        <t t-foreach="get_products(docs)" t-as="product">
+                                            <span t-set="location_data" t-value="get_location_wise_product(docs,warehouse,product,location_ids,periods)"/>
+                                            <t t-if="location_data[1][-1] != 0">
+                                                <tr>
+                                                    <td><span t-esc="get_product_name(product)"/></td>
+                                                    <td></td>
+                                                    <t t-foreach="range(num_cols + 1)" t-as="idx">
+                                                        <td style="font-weight:bold;"><span t-esc="location_data[1][idx]" t-options="{'widget': 'float', 'precision': 2}"/></td>
+                                                    </t>
+                                                </tr>
+                                                <tr t-foreach="location_data[0]" t-as="l">
+                                                    <t t-set="l_vals" t-value="location_data[0][l]"/>
+                                                    <td></td>
+                                                    <td style="padding-left: 10px; color: #666; font-size: 0.9em;">
+                                                        <span t-esc="l.display_name"/>
+                                                    </td>
+                                                    <t t-foreach="period_keys" t-as="key">
+                                                        <td>
+                                                            <span t-esc="l_vals[int(key)]" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                            <t t-set="dummy" t-value="grand_totals.__setitem__(key_index, grand_totals[key_index] + l_vals[int(key)])"/>
+                                                        </td>
+                                                    </t>
+                                                    <td>
+                                                        <span t-esc="l_vals['total_qty']" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                        <t t-set="dummy" t-value="grand_totals.__setitem__(num_cols, grand_totals[num_cols] + l_vals['total_qty'])"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <tr>
+                                            <th style="border-top: 2px solid black">Total</th>
+                                            <th style="border-top: 2px solid black"></th>
+                                            <t t-foreach="range(num_cols + 1)" t-as="idx">
+                                                <th style="border-top: 2px solid black"><span t-esc="grand_totals[idx]" t-options="{'widget': 'float', 'precision': 2}"/></th>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                    <t t-if="not docs.location_ids">
+                                        <t t-foreach="get_products(docs)" t-as="product">
+                                            <t t-value="get_ageing_inventory(docs,product,warehouse,periods)" t-set="product_qty"/>
+                                            <t t-if="product_qty['total_qty'] != 0">
+                                                <tr>
+                                                    <td><span t-esc="get_product_name(product)"/></td>
+                                                    <t t-foreach="period_keys" t-as="key">
+                                                        <td>
+                                                            <span t-esc="product_qty[int(key)]" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                            <t t-set="dummy" t-value="grand_totals.__setitem__(key_index, grand_totals[key_index] + product_qty[int(key)])"/>
+                                                        </td>
+                                                    </t>
+                                                    <td>
+                                                        <span t-esc="product_qty['total_qty']" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                        <t t-set="dummy" t-value="grand_totals.__setitem__(num_cols, grand_totals[num_cols] + product_qty['total_qty'])"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <tr>
+                                            <th style="border-top: 2px solid black">Grand Total</th>
+                                            <t t-foreach="range(num_cols + 1)" t-as="idx">
+                                                <th style="border-top: 2px solid black"><span t-esc="grand_totals[idx]" t-options="{'widget': 'float', 'precision': 2}"/></th>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+
+                                <!--Group By Category wise  -->
+                                <t t-if="docs.group_by_categ">
+                                    <t t-foreach="get_product_category(docs)" t-as="category">
+                                        <t t-set="categ_totals" t-value="[0.0] * (num_cols + 1)"/>
+
+                                        <tr style="background-color:darkgrey;">
+                                            <td><span t-esc="category.name"/></td>
+                                            <td t-if="docs.location_ids"/>
+                                            <td t-att-colspan="num_cols + 1"/>
+                                        </tr>
+                                        
+                                        <t t-foreach="get_products(docs,category)" t-as="product">
+                                            <t t-if="not docs.location_ids">
+                                                <t t-value="get_ageing_inventory(docs,product,warehouse,periods)" t-set="product_qty"/>
+                                                <t t-if="product_qty['total_qty'] != 0">
+                                                    <tr>
+                                                        <td><span t-esc="get_product_name(product)"/></td>
+                                                        <t t-foreach="period_keys" t-as="key">
+                                                            <td>
+                                                                <span t-esc="product_qty[int(key)]" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                                <t t-set="dummy" t-value="categ_totals.__setitem__(key_index, categ_totals[key_index] + product_qty[int(key)])"/>
+                                                            </td>
+                                                        </t>
+                                                        <td>
+                                                            <span t-esc="product_qty['total_qty']" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                            <t t-set="dummy" t-value="categ_totals.__setitem__(num_cols, categ_totals[num_cols] + product_qty['total_qty'])"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+
+                                            <t t-if="docs.location_ids">
+                                                <span t-set="location_data" t-value="get_location_wise_product(docs,warehouse,product,location_ids,periods)"/>
+                                                <t t-if="location_data[1][-1] != 0">
+                                                    <tr>
+                                                        <td><span t-esc="get_product_name(product)"/></td>
+                                                        <td></td>
+                                                        <t t-foreach="range(num_cols + 1)" t-as="idx">
+                                                            <td style="font-weight:bold;"><span t-esc="location_data[1][idx]" t-options="{'widget': 'float', 'precision': 2}"/></td>
+                                                        </t>
+                                                    </tr>
+
+                                                    <tr t-foreach="location_data[0]" t-as="l">
+                                                        <t t-set="l_vals" t-value="location_data[0][l]"/>
+                                                        <td></td>
+                                                        <td style="padding-left: 10px; color: #666; font-size: 0.9em;">
+                                                            <span t-esc="l.display_name"/>
+                                                        </td>
+                                                        <t t-foreach="period_keys" t-as="key">
+                                                            <td>
+                                                                <span t-esc="l_vals[int(key)]" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                                <t t-set="dummy" t-value="categ_totals.__setitem__(key_index, categ_totals[key_index] + l_vals[int(key)])"/>
+                                                            </td>
+                                                        </t>
+                                                        <td>
+                                                            <span t-esc="l_vals['total_qty']" t-options="{'widget': 'float', 'precision': 2}"/>
+                                                            <t t-set="dummy" t-value="categ_totals.__setitem__(num_cols, categ_totals[num_cols] + l_vals['total_qty'])"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <tr>
+                                            <th style="border-top: 2px solid black" class="text-center">Total</th>
+                                            <th t-if="docs.location_ids" style="border-top: 2px solid black"/>
+                                            <t t-foreach="range(num_cols + 1)" t-as="idx">
+                                                <th style="border-top: 2px solid black"><span t-esc="categ_totals[idx]" t-options="{'widget': 'float', 'precision': 2}"/></th>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Page Break -->
+                        <p style="page-break-before:always;"/>
+                    </t>
+                </div>
+            </t>
+        </template>
+
+        <template id="stock_ageing_report">
+            <t t-call="web.html_container">
+                <t t-call="eq_stock_ageing_report.stock_ageing_report_document"/>
+            </t>
+        </template>
+
+    </data>
+</odoo>

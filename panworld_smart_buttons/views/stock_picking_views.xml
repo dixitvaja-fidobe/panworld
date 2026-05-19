@@ -1,0 +1,37 @@
+<odoo>
+    <record id="view_picking_form_inherit_panworld_smart_buttons" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.panworld.smart.buttons</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_picking_lines" type="object" class="oe_stat_button" icon="fa-list">
+                    <field name="move_line_count" widget="statinfo" string="Lines"/>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record id="view_stock_move_tree_panworld" model="ir.ui.view">
+        <field name="name">stock.move.tree.panworld</field>
+        <field name="model">stock.move</field>
+        <field name="arch" type="xml">
+            <list string="Picking Lines" create="false" multi_edit="1">
+                <field name="product_id"/>
+                <field name="description_picking" string="Description"/>
+                <field name="product_uom_qty" string="Demand"/>
+                <field name="quantity" string="Done"/>
+                <field name="product_uom" groups="uom.group_uom"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state not in ('done', 'cancel', 'draft')" decoration-muted="state == 'draft'"/>
+                <field name="origin" optional="hide"/>
+                <field name="partner_id" optional="hide"/>
+                <field name="date" optional="hide"/>
+                <field name="date_deadline" optional="hide"/>
+                <field name="customer_name" optional="hide"/>
+                <field name="customer_sales_order" optional="hide"/>
+            </list>
+        </field>
+    </record>
+</odoo>

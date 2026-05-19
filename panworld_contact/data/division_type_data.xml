@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="partner_division_school" model="division.type">
+        <field name="name">School Division</field>
+    </record>
+    <record id="partner_division_high_edu" model="division.type">
+        <field name="name">Higher Education  Division</field>
+    </record>
+    <record id="partner_division_wholesale" model="division.type">
+        <field name="name">eCom- Wholesale Division</field>
+    </record>
+    <record id="partner_division_retail" model="division.type">
+        <field name="name">eCom- Retail Division</field>
+    </record>
+    <record id="partner_division_corporate" model="division.type">
+        <field name="name">Wholesale &amp; Corporate Division</field>
+    </record>
+    <record id="partner_division_int_company" model="division.type">
+        <field name="name">Inter-company Division</field>
+    </record>
+    <record id="partner_division_na" model="division.type">
+        <field name="name">Not Applicable</field>
+    </record>
+</odoo>

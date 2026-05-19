@@ -1,0 +1,39 @@
+<odoo>
+    <record id="rma_ret_mer_auth_panworld_inherit" model="ir.ui.view">
+        <field name="name">rma.ret.mer.auth.panworld.inherit</field>
+        <field name="model">rma.ret.mer.auth</field>
+        <field name="inherit_id" ref="scs_rma.exchange_rma_ret_mer_auth_form"/>
+        <field name="arch" type="xml">
+            <button name="rma_submit" position="after">
+                <button
+                    name="%(panworld_import.import_data_action)d"
+                    string="Update Purchase Direct Lines"
+                    type="action"
+                    invisible="state not in ('new','verification') or rma_type != 'direct'"
+                />
+                 <button
+                    name="%(panworld_import.import_data_action)d"
+                    string="Update RMA Purchase Lines"
+                    type="action"
+                    invisible="state not in ('new','verification') or rma_type != 'supplier'"
+                />
+            
+                <button
+                    name="%(panworld_import.import_data_action)d"
+                    string="Update Sales Direct Lines"
+                    type="action"
+                    context="{'sale_direct':True}"
+                    invisible="state not in ('new','verification') or rma_type != 'sale_direct'"
+                />
+                <button
+                    name="%(panworld_import.import_data_action)d"
+                        string="Update RMA Sales Lines"
+                    type="action"
+                    context="{'sale_direct':True}"
+                    invisible="state not in ('new','verification') or rma_type != 'customer'"
+                />
+            </button>
+        </field>
+    </record>
+</odoo>
+

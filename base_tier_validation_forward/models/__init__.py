@@ -1,0 +1,12 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) Fidobe Solutions LLC.
+#
+#    For Module Support : dev3@fidobe.com
+#
+#############################################################################
+from . import tier_definition
+from . import tier_review
+from . import tier_validation

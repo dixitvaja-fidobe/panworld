@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.actions.act_window" id="panworld_dashboard_open_quants"> <!-- Used in dashboard -->
+        <field name="name">Stock On Hand</field>
+        <field name="context">{'uk_warehouse_search_default': 1}</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_id" ref="stock.view_stock_quant_tree_editable"/>
+    </record>
+    <menuitem id="panworld_menu_valuation" name="Inventory Report Uk Warehouse"
+              parent="stock.menu_warehouse_report" sequence="100"
+              action="panworld_dashboard_open_quants"/>
+
+    <record id="view_stock_product_tree_uk_warehouse" model="ir.ui.view">
+        <field name="name">product.stock.tree.inherit.uk.warehouse</field>
+        <field name="model">product.product</field>
+        <field name="arch" type="xml">
+            <list string="Product Variants" create='false' multi_edit="1" duplicate="false" sample="1">
+                <header>
+                    <button string="Print Labels" type="object" name="action_open_label_layout"/>
+                </header>
+                <field name="type" optional="hide" readonly="1" column_invisible='1'/>
+                <field name="is_favorite" widget="priority" nolabel="1" readonly="1"/>
+                <field name="default_code" optional="show" readonly="1"/>
+                <field name="barcode" optional="hide" readonly="1"/>
+                <field name="name" readonly="1"/>
+                <field name="categ_id" optional="hide"/>
+                <field name="qty_available"
+                       column_invisible="type != 'product'"
+                       optional="show"
+                       decoration-danger="virtual_available &lt; 0"
+                       decoration-warning="virtual_available == 0"
+                       decoration-bf="1"/>
+                <field name="virtual_available"
+                       column_invisible="type != 'product'"
+                       string="Forecasted Quantity"
+                       optional="show"
+                       decoration-danger="virtual_available &lt; 0"
+                       decoration-warning="virtual_available == 0"/>
+            </list>
+        </field>
+    </record>
+</odoo>

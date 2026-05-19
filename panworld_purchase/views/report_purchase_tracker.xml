@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+      <record id="stock_replenishment_report_product_product_action" model="ir.actions.report">
+        <field name="name">Purchase Tracker Report</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">panworld_purchase.report_purchase_tracker</field>
+      </record>
+
+    <template id="report_purchase_tracker">
+        <t t-call="web.html_container">
+            <div class="page pt-3 o_report_replenishment_page">
+<!--                <t t-set="future_virtual_available" t-value="docs['virtual_available'] + docs['qty']['in'] - docs['qty']['out']"/>-->
+<!--                <t t-call="stock.report_replenishment_header"/>-->
+                <div>
+                <table class="o_report_replenishment table table-bordered">
+                    <thead>
+                        <tr class="bg-light">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_purchase_tracker_template">
+        <t t-call="panworld_purchase.report_purchase_tracker"/>
+    </template>
+
+</odoo>

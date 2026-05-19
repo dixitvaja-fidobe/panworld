@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="inheirt_mail_server_form_view">
+            <field name="model">ir.mail_server</field>
+            <field name="inherit_id" ref="base.ir_mail_server_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group[2]" position="after">
+                    <group>
+                        <field name="user_ids" widget="many2many_tags"
+                               invisible="is_smtp_by_user == False"/>
+                        <field name="company_ids"
+                               invisible="is_smtp_by_company == False"
+                               widget="many2many_tags"/>
+                        <field name="is_smtp_by_user" invisible="1"/>
+                        <field name="is_smtp_by_company" invisible="1"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

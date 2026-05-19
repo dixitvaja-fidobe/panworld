@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+     <record id="view_rma_sale_direct_lines_tree" model="ir.ui.view">
+        <field name="name">view.rma.sale.direct.lines.tree</field>
+        <field name="model">rma.sale.direct.lines</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="product_id" required="True" />
+                <field name="type" optional="hide"/>
+                <field
+                    name="source_location_id"
+                    required="True"
+                    options="{'no_create': True}"
+                />
+                <field name="destination_location_id" options="{'no_create': True}"/>
+                <field name="price_unit" />
+                <field name="order_quantity" column_invisible="1" />
+                <field name="delivered_quantity" column_invisible="1" />
+                <field name="refund_qty" required="1" />
+                <field name="landed_cost" optional="hide"/>
+                <field name="marketplace_cost" optional="hide"/>
+                <field name="shipping_cost" optional="hide"/>
+                <field name="other_cost" optional="hide"/>
+                <field name="subtotal_cost" optional="hide"/>
+                <field name="reason_id" required="1" column_invisible="1" />
+                <field
+                    name="tax_id"
+                    widget="many2many_tags"
+                    domain="[('type_tax_use','=','purchase')]"
+                    options="{'no_create': True, 'no_open': True}"
+                />
+                <field name="price_tax" column_invisible="1" />
+                <field name="refund_price" required="1" force_save="1" />
+            </list>
+        </field>
+    </record>
+
+</odoo>

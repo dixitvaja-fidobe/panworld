@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--        <report-->
+        <!--            id="report_purchase_requisition"-->
+        <!--            model="material.purchase.requisition" -->
+        <!--            string="Purchase Requisition" -->
+        <!--            report_type="qweb-pdf"-->
+        <!--            name="material_purchase_requisitions.purchase_requisition" -->
+        <!--            file="material_purchase_requisitions.purchase_requisition"-->
+        <!--        />-->
+
+        <record id="report_purchase_requisition" model="ir.actions.report">
+            <field name="name">Purchase Requisition</field>
+            <field name="model">material.purchase.requisition</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">material_purchase_requisitions.purchase_requisition</field>
+            <field name="report_file">material_purchase_requisitions.purchase_requisition</field>
+            <field name="binding_model_id"  ref="model_material_purchase_requisition"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="purchase_requisition">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div t-attf-class="page">
+                            <div style="border:1px solid black; border-bottom:none; padding:10px;">
+                                <!--                                &lt;!&ndash; LOGO TABLE &ndash;&gt;-->
+                                <!--                                <div style="width:100%; margin-bottom:5px;">-->
+                                <!--                                    <table style="width:100%; border-collapse:collapse; border:none;">-->
+                                <!--                                        <tr>-->
+                                <!--                                            <td style="text-align:left; border:none;">-->
+                                <!--                                                <img src="material_purchase_requisitions/static/description/logo_r1.jpg"-->
+                                <!--                                                     style="height:60px;"/>-->
+                                <!--                                            </td>-->
+                                <!--                                            <td style="text-align:right; border:none;">-->
+                                <!--                                                <img src="material_purchase_requisitions/static/description/logo_r2.png"-->
+                                <!--                                                     style="height:60px;"/>-->
+                                <!--                                            </td>-->
+                                <!--                                        </tr>-->
+                                <!--                                    </table>-->
+                                <!--                                </div>-->
+                                <!-- DOCUMENT HEADING -->
+                                <div style="text-align:center; margin-bottom:10px;">
+                                    <p style="margin:0; font-size:16px; font-weight:bold; text-decoration:underline;">
+                                        MATERIAL REQUISITION (MR)
+                                    </p>
+                                </div>
+
+                                <!-- INFO TABLE (No border) -->
+                                <div class="row" style="margin-bottom:5px;">
+
+                                    <!-- LEFT PARTITION -->
+                                    <div class="col-7">
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                STORAGE LOCATION :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7">-->
+                                        <!--                                                <span t-esc="o.dest_location_id.display_name"/>-->
+                                        <!--                                            </div>-->
+                                        <!--                                        </div>-->
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                JOB NUMBER :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.project_code"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                PROJECT NAME :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.project_id.name"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                CLIENT :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.project_id.partner_id.name"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                BOQ REFERENCE :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.boq_reference"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                DRAWING REFERENCE:
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.drawing_reference"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                SCOPE OF WORK :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.job_cost_id.name"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                REQUESTED BY :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.employee_id.sudo().name"/>
+                                            </div>
+                                        </div>
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">PLANT-->
+                                        <!--                                                :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                SECTION/UNIT :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                MOVEMENT TYPE :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-7"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                CHARGEABLE ACCOUNTS :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-5"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                RESERVATION NO :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">JOB-->
+                                        <!--                                                TYPE :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-7"-->
+                                        <!--                                                 style="font-weight:bold;">JOB-->
+                                        <!--                                                TYPE DESCRIPTION :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-5"></div>-->
+                                        <!--                                        </div>-->
+                                    </div>
+                                    <div class="col-1"/>
+                                    <!-- RIGHT PARTITION -->
+                                    <div class="col-6">
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                MR NUMBER :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.name"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                REQUESTED DATE :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.request_date"/>
+                                            </div>
+                                        </div>
+                                        <div class="row"
+                                             style="margin-bottom:4px;">
+                                            <div class="col-5"
+                                                 style="font-weight:bold;">
+                                                APPROVAL DATE :
+                                            </div>
+                                            <div class="col-7">
+                                                <span t-esc="o.management_approval_date"/>
+                                            </div>
+                                        </div>
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                RECIPIENT :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-6"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                DELIVERY REQD DATE :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-6">-->
+                                        <!--                                                <span t-esc="o.request_date"/>-->
+                                        <!--                                            </div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">-->
+                                        <!--                                                DELIVERY LOCATION :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7">-->
+                                        <!--                                                <span t-esc="o.dest_location_id.display_name"/>-->
+                                        <!--                                            </div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">WBS-->
+                                        <!--                                                ELEMENT :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div class="row"-->
+                                        <!--                                             style="margin-bottom:4px;">-->
+                                        <!--                                            <div class="col-5"-->
+                                        <!--                                                 style="font-weight:bold;">SAP-->
+                                        <!--                                                CONTRACT :-->
+                                        <!--                                            </div>-->
+                                        <!--                                            <div class="col-7"></div>-->
+                                        <!--                                        </div>-->
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <!-- ITEM TABLE (Keep borders inside only) -->
+                            <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom:10px;">
+                                <thead>
+                                    <tr>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            Sl No
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            ITEM CODE
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            DESCRIPTION
+                                        </th>
+<!--                                        <th style="border:1px solid black; padding:3px;">-->
+<!--                                            GRD-->
+<!--                                        </th>-->
+                                        <th style="border:1px solid black; padding:3px;">
+                                            BOQ QTY
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            UOM
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            REQD QTY
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            STORE AVILBL QTY
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            BALANCE QTY
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            VENDORS
+                                        </th>
+                                        <th style="border:1px solid black; padding:3px;">
+                                            REMARKS
+                                        </th>
+                                        <!--                                        <th style="border:1px solid black; padding:3px;">-->
+                                        <!--                                            LOCN STK-->
+                                        <!--                                        </th>-->
+                                        <!--                                        <th style="border:1px solid black; padding:3px;">-->
+                                        <!--                                            COMP STK-->
+                                        <!--                                        </th>-->
+                                        <!--                                        <th style="border:1px solid black; padding:3px;">-->
+                                        <!--                                            BIN LOCN-->
+                                        <!--                                        </th>-->
+                                        <!--                                        <th style="border:1px solid black; padding:3px;">-->
+                                        <!--                                            UNLOADING POINT-->
+                                        <!--                                        </th>-->
+                                        <!--                                        <th style="border:1px solid black; padding:3px;">-->
+                                        <!--                                            TEXT-->
+                                        <!--                                        </th>-->
+                                        <!--                                        <th style="border:1px solid black; padding:3px;">-->
+                                        <!--                                            Deliv.-->
+                                        <!--                                        </th>-->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.requisition_line_ids"
+                                       t-as="line" t-index="line_index">
+                                        <tr>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="line_index+1"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="line.product_id.default_code"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="line.product_id.name"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                            </td>
+
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="line.uom.name"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="line.qty"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="line.avl_qty_store"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="line.balance_qty"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:center;">
+                                                <t t-esc="', '.join(line.partner_id.mapped('name'))"/>
+                                            </td>
+                                            <td style="border:1px solid black; padding:3px; text-align:left;">
+                                                <t t-esc="line.remarks"/>
+                                            </td>
+                                            <!--                                            <td style="border:1px solid black; padding:3px;">-->
+                                            <!--                                            </td>-->
+                                            <!--                                            <td style="border:1px solid black; padding:3px;">-->
+                                            <!--                                            </td>-->
+                                            <!--                                            <td style="border:1px solid black; padding:3px;">-->
+                                            <!--                                            </td>-->
+                                            <!--                                            <td style="border:1px solid black; padding:3px;">-->
+                                            <!--                                            </td>-->
+                                            <!--                                            <td style="border:1px solid black; padding:3px;">-->
+                                            <!--                                            </td>-->
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <!-- ATTACHMENTS ENCLOSURE TABLE -->
+                            <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-top:10px;">
+                                <tr>
+                                    <td colspan="4"
+                                        style="border:1px solid black; padding:5px; font-weight:bold;">
+                                        Attachments Enclosure from Requestor :
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        Specification Reference
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.spec_reference == 'yes'">☑
+                                        </t>
+                                        <t t-if="o.spec_reference != 'yes'">☐
+                                        </t>
+                                    </td>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        Client Intimation Email
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.client_intimation_email == 'yes'">
+                                            ☑
+                                        </t>
+                                        <t t-if="o.client_intimation_email != 'yes'">
+                                            ☐
+                                        </t>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        Material Control Sheet (MCS)
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.material_control_sheet == 'yes'">
+                                            ☑
+                                        </t>
+                                        <t t-if="o.material_control_sheet != 'yes'">
+                                            ☐
+                                        </t>
+                                    </td>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        BOQ (Unpriced)
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.boq_unpriced == 'yes'">☑</t>
+                                        <t t-if="o.boq_unpriced != 'yes'">☐</t>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        Approved Drawings
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.approved_drawings_material == 'yes'">
+                                            ☑
+                                        </t>
+                                        <t t-if="o.approved_drawings_material != 'yes'">
+                                            ☐
+                                        </t>
+                                    </td>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        Submittal Approval Copy
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.submittal_approval_copy == 'yes'">
+                                            ☑
+                                        </t>
+                                        <t t-if="o.submittal_approval_copy != 'yes'">
+                                            ☐
+                                        </t>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        Price Comparison Sheet
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.price_comparison_sheet == 'yes'">
+                                            ☑
+                                        </t>
+                                        <t t-if="o.price_comparison_sheet != 'yes'">
+                                            ☐
+                                        </t>
+                                    </td>
+                                    <td style="border:1px solid black; padding:5px;">
+                                        All Authority Comments Forwarded
+                                    </td>
+                                    <td style="border:1px solid black; text-align:center;">
+                                        <t t-if="o.authority_comments_forwarded == 'yes'">
+                                            ☑
+                                        </t>
+                                        <t t-if="o.authority_comments_forwarded != 'yes'">
+                                            ☐
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- APPROVAL SECTION (Keep border inside) -->
+
+                        </div>
+                        <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-top:15px;">
+                            <tr>
+                                <td style="width:33%; border:1px solid black; padding:3px;">
+                                    <strong>INITIATE BY</strong>
+                                    <br/>
+                                    <span style="font-weight:bold;">NAME :
+                                    </span>
+                                    <span t-esc="o.employee_confirm_id.name"/>
+                                    <br/>
+                                    <span style="font-weight:bold;">DEPT :
+                                    </span>
+                                    <span t-esc="o.employee_confirm_id.department_id.name"/>
+                                    <br/>
+                                    <span style="font-weight:bold;">DATE :
+                                    </span>
+                                    <span t-esc="o.confirm_date"/>
+                                </td>
+                                <td style="width:33%; border:1px solid black; padding:3px;">
+                                    <strong>CHECKED BY</strong>
+                                    <br/>
+                                    <span style="font-weight:bold;">NAME :
+                                    </span>
+                                    <span t-esc="o.purchase_approver_id.name"/>
+                                    <br/>
+                                    <span style="font-weight:bold;">DEPT :
+                                    </span>
+                                    <span t-esc="o.purchase_approver_id.department_id.name"/>
+                                    <br/>
+                                    <span style="font-weight:bold;">DATE :
+                                    </span>
+                                    <span t-esc="o.purchase_approval_date"/>
+                                </td>
+                                <td style="width:34%; border:1px solid black; padding:3px;">
+                                    <strong>HEAD OF DEPT</strong>
+                                    <br/>
+                                    <span style="font-weight:bold;">NAME :
+                                    </span>
+                                    <span t-esc="o.management_approver_id.name"/>
+                                    <br/>
+                                    <span style="font-weight:bold;">DESGN :
+                                    </span>
+                                    <span t-esc="o.management_approver_id.job_id.name"/>
+                                    <br/>
+                                    <span style="font-weight:bold;">DATE :
+                                    </span>
+                                    <span t-esc="o.management_approval_date"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-top:15px; font-size:10px;">
+                            <tr>
+                                <td style="padding:5px; border:none; border-bottom:1px solid black;">
+                                    NOTE : THIS MR IS VALID ONLY WHEN ALL OF THE
+                                    ABOVE DEPARTMENT HEADS AND MANAGERS HAVE
+                                    SIGNED THIS DOCUMENT AND ATTACHED THE
+                                    NECESSARY ENCLOSURE AS MENTIONED ABOVE
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:5px; border:none; border-bottom:1px solid black;">
+                                    NOTE 2: IN THE EVENT PETTY CASH REQUEST IS
+                                    BEING MADE ONLY CONTRACTS MANAGER AND ABOVE
+                                    SIGNATURE REQUIRED
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:5px; border:none;">
+                                    NOTE 3: PETTY CASH MUST NOT EXCEED A VALUE
+                                    MORE THAN 500/- AND SHOULD BE AVOIDED TO
+                                    PURCHASE PETTY CASH.
+                                </td>
+                            </tr>
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

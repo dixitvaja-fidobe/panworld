@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record  model="ir.ui.view" id="purchase_order_view_inherit" >
+        <field name="name">purchase.order.view.inherit</field>
+        <field name="model">purchase.order</field>
+<!--        <field name="groups_id" eval="[(4, ref('bi_sale_purchase_advance_payment.advance_payments'))]"/>-->
+        <field name="type">form</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/header/button[@name='button_cancel']" position="after">
+                <button name="send_mail_request_advance_payment"
+                        type="object" string="Advance Payment Request" class="oe_highlight"
+                        invisible="state != 'purchase' or is_request_advance_payment == True"
+                        groups="bi_sale_purchase_advance_payment.advance_payments_request"
+                />
+                <button name="%(bi_sale_purchase_advance_payment.action_purchase_advance_payment_wizard_form)d"
+                        type="action" string="Advance Payment" class="oe_highlight"
+                        invisible="state != 'purchase'"
+                        groups="bi_sale_purchase_advance_payment.advance_payments_creator"
+                />
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="before">
+                <field name="is_request_advance_payment"
+                       groups="bi_sale_purchase_advance_payment.advance_payments_creator"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Payment Advance"
+                      invisible="state != 'purchase'">
+                    <field name="account_payment_ids">
+                        <list create="false" delete="false">
+                            <field name="purchase_id" string="Request PO NO"/>
+<!--                            <field name="status_custom" optional="hide"/>-->
+                            <field name="date"/>
+                            <field name="name"/>
+                            <field name="journal_id"/>
+                            <field name="payment_method_line_id"/>
+                            <field name="partner_id"/>
+                            <field name="batch_payment_id"/>
+                            <field name="po_value" optional="hide"/>
+                            <field name="amount_signed" sum="Amount"/>
+                            <field name="currency_id"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>    

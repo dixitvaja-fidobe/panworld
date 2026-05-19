@@ -1,0 +1,9 @@
+id,Sequence,Payment Terms,Company,Display Name
+pay_term_adv,11,Advance Payment,,Advance Payment
+pay_term_60day,16,60 Days,,60 Days
+pay_term_90day,18,90 Days,,90 Days
+pay_term_120day,19,120 Days,,120 Days
+pay_term_150day,20,150 Days,,150 Days
+pay_term_90day_end,22,90 Days + End of that month,,90 Days + End of that month
+pay_term_30day_end,23,30 Days + End of that month,,30 Days + End of that month
+pay_term_120day_end,24,120 Days + End of that month,,120 Days + End of that month

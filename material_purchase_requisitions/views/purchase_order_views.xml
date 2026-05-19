@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_material_purchase_requisitions" model="ir.ui.view">
+        <field name="name">Purchase Order Requisition</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <field name="date_order" position="before">
+                <field name="custom_requisition_id" readonly="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>

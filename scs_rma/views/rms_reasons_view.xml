@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--Form view: Rma Reason Form view-->
+    <record id="view_rma_reasons_form" model="ir.ui.view">
+        <field name="name">view.rma.reasons.form</field>
+        <field name="model">rma.reasons</field>
+        <field name="arch" type="xml">
+            <form string="Reason">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!--Tree view: Rma Reason Tree view-->
+    <record id="view_rma_reasons_tree" model="ir.ui.view">
+        <field name="name">view.rma.reasons.tree</field>
+        <field name="model">rma.reasons</field>
+        <field name="arch" type="xml">
+            <list string="Reasons">
+                <field name="name" />
+            </list>
+        </field>
+    </record>
+    <!--Search view: Rma Reason search view-->
+    <record id="view_rma_reasons_search" model="ir.ui.view">
+        <field name="name">view.rma.reasons.search</field>
+        <field name="model">rma.reasons</field>
+        <field name="arch" type="xml">
+            <search string=" Search reasons">
+                <field name="name" />
+            </search>
+        </field>
+    </record>
+    <!--Action: Action for Reasons-->
+    <record id="action_rma_reasons" model="ir.actions.act_window">
+        <field name="name">Reasons</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rma.reasons</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_rma_reasons_tree" />
+    </record>
+    <menuitem
+        action="action_rma_reasons"
+        id="menu_rma_reasons"
+        parent="menu_rma_config"
+        name="Reasons"
+        sequence="2"
+    />
+</odoo>

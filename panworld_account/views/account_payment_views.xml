@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="account_payment_form_panworld_account" model="ir.ui.view">
+        <field name="name">account.payment.panworld.account.inherited</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_type']" position="after">
+                <field name="group_payment" readonly="state != 'draft'"/>
+                <field name="partner_ids" invisible="group_payment == False or payment_type == 'outbound'"
+                       readonly="state != 'draft'"  required="group_payment == True and payment_type == 'inbound'" widget="many2many_tags"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+                <attribute name="invisible">group_payment == True</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_account_payment_search" model="ir.ui.view">
+        <field name="name">account.payment.search.panworld.account.inherited</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//search/field[@name='partner_id']" position="after">
+                <field name="partner_ids" string="Group Payment Partners"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_account_payment_tree" model="ir.ui.view">
+        <field name="name">account.payment.tree.panworld.account.inherited</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="partner_ids" string="Group Payment Partners" widget="many2many_tags"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

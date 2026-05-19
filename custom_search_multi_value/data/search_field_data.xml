@@ -1,0 +1,29 @@
+<odoo>
+    <record model="ir.config_parameter" id="search_fields">
+        <field name="key">custom_search_multi_value.search_fields</field>
+        <field name="value">['default_code', 'description']</field>
+    </record>
+
+    <record model="ir.config_parameter" id="search_customer_sales_order">
+        <field name="key">custom_search_multi_value.search_customer_sales_order</field>
+        <field name="value">['name', 'customer_sales_order']</field>
+    </record>
+
+     <record model="ir.config_parameter" id="search_customer_purchase_order">
+        <field name="key">custom_search_multi_value.search_customer_purchase_order</field>
+        <field name="value">['name', 'origin']</field>
+    </record>
+
+     <record model="ir.config_parameter" id="search_inventory_transfer">
+        <field name="key">custom_search_multi_value.search_inventory_transfer</field>
+        <field name="value">['name', 'origin', 'customer_sales_order']</field>
+    </record>
+
+    <record model="ir.config_parameter" id="search_account_move">
+        <field name="key">custom_search_multi_value.search_account_move</field>
+        <field name="value">['name', 'ref', 'tracking_ref']</field>
+    </record>
+
+
+
+</odoo>

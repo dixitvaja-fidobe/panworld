@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+costing_reports.access_costing_report,access_costing_report,costing_reports.model_costing_report,base.group_user,1,1,1,1
+costing_reports.access_tracking_number,access_tracking_number,costing_reports.model_tracking_number,base.group_user,1,1,1,1
+costing_reports.access_invoice_tracking_line,access_invoice_tracking_line,costing_reports.model_invoice_tracking_line,base.group_user,1,1,1,1

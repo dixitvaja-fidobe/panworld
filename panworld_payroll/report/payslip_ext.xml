@@ -1,0 +1,304 @@
+<odoo>
+    <record id="payslip_paperformat" model="report.paperformat">
+        <field name="name">PaySlip Paperformat</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">90</field>
+    </record>
+    <record id="payslip_ext" model="ir.actions.report">
+        <field name="name">PaySlip</field>
+        <field name="model">hr.payslip</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">panworld_payroll.payslip_ext_tmp</field>
+        <field name="report_file">panworld_payroll.payslip_ext_tmp</field>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="panworld_payroll.payslip_paperformat"/>
+
+    </record>
+    <template id="payslip_ext_tmp">
+        <t t-call="web.html_container">
+            <t t-set="docs" t-value="request.env['hr.payslip'].browse(payslip_id)"/>
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <t t-set="company" t-value="doc.company_id"/>
+                        <div>
+                            <div>
+                                <center>
+                                    <b style="color:#4b73c4">
+                                        <h2>PAYSLIP</h2>
+                                    </b>
+                                </center>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div>
+                                        <h5>
+                                            <b style="color:#4b73c4" t-esc="company.name"/>
+                                        </h5>
+                                    </div>
+                                    <div style="color:#4b73c4;">
+                                        <div class="o_address_format">
+                                            <span t-esc="company.street"/>
+                                            <span t-esc="company.street2"/>
+                                            <span t-esc="company.city"/>
+                                            <span t-esc="company.state_id.name or ''"/>
+                                            <span t-esc="company.zip"/>
+                                            <br/>
+                                            <span t-esc="company.country_id.name or ''"/>
+                                        </div>
+                                        <div>
+                                            Phone:
+                                            <span>
+                                                <t t-esc="company.phone"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-right">
+                                     <img
+                                        t-if="company.logo"
+                                        t-att-src="image_data_uri(company.logo)"
+                                        alt="Logo" style="max-height: 150px; max-width: 150px; margin-top: -8px;"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div>
+                                        <span style="color: white;background-color:#8faadc;">
+                                            <b>EMPLOYEE INFORMATION</b>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span>
+                                            <b t-esc="doc.employee_id.name or ''"/>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span>
+                                            <t t-esc="doc.employee_id.work_phone or ''"/>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span>
+                                            <t t-esc="doc.employee_id.work_email or ''"/>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span>
+                                          <b>  Department: </b> <t t-esc="doc.employee_id.department_id and doc.employee_id.department_id.name or ''"/>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span>
+                                           <b> Designation: </b> <t t-esc="doc.employee_id.job_title or ''"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div>
+                                        <table style="width:100%;background:white;line-height:0;"
+                                               class="table">
+                                            <tr style="color:white">
+                                                <td style="background-color:#4b73c4;border-right:1px solid white">
+                                                    <center>
+                                                        <b>PAY DATE</b>
+                                                    </center>
+                                                </td>
+                                                <td style="background-color:#4b73c4;">
+                                                    <center>
+                                                        <b>PAY TYPE</b>
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color:#8faadc;border-right:1px solid white">
+                                                    <center>
+                                                        <b>
+                                                            <t t-esc="doc.get_pay_date()"/>
+                                                        </b>
+                                                    </center>
+
+                                                </td>
+                                                <td style="background-color:#8faadc;">
+                                                    <center>
+                                                        <b>
+                                                            Monthly
+                                                        </b>
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                            <tr style="color:white">
+                                                <td style="background-color:#4b73c4;border-right:1px solid white">
+                                                    <center>
+                                                        <b>Salary Month</b>
+                                                    </center>
+                                                </td>
+                                                <td style="background-color:#4b73c4;">
+                                                    <center>
+                                                        <b>Payment Method</b>
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color:#8faadc;border-right:1px solid white">
+                                                    <center>
+                                                        <b>
+                                                            <t t-esc="doc.get_salary_month()"/>
+                                                        </b>
+                                                    </center>
+
+                                                </td>
+                                                <td>
+                                                    <center>
+                                                        <b>
+                                                            <span t-field="doc.payment_method"/>
+                                                        </b>
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                            <tr style="color:white">
+                                                <td style="background-color:#4b73c4;border-right:1px solid white">
+                                                    <center>
+                                                        <b>Employee ID</b>
+                                                    </center>
+                                                </td>
+                                                <td style="background-color:#4b73c4;">
+                                                    <center>
+                                                        <b>Leave Balance</b>
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color:#8faadc;border-right:1px solid white">
+                                                    <center>
+                                                        <b>
+                                                            <t t-esc="doc.employee_id.barcode or ''"/>
+                                                        </b>
+                                                    </center>
+
+                                                </td>
+                                                <td style="background-color:#8faadc;">
+                                                    <center>
+                                                        <b>
+                                                            <t t-esc="doc._compute_remaining_leaves()"/>
+                                                        </b>
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <style>
+                                    table{
+                                    line-height:0.5;
+                                    }
+                                    .table-bordered-tus th, .table-bordered-tus td {
+                                    border: 1px solid #dee2e6;
+                                    border-right: none;
+                                    border-left: none;
+                                    }
+                                </style>
+                                <table class="table table-bordered-tus">
+                                    <tr style="background-color:#dddddd;">
+                                        <th>
+                                            <b>EARNINGS</b>
+                                        </th>
+                                        <th style="text-align:right;">
+                                            <b>AMOUNT</b>
+                                        </th>
+                                    </tr>
+                                    <tr t-foreach="doc.line_ids.filtered(lambda line: line.category_id.code in ['BASIC', 'ALW'])"
+                                        t-as="line">
+                                        <td>
+                                            <t t-esc="line.name"/>
+                                        </td>
+                                        <td style="text-align:right;">
+                                            <t t-esc="'{:,}'.format(line.amount).split('.')[0]"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-bordered-tus">
+                                    <tr style="background-color:#dddddd;">
+                                        <th style="text-align:right;width:70%;">
+                                            <b>GROSS PAY</b>
+                                        </th>
+                                        <th style="text-align:right;">
+                                            <t t-esc="'{:,}'.format(doc.line_ids.filtered(lambda line: line.category_id.code in ['GROSS']).amount).split('.')[0]"/>
+                                        </th>
+                                    </tr>
+                                </table>
+                                <table t-if="doc.line_ids.filtered(lambda line: line.category_id.code in ['DED'])"
+                                       class="table table-bordered-tus">
+                                    <tr style="background-color:#dddddd;">
+                                        <th>
+                                            <b>DEDUCTIONS</b>
+                                        </th>
+                                        <th style="text-align:right;">
+                                            <b>AMOUNT</b>
+                                        </th>
+                                    </tr>
+                                    <tr t-foreach="doc.line_ids.filtered(lambda line: line.category_id.code in ['DED'])"
+                                        t-as="line">
+                                        <td>
+                                            <t t-esc="line.name"/>
+                                        </td>
+                                        <td style="text-align:right;">
+                                            <t t-esc="'{:,}'.format(line.amount).split('.')[0]"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table t-if="doc.line_ids.filtered(lambda line: line.category_id.code in ['DED'])"
+                                       class="table table-bordered-tus">
+                                    <tr style="background-color:#dddddd;">
+                                        <th style="text-align:right;width:70%;">
+                                            <b>TOTAL DEDUCTIONS</b>
+                                        </th>
+                                        <th style="text-align:right;">
+                                            <t t-esc="'{:,}'.format(sum(doc.line_ids.filtered(lambda line: line.category_id.code in ['DED']).mapped('amount'))).split('.')[0]"/>
+                                        </th>
+                                    </tr>
+                                </table>
+                                <table class="table table-bordered-tus">
+                                    <tr style="background-color:#dddddd;">
+                                        <th style="text-align:right;width:70%;">
+                                            <b>NET PAY</b>
+                                        </th>
+                                        <th style="text-align:right;">
+                                            <t t-esc="'{:,}'.format(doc.line_ids.filtered(lambda line: line.category_id.code in ['NET']).amount).split('.')[0]"/>
+                                        </th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <p>
+                                <center>
+                                    <b>
+                                        If you have any questions about this payslip, please contact:
+                                    </b>
+                                    <br/>
+                                    <a href="[accounts@panworldedu.com]">
+                                        accounts@panworldedu.com
+                                    </a>
+                                </center>
+                            </p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--Report Invoice Document Inherit-->
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@class='row']" position="replace">
+            <div class="row">
+                <t t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)">
+                    <div class="col-6">
+                        <div name="address_not_same_as_shipping">
+                            <address class="mb-0" t-field="o.partner_id"
+                                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                            <div t-if="o.partner_id.vat" id="partner_vat_address_not_same_as_shipping">
+                                <t t-if="o.company_id.account_fiscal_country_id.vat_label"
+                                   t-out="o.company_id.account_fiscal_country_id.vat_label" id="inv_tax_id_label"/>
+                                <t t-else="">Tax ID</t>:
+                                <span t-field="o.partner_id.vat"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                         <div groups="account.group_delivery_invoice_address" name="shipping_address_block">
+                            <strong class="d-block mt-3">Shipping Address</strong>
+                            <div t-field="o.partner_shipping_id"
+                                 t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        </div>
+                    </div>
+                </t>
+                <t t-elif="o.partner_shipping_id and (o.partner_shipping_id == o.partner_id)">
+                    <div class="col-6" name="address_same_as_shipping">
+                        <address class="mb-0" t-field="o.partner_id"
+                                 t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        <div t-if="o.partner_id.vat" id="partner_vat_address_same_as_shipping">
+                            <t t-if="o.company_id.account_fiscal_country_id.vat_label"
+                               t-out="o.company_id.account_fiscal_country_id.vat_label" id="inv_tax_id_label"/>
+                            <t t-else="">Tax ID</t>:
+                            <span t-field="o.partner_id.vat"/>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="col-6" name="no_shipping">
+                        <address class="mb-0" t-field="o.partner_id"
+                                 t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        <div t-if="o.partner_id.vat" id="partner_vat_no_shipping">
+                            <t t-if="o.company_id.account_fiscal_country_id.vat_label"
+                               t-out="o.company_id.account_fiscal_country_id.vat_label" id="inv_tax_id_label"/>
+                            <t t-else="">Tax ID</t>:
+                            <span t-field="o.partner_id.vat"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-set='layout_document_title']" position="attributes">
+                <attribute name="style">display: none;</attribute>
+            </xpath>
+            <xpath expr="//t[@t-set='layout_document_title']" position="after">
+            <t t-set="layout_document_title">
+                <h2 class="text-center" style="margin-top: -5px;">
+                        <t t-if="o.is_shipping_service">
+                            <span class="text-center"
+                                  style="color: black !important; margin-top: 20px; margin-bottom: 32px;">
+                                Shipping Service Voucher
+                            </span>
+                        </t>
+                        <t t-if="o.is_service_quotation_bill">
+                            <center>
+                                <span class="text-center"
+                                      style="color: black !important; margin-top: 20px; margin-bottom: 32px;">
+                                    Service Quotation
+                                </span>
+                            </center>
+                        </t>
+                        <t t-if="not o.is_shipping_service and not o.is_service_quotation_bill">
+                            <t t-if="o.journal_id.code !='SMP'" name="invoice_title">
+                                <center>
+                                    <span class="text-center tax-invoice-heading"
+                                          style="color: black !important; display: block; margin-top: 20px; margin-bottom: 32px;">
+                                        Tax Invoice
+                                    </span>
+                                </center>
+                            </t>
+                            <t t-if="o.journal_id.code =='SMP'">
+                                <center>
+                                    Sample Invoice
+                                </center>
+                            </t>
+                        </t>
+                </h2>
+            </t>
+        </xpath>
+        <xpath expr="//div[@id='informations']" position="attributes">
+                <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='informations']" position="after">
+            <div id="informations_panworld" class="mt-4 mb-4">
+                <div class="row mb-2">
+                    <div class="col-3 text-start" t-if="o.name" name="invoice_no">
+                        <strong>Invoice Number</strong>
+                        <p class="m-0" t-field="o.name"/>
+                    </div>
+                    <div class="col-3 text-start" t-if="o.invoice_date" name="invoice_date">
+                        <t t-if="o.move_type == 'out_invoice'"><strong>Invoice Date</strong></t>
+                        <t t-elif="o.move_type == 'out_refund'"><strong>Credit Note Date</strong></t>
+                        <t t-elif="o.move_type == 'out_receipt'"><strong>Receipt Date</strong></t>
+                        <t t-else=""><strong>Date</strong></t>
+                        <p class="m-0" t-field="o.invoice_date"/>
+                    </div>
+                    <div class="col-3 text-start" t-if="o.tracking_ref" name="cso">
+                        <strong>CSO</strong>
+                        <p class="m-0" t-field="o.tracking_ref"/>
+                    </div>
+                    <div class="col-3 text-start" t-if="o.invoice_date_due and o.move_type == 'out_invoice' and o.state == 'posted'" name="due_date">
+                        <strong>Due Date</strong>
+                        <p class="m-0" t-field="o.invoice_date_due"/>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3 text-start" t-if="o.invoice_origin" name="origin">
+                        <strong>Source</strong>
+                        <p class="m-0" t-field="o.invoice_origin"/>
+                    </div>
+                    <div class="col-3 text-start" name="currency">
+                        <strong>Currency</strong>
+                        <p class="m-0" t-field="o.currency_id.name"/>
+                    </div>
+                    <div class="col-3 text-start" t-if="o.invoice_payment_term_id" name="payment_term">
+                        <strong>Payment Term</strong>
+                        <p class="m-0" t-field="o.invoice_payment_term_id.name"/>
+                    </div>
+                    <div class="col-3 text-start" t-if="o.invoice_incoterm_id" name="incoterm_id">
+                        <strong>Incoterm</strong>
+                        <p class="m-0" t-field="o.invoice_incoterm_id.code"/>
+                    </div>
+                     <div class="col-3 text-start" t-if="o.delivery_date" name="delivery_date">
+                        <strong>Delivery Date</strong>
+                        <p class="m-0" t-field="o.delivery_date"/>
+                    </div>
+                </div>
+                 <div class="row mb-2" t-if="o.partner_id.ref or o.ref">
+                     <div class="col-3 text-start" t-if="o.partner_id.ref" name="customer_code">
+                        <strong>Customer Code</strong>
+                        <p class="m-0" t-field="o.partner_id.ref"/>
+                    </div>
+                    <div class="col-3 text-start" t-if="o.ref" name="reference">
+                        <strong>Reference</strong>
+                        <p class="m-0" t-field="o.ref"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-set='display_discount']" position="before">
+            <t t-set="count" t-value="0" />
+            <t t-set="qty_count" t-value="0"/>
+        </xpath>
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+<!--        <xpath expr="/t/t/div/table/tbody/t[3]/tr/t[1]/td[5]" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+
+        <xpath expr="//th[@name='th_priceunit']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+<!--        <xpath expr="//t[@t-if='not line.display_type']/td[2]" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <th name="th_unit_price" style="width: 12%; text-align: center !important;" class="text-center"><strong>Unit Price</strong></th>
+        </xpath>
+        <xpath expr="//td[@t-if='display_discount']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_discount']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="replace">
+            <th name="th_description" style="text-align: left !important;" class="text-start"><span><strong>Description</strong></span></th>
+        </xpath>
+        <xpath expr="//th[@name='th_quantity']" position="replace">
+            <th name="th_quantity" style="width: 8%; text-align: center !important;" class="text-center"><span><strong>Qty</strong></span></th>
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th name="th_sr" style="width: 5%; text-align: center !important;" class="text-center"><strong>S No.</strong></th>
+            <th name="th_isbn" style="width: 15%; text-align: left !important;" class="text-start"><strong>Product/ISBN</strong></th>
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="after">
+            <!-- As per client requirement add 2 column base on customer vat number -->
+            <t t-if="o.partner_id.vat == '100276002100003' and o.move_type == 'out_invoice'">
+                <th name="th_course" class="text-start">Course ID</th>
+                <th name="th_crn" class="text-start">CRN</th>
+            </t>
+        </xpath>
+        <xpath expr="//th[@name='th_subtotal']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_subtotal']" position="after">
+            <th name="th_vat_per" style="width: 1%; white-space: nowrap; text-align: center !important;" class="text-center"><strong>VAT</strong></th>
+            <th name="th_vat" style="width: 12%; text-align: center !important;" class="text-center"><strong>VAT Amount</strong></th>
+            <th name="th_total" style="width: 15%; text-align: center !important;" class="text-center"><strong>Net Total</strong></th>
+        </xpath>
+        <xpath expr="//td[@name='account_invoice_line_name']" position="before">
+            <td id="s_no" class="text-center" >
+                <t t-set="count" t-value="count+1" />
+                <t t-esc="count"/>
+                <t t-set="qty_count" t-value="qty_count+line.quantity" />
+            </td>
+            <td id="product_code" class="text-start">
+                <span t-field="line.product_id.default_code"/>
+            </td>
+            <td id="product_name" class="text-start">
+                <span t-field="line.product_id.name"/>
+            </td>
+            <t t-if="o.partner_id.vat == '100276002100003' and o.move_type == 'out_invoice'">
+                <td name="course_" class="text-start">
+                    <span t-esc="line.course_id"/>
+                </td>
+                <td name="crn" class="text-start">
+                    <span t-esc="line.crn"/>
+                </td>
+            </t>
+            <td style="text-align: right !important;">
+                <span t-field="line.quantity" t-options="{'widget': 'float', 'precision': 0}"/>
+            </td>
+            <td style="text-align: right !important;">
+                <span t-field="line.price_unit" t-options="{'widget': 'float', 'precision': 3}"/>
+            </td>
+            <td style="text-align: right !important;">
+                <span t-esc="', '.join(map(lambda x: (x.invoice_label or x.name), line.tax_ids))" id="line_tax_ids"/>
+            </td>
+            <td style="text-align: right !important;">
+                <span t-esc="'%.3f' % (line.price_total - line.price_subtotal)"/>
+            </td>
+            <td style="text-align: right !important;">
+                <span t-field="line.price_total"/>
+            </td>
+        </xpath>
+        <xpath expr="//td[@name='account_invoice_line_name']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_quantity']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_price_unit']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@t-if='display_discount']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_taxes']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_subtotal']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@class='overflow-hidden']" position="before">
+            <h6> <strong> Amount in Words : </strong> <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/></h6>
+        </xpath>
+         <xpath expr="//div[@id='payment_term']" position="attributes">
+             <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='payment_term']" position="after">
+            <p t-if="o.narration" name="comment">
+                <div style="font-size: 12px;">
+                    <span t-esc="o.narration"/>
+                </div>
+            </p>
+            <br />
+            <br />
+            <br />
+            <div class="mt8">Received By:</div>
+            <div style="margin-left: 12px;">Name:</div>
+            <div style="margin-left: 12px;">Date:</div>
+            <div style="margin-left: 12px;">Sign &amp; Stamp:</div>
+        </xpath>
+        <xpath expr="//p[@name='payment_communication']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+    </template>
+
+    <template id="report_invoice_document_l10n_ae" inherit_id="l10n_ae.l10n_ae_report_invoice_document">
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_taxes']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_vat_amount']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_vat_amount']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+    </template>
+
+    <template id="l10n_ae_report_invoice_document" inherit_id="l10n_ae.l10n_ae_report_invoice_document">
+        <xpath expr="//th[@name='th_subtotal_curr']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_subtotal_curr']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+    </template>
+
+    <template id="l10n_sa_report_invoice_document" inherit_id="l10n_sa.l10n_sa_report_invoice_document">
+        <xpath expr="//th[@name='th_vat_excl']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_vat_excl']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_vat_amount']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_vat_amount']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_vat_incl']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_vat_incl']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+    </template>
+</odoo>

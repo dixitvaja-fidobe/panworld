@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="external_report_layout_custom_arabic">
+        <div class="header">
+            <div class="row">
+                <div class="col-4">
+                    <img
+                        t-if="company.logo"
+                        t-att-src="image_data_uri(company.logo)"
+                        alt="Logo" style="max-height: 150px; max-width: 170px;"
+                    />
+                </div>
+                <div class="col-4 text-left" style="padding-top: 5px;">
+                    <t t-set="company_en" t-value="company.sudo().with_context(lang='en_US')" />
+                    <div><strong><span t-field="company_en.name" /></strong></div>
+                    <div t-if="company_en.street"><span t-field="company_en.street" /></div>
+                    <div t-if="company_en.city">
+                        <span t-field="company_en.city" />, <span t-field="company_en.state_id.name" /> <span t-field="company_en.zip" />
+                    </div>
+                    <div t-if="company_en.partner_id.vat">VAT: <span t-field="company_en.partner_id.vat"/></div>
+                    <div t-if="company_en.crn_number">CR: <span t-field="company_en.crn_number"/></div>
+                </div>
+                <div class="col-4 text-right" style="padding-top: 5px; direction: rtl;">
+                    <div t-if="company.address_arabic">
+                        <span t-esc="company.address_arabic" />
+                    </div>
+                    <div t-if="company.add_line_1_ar">
+                        <span t-esc="company.add_line_1_ar" />
+                    </div>
+                    <div t-if="company.add_line_2_ar">
+                        <span t-esc="company.add_line_2_ar" />
+                    </div>
+<!--                    <div>-->
+<!--                        <strong>-->
+<!--                            <span t-esc="company.to_arabic_text(company_en.name)" />-->
+<!--                        </strong>-->
+<!--                    </div>-->
+<!--                    <div t-if="company_en.street">-->
+<!--                        <span t-esc="company.to_arabic_text(company_en.street)" />-->
+<!--                    </div>-->
+<!--                    <div t-if="company_en.city">-->
+<!--                        <span t-esc="company.to_arabic_text(company_en.city)" />,-->
+<!--                        <span t-esc="company.to_arabic_text(company_en.state_id.name)" />-->
+<!--                        <span t-esc="company_en.zip" />-->
+<!--                    </div>-->
+                    <div t-if="company.partner_id.vat">
+                        <span>VAT:</span>
+                        <span t-esc="company.to_arabic_text(company.partner_id.vat)"/>
+                    </div>
+                    <div t-if="company.crn_number">
+                        <span>CR:</span>
+                        <span t-esc="company.to_arabic_text(company_en.crn_number)"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="article">
+            <t t-raw="0" />
+        </div>
+        <div class="footer" style="font-size: 0.75rem;">
+            <t t-if="o and o._context.get('is_delivery_ship')">
+                <div class="ml12" style="color: #808080;">Received By:</div>
+                <div class="ml12" style="color: #808080;">Name:</div>
+                <div class="ml12" style="color: #808080;">Date:</div>
+                <div class="ml12" style="color: #808080;">Sign &amp; Stamp:</div>
+            </t>
+            <div
+                class="text-center"
+                style="border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px 0;"
+            >
+                <ul class="list-inline mb4">
+                    <span style="color: #808080;"> <t t-esc="company.phone" /> | <t
+                            t-esc="company.email"
+                        /> | </span>
+                    <span style="color: #0E81FF;">
+                        <t t-esc="company.website" />
+                    </span>
+                    <span style="color: #808080;"> | VAT:<t
+                            t-esc="company.partner_id.vat"
+                        /></span>
+                </ul>
+            </div>
+            <div class="text-muted text-center" style="font-size: 0.7rem;">
+        Page: <span class="page" /> / <span class="topage" />
+      </div>
+        </div>
+    </template>
+    <template id="external_layout_custom_arabic">
+        <!-- Multicompany -->
+        <t t-if="not o and doc">
+            <t t-set="o" t-value="doc.with_context(lang='ar_001')" />
+        </t>
+        <t t-if="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id.sudo().with_context(lang='ar_001')" />
+            <!-- <t t-set="o_sec" t-value="o.with_context(lang='ar_001')"/> -->
+        </t>
+        <t t-if="not o or not 'company_id' in o">
+            <t t-set="company" t-value="res_company.with_context(lang='ar_001')" />
+        </t>
+        <t t-call="panworld_saudi_arabic_invoice.external_report_layout_custom_arabic">
+            <t t-raw="0" />
+        </t>
+    </template>
+</odoo>

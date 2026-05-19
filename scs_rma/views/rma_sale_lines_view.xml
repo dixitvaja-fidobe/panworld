@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--Form view: Form View For rma sale lines-->
+    <record id="view_rma_sale_lines_form" model="ir.ui.view">
+        <field name="name">view.rma.sale.lines.form</field>
+        <field name="model">rma.sale.lines</field>
+        <field name="arch" type="xml">
+            <form string="RMA Sales" create="false">
+                <sheet string="RMA Sales">
+                    <group>
+                        <group>
+                            <field name="product_id" />
+                            <field name="tax_id" widget="many2many_tags" />
+                            <field name="discount" />
+                            <field name="type" required="1" />
+                            <field
+                                name="exchange_product_id"
+                                invisible="type == 'return'"
+                                required="type == 'exchange'"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="analytic_account_id" options="{'no_create': True, 'no_open': True}"
+                            />
+                        </group>
+                        <group>
+                            <field name="order_quantity" readonly="1" force_save="1" />
+                            <field
+                                name="delivered_quantity"
+                                readonly="1"
+                                force_save="1"
+                            />
+                            <field name="refund_qty" required="1" />
+                            <field
+                                name="source_location_id"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="destination_location_id"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field name="reason_id" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

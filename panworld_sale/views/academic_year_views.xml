@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+ <record id="academic_year_view_tree" model="ir.ui.view">
+        <field name="name">academic.year.view.tree</field>
+        <field name="model">academic.year</field>
+        <field name="arch" type="xml">
+            <list string="Academic Year" editable="bottom">
+                <field name="start_year" required="1"/>
+                <field name="end_year" required="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="academic_year_action" model="ir.actions.act_window">
+        <field name="name">Academic Year</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">academic.year</field>
+        <field name="view_mode">list</field>
+    </record>
+     <menuitem id="menu_academic_year" name="Academic Year" parent="sale.menu_sale_config"
+               action="panworld_sale.academic_year_action" sequence="30"/>
+</odoo>

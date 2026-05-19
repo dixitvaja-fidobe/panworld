@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <record id="sale_price_history_views_panworld_sale" model="ir.ui.view">
+            <field name="name">sale.price.history</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <list string="Sale Price History">
+                    <field name="scheduled_date"/>
+                    <field name="order_id"/>
+                    <field name="order_partner_id"/>
+                    <field name="barcode"/>
+                    <field name="invoice_ref"/>
+                    <field name="name" string="Title"/>
+                    <field name="currency_id"/>
+                    <field name="list_price"/>
+                    <field name="discount"/>
+                    <field name="price_unit"/>
+                    <field name="product_qty"/>
+                    <field name="qty_delivered"/>
+                    <field name="qty_invoiced"/>
+                    <field name="price_subtotal"/>
+                </list>
+            </field>
+        </record>
+        <record id="sale_price_history_search_panworld_sale" model="ir.ui.view">
+            <field name="name">sale.order.line.search</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Logs">
+                    <field name="barcode" string="Product ISBN"/>
+                    <field name="order_id" string="Sale Order Number"/>
+                    <group>
+                        <filter string="Customer" name="customer" domain="[]" context="{'group_by':'order_partner_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_sale_price_history_panworld_purchase" model="ir.actions.act_window">
+            <field name="name">Sale Price History</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="view_id" ref="sale_price_history_views_panworld_sale"/>
+            <field name="view_mode">list</field>
+            <field name="search_view_id" ref="sale_price_history_search_panworld_sale"/>
+            <field name="context">{'delete': 0, 'edit': 0, 'create': 0}</field>
+        </record>
+        <menuitem id="menu_sale_price_history_panworld_purchase"
+            action="action_sale_price_history_panworld_purchase"
+            parent="sale.sale_order_menu"
+            sequence="100"
+        />
+    </data>
+</odoo>

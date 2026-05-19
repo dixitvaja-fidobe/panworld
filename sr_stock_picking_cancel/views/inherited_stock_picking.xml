@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_picking_form_extends_add_cancel_button" model="ir.ui.view">
+		<field name="name">view.picking.form.extends.add.cancel.button</field>
+		<field name="model">stock.picking</field>
+		<field name="inherit_id" ref="stock.view_picking_form"/>
+		<field name="arch" type="xml">
+		<button name='button_validate' position="after">
+			<button name="picking_cancel"  string="Cancel" type="object" invisible="state != 'done'"/>
+			<button name="picking_reset_to_ready"  string="Reset to ready" type="object" groups="base.group_no_one"/>
+		</button>
+		</field>
+	</record>
+</odoo>

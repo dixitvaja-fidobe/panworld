@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="po_compare_cancel_line.bill_multi_access_right_group" model="res.groups">
+            <field name="name">Create Bill For Multi PO</field>
+        </record>
+<!--        <record id="po_compare_cancel_line.compare_access_right_group" model="res.groups">-->
+<!--            <field name="name">Compare Sale/PO lines</field>-->
+<!--            <field name="category_id" ref="base.module_category_hidden"/>-->
+<!--        </record>-->
+
+        <record id="po_compare_cancel_line.po_confirm_access_right_group" model="res.groups">
+            <field name="name">Confirm Purchase Order</field>
+        </record>
+
+    </data>
+</odoo>

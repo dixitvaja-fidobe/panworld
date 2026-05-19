@@ -1,0 +1,32 @@
+<odoo>
+    <record id="purchase_order_type.action_purchase_order_type_view"
+        model="ir.actions.act_window">
+        <field name="name">Vendor Agreement</field>
+    </record>
+    <record id="purchase_order_type.menu_purchase_order_type" model="ir.ui.menu">
+        <field name="name">Vendor Agreement</field>
+    </record>
+    <record model="ir.ui.view"
+        id="purchase_order_type.res_partner_purchase_type_form_view">
+        <field name="name">res.partner.purchase_type.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <field name="property_supplier_payment_term_id" position="before">
+                <field name="supplier_rank" invisible="1" />
+                <field
+                    name="purchase_type"
+                    string="Vendor Agreement"
+                    invisible="supplier_rank == 0"/>
+                <field name="purchase_account_number"/>
+            </field>
+            <field name="property_supplier_payment_term_id" position="attributes">
+                <attribute name="readonly">purchase_type != False</attribute>
+            </field>
+        </field>
+    </record>
+    <record id="purchase_order_type.purchase_order_type_multi_company_rule"
+        model="ir.rule" >
+        <field name="name">Vendor Agreement multi-company</field>
+    </record>
+</odoo>

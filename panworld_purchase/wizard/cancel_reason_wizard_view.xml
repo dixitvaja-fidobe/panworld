@@ -1,0 +1,27 @@
+<odoo>
+    <!--  TASK - 02908-->
+    <record id="view_picking_cancel_reason_form" model="ir.ui.view">
+        <field name="name">picking.cancel.reason.form</field>
+        <field name="model">picking.cancel.reason</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="cancel_reason" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_picking_cancel" string="Cancel" class="oe_highlight" type="object"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_picking_cancel_reason" model="ir.actions.act_window">
+        <field name="name">Picking Cancel Reason</field>
+        <field name="res_model">picking.cancel.reason</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

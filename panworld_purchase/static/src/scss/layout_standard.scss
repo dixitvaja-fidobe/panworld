@@ -1,0 +1,42 @@
+th.o_column_sortable[data-name="date_planned"]
+{
+        padding-left: 0px !important;
+        width:5px !important;
+        max-width: 5px !important;
+
+ }
+
+.o_report_layout_standard {
+    color: #808080;
+    h2 {
+        color: #808080;
+    }
+    
+    #informations strong {
+        color: #808080;
+    }
+    
+    #total strong{
+        color: #808080;
+    }
+    table {
+        color: #808080;
+        thead {
+            color: #808080;
+        }
+        tr:nth-of-type(even) {
+            background-color: #F8F5F7;
+        }
+        tr:nth-of-type(odd) {
+            background-color: #FFFFFF;
+        }
+    }
+
+    div[name=comment] p{
+        margin-bottom: 0;
+    }
+}
+
+.o_clean_footer, .o_clean_header, .o_report_layout_bold {
+    color: #808080;
+}

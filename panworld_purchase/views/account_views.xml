@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherited account.move Form -->
+    <record id="view_account_move_form_inherit" model="ir.ui.view">
+        <field name="name">view.account.move.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='journal_div']" position="after">
+                <field
+                    name="value_as_per_bill"
+                    widget="monetary"
+                    options="{'currency_field': 'currency_id'}"
+                    invisible ="move_type not in ('in_invoice', 'in_refund', 'in_receipt')"
+                    readonly="state != 'draft'"
+                />
+                <field
+                    name="bill_difference_amount"
+                    widget="monetary"
+                    options="{'currency_field': 'currency_id'}"
+                    invisible="move_type not in ('in_invoice', 'in_refund', 'in_receipt')"
+                />
+                <field name="total_quantity" invisible="move_type != 'in_invoice'"/>
+                <div class='oe_inline' colspan='2'>
+                    <button
+                        string="Add Difference Amount"
+                        name="action_bill_difference_amount"
+                        type="object"
+                        class="text-warning btn-secondary"
+                        invisible="move_type not in ('in_invoice', 'in_refund', 'in_receipt') or state != 'draft' or bill_difference_amount == 0"
+                    />
+                </div>
+            </xpath>
+            <xpath expr="//form/header/button[@name='preview_invoice']" position="after">
+                <button
+                    name="%(panworld_purchase.check_price_change_action)d"
+                    string="Check for Price Change"
+                    invisible="move_type != 'in_invoice' or state != 'draft'"
+                    type="action"
+                    groups="panworld_purchase.check_for_change"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_bank_id']" position="after">
+                <field name="rma_done" invisible="1" />
+            </xpath>
+            <xpath expr="(//field[@name='ref'])[1]" position="after">
+                <field name="is_service_quotation_bill" invisible='1'/>
+                <field name="po_ref_ids" widget="many2many_tags" readonly="1" force_save="1"
+                       invisible="move_type not in ('in_invoice','in_refund')"
+                />
+                <field name="tracking_ref" string="CSO Reference"
+                       invisible="is_service_quotation_bill == True"/>
+                <div class="o_td_label" invisible="is_service_quotation_bill == True or move_type == 'entry'">
+                    <label for="grn_tracking" string="GRN Tracking Number"
+                           readonly="state == 'posted'"
+                           invisible ="move_type not in ('out_invoice', 'out_refund')"/>
+                    <label for="grn_tracking" string="Tracking(AWB)"
+                           invisible ="move_type in ('out_invoice', 'out_refund')"/>
+                </div>
+                <field name="grn_tracking" nolabel="1"
+                       readonly="state == 'posted'"
+                       invisible="is_service_quotation_bill == True or move_type == 'entry'"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_unit']" position="after">
+                <field name="customer_name"/>
+                <field name="customer_sales_order" string="CSO"/>
+                <field name="is_allow_to_edit_bill_lines" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']" position="attributes">
+                <attribute name="readonly">is_allow_to_edit_bill_lines == False and  parent.move_type == 'in_invoice'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">is_allow_to_edit_bill_lines == False and parent.move_type =='in_invoice'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='discount']" position="attributes">
+                <attribute name="readonly">is_allow_to_edit_bill_lines == False and parent.move_type =='in_invoice'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_move_form_inherit_panworld_purchase" model="ir.ui.view">
+        <field name="name">view.account.move.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="costing_reports.view_account_move_form_inherit_costing" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tracking_number_bill_id']" position="after">
+                <field name="boe_no" invisible="move_type != 'in_invoice'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_invoice_tree_inherit" model="ir.ui.view">
+        <field name="name">view.invoice.tree.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total_in_currency_signed']" position="attributes">
+                <attribute name="sum">Total Currency Amount</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_date_due']" position="replace">
+                <field name="invoice_date_due" optional="show"
+                       invisible="payment_state in ('paid', 'in_payment', 'reversed')"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_in_invoice_bill_tree_inherit1_panworld_purchase" model="ir.ui.view">
+        <field name="name">view.account.move.tree.inherit.panworld.purchase</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="costing_reports.view_in_invoice_bill_tree_inherit_costing_reports"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tracking_number_bill_id']" position="after">
+                <field name="boe_no" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_in_invoice_bill_tree_inherit2_panworld_purchase" model="ir.ui.view">
+        <field name="name">view.account.move.tree.inherit.costing.reports</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_partner_display_name']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_date']" position="before">
+                <field name="partner_id" string="Vendor"/>
+                <field name="po_ref_ids" widget="many2many_tags" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="account_move_search_view_panworld_purchase" model="ir.ui.view">
+        <field name="name">account.move.search.inherit.panworld.purchase</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="tracking_number_bill_id"/>
+                <field name="boe_no"/>
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Presale Tracking Tree View -->
+    <record id="presale_tracking_tree" model="ir.ui.view">
+        <field name="name">presale.tracking.tree</field>
+        <field name="model">presale.tracking</field>
+        <field name="arch" type="xml">
+            <list string="Presale Tracking" decoration-info="state=='draft'" decoration-warning="state=='in_progress'"
+                  decoration-success="state=='done'" sample="1">
+                <field name="name" decoration-bf="1" decoration-primary="1"/>
+                <field name="reference"/>
+                <field name="date" widget="date"/>
+                <field name="partner_id" decoration-bf="1"/>
+                <field name="line_count" optional="show" sum="Total Lines"/>
+                <field name="total_qty" optional="show" sum="Total Qty"/>
+                <field name="total_amount" sum="Total Amount" decoration-bf="1" widget="monetary"
+                       decoration-success="state=='done'"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-primary="state == 'rfq_created'"
+                       decoration-muted="state == 'po_confirmed'"
+                       decoration-danger="state == 'cancel'"
+                       decoration-success="state == 'done'"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Presale Tracking Form View -->
+    <record id="presale_tracking_form" model="ir.ui.view">
+        <field name="name">presale.tracking.form</field>
+        <field name="model">presale.tracking</field>
+        <field name="arch" type="xml">
+            <form string="Presale Tracking">
+                <header>
+                    <button name="action_done" string="Mark Done" type="object" class="oe_highlight"
+                            help="Finalize the presale tracking document. All POs must be confirmed and all lines linked."
+                            invisible="state != 'po_confirmed' or has_unlinked_po_lines or has_unlinked_so_lines"/>
+                    <button name="action_create_purchase_rfqs" string="Process RFQs &amp; Quotation" type="object"
+                            class="oe_highlight" icon="fa-tasks"
+                            help="The Purchase RFQ and Sale quote will be created. Both"
+                            invisible="state not in ['in_progress']"/>
+                    <button name="action_sync_sale_order_lines" string="Update Sales Quotation" type="object"
+                            icon="fa-refresh" class="oe_highlight"
+                            help="Create a Sale Quotation / Synchronize changes from tracking lines to the linked Sales Quotation."
+                            invisible="state in ['draft', 'done']"/>
+                    <button name="action_update_tracking_lines" string="Import Tracking Lines" type="object"
+                            icon="fa-upload" class="oe_highlight"
+                            help="Import tracking lines from the attached request document."
+                            invisible="state in ['done', 'cancel'] or line_count"/>
+                    <button name="action_update_tracking_lines" string="Update Tracking Lines" type="object"
+                            icon="fa-refresh" class="oe_highlight"
+                            help="Update existing tracking lines from the attached file."
+                            invisible="state in ['done', 'cancel'] or not line_count"/>
+                    <button name="action_export_template" string="Export Template" type="object" icon="fa-download"
+                            help="Download an Excel template to fill in tracking data."/>
+                    <button name="action_cancel" string="Cancel" type="object" 
+                            invisible="state in ['done', 'cancel']" 
+                            confirm="Are you sure you want to cancel this Presale Tracking? This will not automatically cancel linked SO/POs."/>
+                    <button name="action_draft" string="Reset to Draft" type="object" 
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_progress,rfq_created,po_confirmed,done"/>
+                </header>
+                <sheet>
+                    <field name="line_count" invisible="1"/>
+                    <field name="has_unlinked_so_lines" invisible="1"/>
+                    <field name="has_unlinked_po_lines" invisible="1"/>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'draft' or (request_file and enquiry_date)">
+                        <i class="fa fa-info-circle me-2"/>
+                        <b>Action Required:</b>
+                        Please attach the <b>Request Document</b> and set the <b>Enquiry Date</b> to proceed.
+                    </div>
+                    <field name="missing_lines_count" invisible="1"/>
+                    <div class="alert alert-danger" role="alert"
+                         style="height: 40px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;"
+                         invisible="missing_lines_count == 0">
+                        <div>
+                            <i class="fa fa-warning me-2"/>
+                            <b>Warning:</b>
+                            <field name="missing_lines_count" readonly="1" class="oe_inline"/>
+                            line(s) have missing products. Quotation creation is disabled.
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button name="action_download_missing_report" string="Download Report" type="object"
+                                    class="btn btn-sm btn-light me-2"/>
+                            <button name="action_rescan_products" string="Rescan Products" type="object"
+                                    class="btn btn-sm btn-primary"/>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning py-2 mb-1" role="alert"
+                         invisible="state in ['draft', 'in_progress'] or not has_unlinked_po_lines"
+                         style="font-size: 0.9rem; border-left: 5px solid #ffc107;">
+                        <i class="fa fa-exclamation-triangle me-2"/>
+                        <strong>Attention:</strong>
+                        Some tracking lines are not yet linked to a <b>Purchase Order</b>.
+                    </div>
+                    <div class="alert alert-warning py-2 mb-0" role="alert"
+                         invisible="state in ['draft', 'in_progress'] or not has_unlinked_so_lines"
+                         style="font-size: 0.9rem; border-left: 5px solid #ffc107;">
+                        <i class="fa fa-exclamation-triangle me-2"/>
+                        <strong>Attention:</strong>
+                        Some tracking lines are not yet linked to a <b>Sale Order</b>.
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lines" type="object" class="oe_stat_button" icon="fa-list">
+                            <field name="line_count" widget="statinfo" string="Lines"/>
+                        </button>
+                        <button name="action_view_sale_order" type="object" class="oe_stat_button"
+                                icon="fa-shopping-cart"
+                                invisible="not sale_order_id">
+                            <field name="sale_order_count" widget="statinfo" string="Sale Quotation"/>
+                        </button>
+                        <button name="action_view_purchase_orders" type="object" class="oe_stat_button"
+                                icon="fa-credit-card"
+                                invisible="purchase_order_count == 0 or state in ['po_confirmed', 'done']">
+                            <field name="purchase_order_count" widget="statinfo" string="RFQs"/>
+                        </button>
+                        <button name="action_view_purchase_orders" type="object" class="oe_stat_button"
+                                icon="fa-credit-card"
+                                invisible="purchase_order_count == 0 or state not in ['po_confirmed', 'done']">
+                            <field name="purchase_order_count" widget="statinfo" string="Purchase Orders"/>
+                        </button>
+                    </div>
+                    <field name="sale_order_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="pricelist_id"/>
+                            <field name="request_file" filename="request_filename" readonly="state not in ['in_progress', 'draft']"/>
+                            <field name="request_filename" invisible="1"/>
+                            <field name="enquiry_date" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="reference"/>
+                            <field name="date" readonly="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tracking Lines" name="lines">
+                            <field name="line_ids">
+                                <list string="Tracking Lines" editable="bottom" class="o_presale_list">
+<!--                                    <header>-->
+<!--                                        <button name="action_delete_line" type="object" string="Delete Selected Lines" class="btn-danger" confirm="⚠️ DANGER: You are about to delete the selected tracking lines!&#10;&#10;Please note that all matching lines in the corresponding Sale Order and Purchase Order will also be PERMANENTLY deleted.&#10;&#10;Are you sure you want to proceed?"/>-->
+<!--                                    </header>-->
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="isbn" decoration-bf="1"/>
+                                    <field name="product_id" readonly="is_linked_to_po"/>
+                                    <field name="qty" decoration-bf="1"/>
+                                    <field name="publisher_id" optional="show"/>
+                                    <field name="product_tmpl_id" column_invisible="1"/>
+                                    <field name="seller_id" string="Available Pricelists" readonly="is_linked_to_po"
+                                           options="{'no_create': True}"
+                                           context="{'presale_tracking_view': True, 'tree_view_ref': 'fs_presale_tracking.view_supplierinfo_tree_presale'}"/>
+                                    <field name="vendor_id" readonly="is_linked_to_po" optional="show"/>
+                                    <field name="sourcing_vendor_id" optional="hide"/>
+                                    <field name="vendor_currency_id" optional="hide" readonly="1"/>
+                                    <field name="list_price" optional="show" widget="monetary"/>
+                                    <field name="gross_lp" optional="show" widget="monetary"/>
+                                    <field name="conv_rate" optional="show"/>
+                                    <field name="list_price_base" optional="show" widget="monetary"/>
+                                    <field name="subject_id" optional="hide"/>
+                                    <field name="grade_id" optional="hide"/>
+                                    <field name="author_id" optional="hide"/>
+                                    <field name="alt_isbn" optional="hide"/>
+                                    <field name="currency_id" string="Company Currency" optional="hide"/>
+                                    <field name="unit_price"/>
+                                    <field name="customer_currency_id" column_invisible="1"/>
+                                    <field name="total_amount" decoration-bf="1"/>
+                                    <field name="exchange_rate" optional="hide"/>
+                                    <field name="total_usd" optional="hide" decoration-bf="1"/>
+                                    <field name="pub_disc" optional="show"/>
+                                    <field name="format_id" optional="hide"/>
+                                    <field name="classification_id" optional="hide"/>
+                                    <field name="disc_percent" optional="show"/>
+                                    <field name="is_linked_to_po" column_invisible="1"/>
+<!--                                    <field name="working_margin" optional="hide"/>-->
+<!--                                    <field name="working_margin_percent" optional="hide"-->
+<!--                                           decoration-danger="working_margin_percent &lt; 0"-->
+<!--                                           decoration-success="working_margin_percent &gt; 20" decoration-bf="1"/>-->
+<!--                                    <field name="working_margin_amount" optional="hide"/>-->
+                                    <field name="remarks"/>
+                                    <field name="linked_po_id" string="Linked RFQ" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Summary" name="summary">
+                            <group>
+                                <group string="Totals">
+                                    <field name="line_count"/>
+                                    <field name="total_qty"/>
+                                    <field name="total_amount"/>
+                                    <field name="total_amount_usd"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Presale Tracking Search View -->
+    <record id="presale_tracking_search" model="ir.ui.view">
+        <field name="name">presale.tracking.search</field>
+        <field name="model">presale.tracking</field>
+        <field name="arch" type="xml">
+            <search string="Presale Tracking">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="In Progress" name="filter_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="RFQ Created" name="filter_rfq_created" domain="[('state', '=', 'rfq_created')]"/>
+                <filter string="PO Confirmed" name="filter_po_confirmed" domain="[('state', '=', 'po_confirmed')]"/>
+                <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter string="Not added in any SOs" name="filter_missing_so" domain="[('has_unlinked_so_lines', '=', True)]"/>
+                <filter string="Not added in any POs" name="filter_missing_po" domain="[('has_unlinked_po_lines', '=', True)]"/>
+                <separator/>
+                <filter string="This Month" name="filter_this_month"
+                        domain="[('date', '>=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter string="Customer" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Presale Tracking Line Tree View (for separate menu) -->
+    <record id="presale_tracking_line_tree" model="ir.ui.view">
+        <field name="name">presale.tracking.line.tree</field>
+        <field name="model">presale.tracking.line</field>
+        <field name="arch" type="xml">
+            <list string="Tracking Lines" multi_edit="1" class="o_presale_list" editable="bottom" limit="300"
+                  create="0"
+                  delete="0">
+                <header>
+                    <button name="action_delete_line" type="object" string="Delete Selected Lines" class="btn-danger" confirm="⚠️ DANGER: You are about to delete the selected tracking lines!&#10;&#10;Please note that all matching lines in the corresponding Sale Order and Purchase Order will also be PERMANENTLY deleted.&#10;&#10;Are you sure you want to proceed?"/>
+                </header>
+                <field name="state" column_invisible="1"/>
+                <field name="sequence" widget="handle"/>
+                <field name="isbn" decoration-bf="1"/>
+                <field name="product_id" readonly="is_linked_to_po"/>
+                <field name="qty" decoration-bf="1" sum="Total Qty"/>
+                <field name="publisher_id" optional="show"/>
+                <field name="product_tmpl_id" column_invisible="1"/>
+                <field name="seller_id" readonly="is_linked_to_po"
+                       context="{'presale_tracking_view': True, 'tree_view_ref': 'fs_presale_tracking.view_supplierinfo_tree_presale'}"/>
+                <field name="vendor_id" readonly="is_linked_to_po" optional="show"/>
+                <field name="sourcing_vendor_id" optional="hide"/>
+                <field name="vendor_currency_id" optional="hide" readonly="1"/>
+                <field name="list_price" optional="show" widget="monetary"/>
+                <field name="gross_lp" optional="show" widget="monetary"/>
+                <field name="conv_rate" optional="show"/>
+                <field name="list_price_base" optional="show" widget="monetary"/>
+                <field name="subject_id" optional="hide"/>
+                <field name="grade_id" optional="hide"/>
+                <field name="author_id" optional="hide"/>
+                <field name="alt_isbn" optional="hide"/>
+                <field name="currency_id" string="Company Currency" optional="hide"/>
+                <field name="unit_price"  sum="Total Unit Price"/>
+                <field name="customer_currency_id" column_invisible="1"/>
+                <field name="total_amount" decoration-bf="1" sum="Total Amount"/>
+                <field name="exchange_rate" optional="hide"/>
+                <field name="total_usd" optional="hide" decoration-bf="1"/>
+                <field name="pub_disc" optional="show"/>
+                <field name="format_id" optional="hide"/>
+                <field name="classification_id" optional="hide"/>
+                <field name="disc_percent" optional="show"/>
+                <field name="is_linked_to_po" column_invisible="1"/>
+<!--                <field name="working_margin_amount" optional="hide" sum="Total Margin"/>-->
+                <field name="remarks"/>
+                <field name="linked_po_id" string="Linked RFQ" optional="show"/>
+                <field name="program" optional="hide"/>
+                <field name="stock_availability" optional="show" widget="badge"
+                       decoration-success="stock_availability == 'in_stock'"
+                       decoration-danger="stock_availability == 'out_of_stock'"
+                       decoration-warning="stock_availability == 'low_stock'"
+                       decoration-info="stock_availability == 'on_order'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Presale Tracking Line Search View -->
+    <record id="presale_tracking_line_search" model="ir.ui.view">
+        <field name="name">presale.tracking.line.search</field>
+        <field name="model">presale.tracking.line</field>
+        <field name="arch" type="xml">
+            <search string="Tracking Lines">
+                <field name="isbn"/>
+                <field name="author_id"/>
+                <field name="publisher_id"/>
+                <field name="product_tmpl_id" column_invisible="1"/>
+                <field name="seller_id"
+                       context="{'presale_tracking_view': True, 'tree_view_ref': 'fs_presale_tracking.view_supplierinfo_tree_presale'}"/>
+                <field name="vendor_id" optional="hide" readonly="1"/>
+                <field name="sourcing_vendor_id"/>
+                <filter string="In Stock" name="filter_in_stock" domain="[('stock_availability', '=', 'in_stock')]"/>
+                <filter string="Out of Stock" name="filter_out_of_stock"
+                        domain="[('stock_availability', '=', 'out_of_stock')]"/>
+                <separator/>
+                <filter string="Not added in any POs" name="filter_missing_po"
+                        domain="[('is_linked_to_po', '=', False)]"/>
+                <filter string="Not added in any SOs" name="filter_missing_so"
+                        domain="[('is_linked_to_so', '=', False)]"/>
+                <group>
+                    <filter string="Tracking" name="group_tracking" context="{'group_by': 'tracking_id'}"/>
+                    <filter string="Vendor" name="group_vendor" context="{'group_by': 'vendor_id'}"/>
+                    <filter string="Sourcing Vendor" name="group_sourcing_vendor" context="{'group_by': 'sourcing_vendor_id'}"/>
+                    <filter string="Publisher" name="group_publisher" context="{'group_by': 'publisher_id'}"/>
+                    <filter string="Classification" name="group_classification"
+                            context="{'group_by': 'classification_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_bulk_link_rfq" model="ir.actions.server">
+        <field name="name">Link to RFQ</field>
+        <field name="model_id" ref="model_presale_tracking_line"/>
+        <field name="binding_model_id" ref="model_presale_tracking_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'name': 'Link to RFQ',
+            'type': 'ir.actions.act_window',
+            'res_model': 'presale.link.rfq.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            }
+        </field>
+    </record>
+    <record id="presale_tracking_action" model="ir.actions.act_window">
+        <field name="name">Presale Tracking</field>
+        <field name="res_model">presale.tracking</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="presale_tracking_search"/>
+        <field name="context">{'search_default_filter_in_progress': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Presale Tracking document
+            </p>
+            <p>
+                Track vendor pricing, compare margins, and decide on the best vendor for your orders.
+            </p>
+        </field>
+    </record>
+    <record id="presale_tracking_line_action" model="ir.actions.act_window">
+        <field name="name">Tracking Lines</field>
+        <field name="res_model">presale.tracking.line</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="presale_tracking_line_tree"/>
+        <field name="search_view_id" ref="presale_tracking_line_search"/>
+        <field name="context">{'search_default_group_tracking': 1}</field>
+    </record>
+
+    <!-- Graph View for Analytics -->
+    <record id="presale_tracking_view_graph" model="ir.ui.view">
+        <field name="name">presale.tracking.graph</field>
+        <field name="model">presale.tracking</field>
+        <field name="arch" type="xml">
+            <graph string="Presale Analytics" type="bar" sample="1">
+                <field name="date" interval="month"/>
+                <field name="partner_id"/>
+                <field name="duration_to_rfq" type="measure"/>
+                <field name="duration_to_confirm" type="measure"/>
+                <field name="total_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot View for Analytics -->
+    <record id="presale_tracking_view_pivot" model="ir.ui.view">
+        <field name="name">presale.tracking.pivot</field>
+        <field name="model">presale.tracking</field>
+        <field name="arch" type="xml">
+            <pivot string="Presale Analysis" sample="1">
+                <field name="date" type="row" interval="month"/>
+                <field name="partner_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="duration_to_rfq" type="measure"/>
+                <field name="duration_to_confirm" type="measure"/>
+                <field name="total_amount" type="measure"/>
+                <field name="missing_lines_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Reporting Action -->
+    <record id="presale_tracking_action_reporting" model="ir.actions.act_window">
+        <field name="name">Presale Analysis</field>
+        <field name="res_model">presale.tracking</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="view_id" ref="presale_tracking_view_graph"/>
+        <field name="context">{'search_default_group_by_date': 1}</field>
+    </record>
+
+    <!-- Dashboard Client Action -->
+    <record id="action_presale_dashboard_client" model="ir.actions.client">
+        <field name="name">Overview</field>
+        <field name="tag">presale_dashboard</field>
+    </record>
+    <menuitem id="menu_presale_tracking_root" name="Presale Tracking"
+              web_icon="fs_presale_tracking,static/description/icon.png"/>
+    <menuitem id="menu_presale_tracking_dashboard" name="Dashboard" parent="menu_presale_tracking_root"
+              action="action_presale_dashboard_client" sequence="1"/>
+    <menuitem id="menu_presale_tracking_main" name="Presales" parent="menu_presale_tracking_root" sequence="10"/>
+    <menuitem id="menu_presale_tracking_list" name="Presale Tracking" parent="menu_presale_tracking_main"
+              action="presale_tracking_action" sequence="10"/>
+    <menuitem id="menu_presale_tracking_all_lines" name="All Lines" parent="menu_presale_tracking_main"
+              action="presale_tracking_line_action" sequence="20"/>
+    <menuitem id="menu_presale_tracking_reporting" name="Reporting" parent="menu_presale_tracking_root" sequence="20"/>
+    <menuitem id="menu_presale_tracking_analysis" name="Presale Analysis" parent="menu_presale_tracking_reporting"
+              action="presale_tracking_action_reporting" sequence="10"/>
+    <menuitem id="menu_presale_tracking_config"
+              name="Configuration"
+              parent="menu_presale_tracking_root"
+              groups="group_presale_tracking_manager"
+              sequence="100"/>
+    <record id="action_ecommerce_sale_quotations" model="ir.actions.act_window">
+        <field name="name">E-Commerce Sales</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="domain">[('is_ecommerce', '=', True)]</field>
+        <field name="context">{'default_is_ecommerce': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new E-Commerce Sales Quotation
+            </p>
+        </field>
+    </record>
+    <record id="action_ecommerce_purchase_rfq" model="ir.actions.act_window">
+        <field name="name">E-Commerce Purchase</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="domain">[('is_ecommerce', '=', True)]</field>
+        <field name="context">{'default_is_ecommerce': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new E-Commerce Request for Quotation
+            </p>
+        </field>
+    </record>
+    <menuitem id="menu_ecom_sales" name="E-Commerce Sales" parent="sale.sale_order_menu"
+              action="action_ecommerce_sale_quotations" sequence="12" groups="group_ecom_sales_manager"/>
+    <menuitem id="menu_ecom_purchase" name="E-Commerce Purchase" parent="purchase.menu_procurement_management"
+              action="action_ecommerce_purchase_rfq" sequence="50" groups="group_ecom_sales_manager"/>
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="domain">[]</field>
+    </record>
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="domain">[]</field>
+    </record>
+    <record id="purchase.purchase_rfq" model="ir.actions.act_window">
+        <field name="domain">[]</field>
+    </record>
+    <record id="purchase.purchase_form_action" model="ir.actions.act_window">
+        <field name="domain">[]</field>
+    </record>
+</odoo>
+

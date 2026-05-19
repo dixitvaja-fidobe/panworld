@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo >
+    <record id="costing_average_report_default_data" model="costing.report">
+        <field name="name">Costing Reports</field>
+    </record>
+</odoo>

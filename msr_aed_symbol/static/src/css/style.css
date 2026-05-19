@@ -1,0 +1,351 @@
+/* Variables */
+:root {
+    --primary-color: #2f704a;
+    --riyals-color: #2f704a;
+    --aed-color: #2f704a;
+    --font-size-base: 16px;
+    --line-height-base: 1.5;
+    --spacing-unit: 8px;
+    --container-padding: calc(var(--spacing-unit) * 2);
+}
+
+@font-face {
+    font-family: 'aed_symbol';
+    src: url('../fonts/aed_symbol.eot?bdfc4l');
+    src: url('../fonts/aed_symbol.eot?bdfc4l#iefix') format('embedded-opentype'),
+         url('../fonts/aed_symbol.ttf?bdfc4l') format('truetype'),
+         url('../fonts/aed_symbol.woff?bdfc4l') format('woff'),
+         url('../fonts/aed_symbol.svg?bdfc4l#aed_symbol') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: 'JannaLTBold';
+    src: url('../fonts/ArbFONTS-ArbFONTS-Janna-LT-Bold.ttf') format('truetype');
+}
+
+/* Base Styles */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Icon styling */
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'aed_symbol' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline-block; /* Ensure proper display */
+}
+
+.icon-saudi_riyal:before {
+    content: "\e900";
+    color: var(--riyals-color);
+}
+
+/* Changed to use uppercase U directly since we confirmed it's in the SVG font */
+.icon-aed_symbol:before {
+    content: "U";
+    color: var(--aed-color);
+}
+
+/* Add specific styling for list view monetary fields */
+.o_list_monetary, .o_list_number {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Target AED currency cells specifically */
+.o_data_cell[data-currency="AED"],
+[data-currency-id="AED"],
+.o_data_cell .o_field_monetary[data-currency="AED"] {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* AED Currency specific styling that was previously working */
+.o_list_number, .o_data_cell span.monetary, .o_field_monetary, .oe_currency_value {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+span.oe_currency_value + span.o_field_widget {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Add specific rule for AED currency */
+.o_field_monetary[data-currency-id="AED"] .o_field_widget,
+*[data-currency-id="AED"] .oe_currency_value {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* POS Receipt Currency Styling */
+.pos-receipt .pos-receipt-amount,
+.pos-receipt .receipt-line-amount,
+.pos-receipt .receipt-change-amount,
+.pos-receipt .receipt-total,
+.pos-receipt span.price_display,
+.receipt .pos_receipt_amount,
+.receipt .pos-receipt-amount {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Enhanced targeting for AED currency in receipts */
+.pos-receipt [data-currency="AED"],
+.pos-receipt [data-currency-id="AED"],
+.receipt [data-currency="AED"],
+.receipt [data-currency-id="AED"] {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* POS Receipt Screen Specific Styling */
+.pos .receipt-screen .receipt,
+.pos .receipt-screen .pos-receipt,
+.pos .receipt-screen .receipt-line,
+.pos .receipt-screen .receipt-amount,
+.pos .receipt-screen .receipt-total,
+.pos .receipt-screen .pos-receipt-amount {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Target payment screen amounts */
+.pos .payment-screen .payment-amount,
+.pos .payment-screen .payment-buttons .currency-amount,
+.pos .payment-screen .paymentline-amount,
+.pos .payment-screen .total-amount,
+.pos .payment-screen .currency-symbol,
+.pos .payment-screen .payment-amount-total {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Target order screen price displays */
+.pos .order .orderline .price,
+.pos .order .orderline .price_display,
+.pos .order .summary .total .value,
+.pos .order .summary .total .currency {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Specific targeting for receipt screen with AE character */
+.receipt-screen h1,
+.pos-receipt-amount,
+.pos-receipt-right-align,
+.price-per-unit,
+.product-price,
+.receipt-change,
+.paymentlines,
+.pos-receipt .price {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Special fix for the AE character in POS receipt */
+.receipt-screen h1:contains("ᴁ"),
+.pos-receipt span:contains("ᴁ"),
+.pos-receipt div:contains("ᴁ"),
+.pos-receipt-amount:contains("ᴁ"),
+.pos-receipt .price:contains("ᴁ") {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Force AE character replacement with AED symbol */
+.receipt-screen h1,
+.pos-receipt-container .pos-receipt,
+.pos-receipt-amount span,
+.price-per-unit,
+.product-price.price {
+    font-variant-ligatures: none;
+}
+
+/* Payment modal specific targeting */
+.modal-body .payment-methods-overview table td,
+.modal-body .cash-overview td,
+.modal-body .warning,
+.modal-body [class*="ᴁ"],
+.modal-body td:contains("ᴁ") {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Target all currency-related elements in modals */
+.modal .cash-overview,
+.modal .payment-methods-overview,
+.modal .cash-sign,
+.modal [class*="amount"],
+.modal [class*="total"],
+.modal [class*="price"],
+.modal [class*="payment"],
+.modal [class*="money"],
+.modal [class*="currency"],
+.modal [class*="difference"] {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Typography Classes */
+.text-primary {
+    color: var(--primary-color);
+}
+
+.text-bold {
+    font-family: 'JannaLTBold', 'aed_symbol', sans-serif !important;
+}
+
+/* Layout Components */
+.page, .header, .footer {
+    font-family: 'JannaLTRegular', 'aed_symbol', sans-serif !important;
+    padding: var(--container-padding);
+}
+
+.pos-content {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+.o_kanban_renderer {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+.o_list_renderer {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+.o-dashboard {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+.o_web_client {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Responsive Typography */
+@media screen and (max-width: 768px) {
+    :root {
+        --font-size-base: 14px;
+        --container-padding: var(--spacing-unit);
+    }
+}
+
+/* Print Styles */
+@media print {
+    /* Enhanced print styling for POS receipts */
+    .icon-aed_symbol:before {
+        color: #000; /* Ensure visibility in prints */
+    }
+
+    /* Force font-family for all monetary values in print context */
+    .pos-receipt .pos-receipt-amount,
+    .pos-receipt .receipt-line-amount,
+    .pos-receipt .receipt-change-amount,
+    .pos-receipt .receipt-total,
+    .receipt .pos_receipt_amount,
+    .receipt .pos-receipt-amount,
+    .pos_receipt_amount,
+    [data-currency="AED"],
+    [data-currency-id="AED"],
+    .oe_currency_value,
+    .pos .receipt-screen .receipt *,
+    .pos .receipt-screen .pos-receipt *,
+    .pos .payment-screen .payment-amount,
+    .pos .order .orderline .price_display,
+    /* Add specific selectors from the HTML structure */
+    h1:contains("ᴁ"),
+    .product-price,
+    .price-per-unit,
+    .pos-receipt-right-align,
+    .pos-receipt-amount,
+    .receipt-change,
+    .paymentlines,
+    /* Add payment modal selectors */
+    .modal-body .payment-methods-overview table td,
+    .modal-body .cash-overview td,
+    .modal-body .warning {
+        font-family: 'aed_symbol', Arial, sans-serif !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Ensure font is embedded in print */
+    @font-face {
+        font-family: 'aed_symbol';
+        src: url('../fonts/aed_symbol.ttf?bdfc4l') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+}
+
+/* Add a specific style for the AE character to ensure it's replaced */
+@font-face {
+    font-family: 'aed_latin_fix';
+    src: url('../fonts/aed_symbol.ttf?bdfc4l') format('truetype');
+    unicode-range: U+00C6; /* This is the Unicode for the AE character (ᴁ) */
+}
+
+/* Apply the custom font to the specific character */
+body {
+    font-family: 'aed_latin_fix', system-ui, -apple-system, sans-serif;
+}
+
+/* Add specific rules for the Latin AE character "ᴁ" (U+1D01) and capital AE "Æ" (U+00C6) */
+@font-face {
+    font-family: 'aed_latin_fix';
+    src: url('../fonts/aed_symbol.ttf?bdfc4l') format('truetype');
+    unicode-range: U+00C6, U+1D01; /* These are the Unicode for AE characters */
+}
+
+/* Add a generic rule targeting the specific character combination */
+*:not(script):not(style):not(link) {
+    font-family: 'aed_symbol', Arial, sans-serif;
+}
+
+/* Target any element containing the AE character */
+*:not(script):not(style):not(link):contains("ᴁ"),
+*:not(script):not(style):not(link):contains("Æ") {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Chart and Spreadsheet specific styling */
+.o-figure,
+.o-chart-container,
+.o-figure-canvas,
+.o-grid-overlay canvas,
+.o-figure-wrapper,
+.o-figure-viewport-inverse {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Target all chart labels and text elements */
+canvas text,
+canvas .chartjs-text,
+canvas .chartjs-label,
+canvas .chartjs-render-monitor,
+.chart-legend text,
+.chart-axis text,
+.chart-label,
+.chart-title,
+.chart-tooltip {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}
+
+/* Override ChartJS font handling for currency symbols specifically */
+:root {
+    --chart-font-family: 'aed_symbol', Arial, sans-serif;
+}
+
+/* Add Javascript hook to ensure chart text uses our font */
+body::after {
+    content: 'chartFontFamily:aed_symbol';
+    display: none;
+}
+
+/* Force the chart canvas to use our font */
+.o-figure-canvas {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+    letter-spacing: normal;
+}
+
+/* Ensure the charts in modals also use our font */
+.modal .o-chart-container,
+.modal .o-figure-canvas,
+.modal canvas {
+    font-family: 'aed_symbol', Arial, sans-serif !important;
+}

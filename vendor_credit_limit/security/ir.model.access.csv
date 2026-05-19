@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_confirm_credit_limit,access_confirm_credit_limit,vendor_credit_limit.model_confirm_credit_limit,base.group_user,1,1,1,1

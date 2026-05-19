@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="view_export_sales_form" model="ir.ui.view">
+        <field name="name">export.sale.xls.form</field>
+        <field name="model">export.sale.xls</field>
+        <field name="arch" type="xml">
+            <form string="Export Shipping Tracking">
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_export_excel" string="Export To Excel" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_export_sale_xls" model="ir.actions.act_window">
+        <field name="name">Shipping Tracking</field>
+        <field name="res_model">export.sale.xls</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_export_sales_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem name="Export Shipping Tracking" action="action_export_sale_xls"
+        id="menu_action_sale_xls"
+        parent="stock.menu_warehouse_report" sequence="151"/>
+
+</odoo>

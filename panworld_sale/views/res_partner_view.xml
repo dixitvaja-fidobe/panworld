@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_partner_form_panworld_sale_inherited" model="ir.ui.view">
+        <field name="name">res.partner.inherited.panworld_sale</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="property_delivery_carrier_id" position="before">
+                <field name="pick_type"/>
+            </field>
+            <field name="property_delivery_carrier_id" position="attributes">
+                <attribute name='domain'>[('carrier_type','=','sale'),'|', ('company_id', '=', False), ('company_id', '=', company_id)]
+                </attribute>
+                <attribute name='invisible'>pick_type == 'picked_by_customer'</attribute>
+            </field>
+            <field name="vat" position="after">
+                <field name="analytic_account_id"/>
+            </field>
+        </field>
+    </record>
+    <!-- Inherit Form View to Modify it -->
+<!--    <record id="inherit_base_view_company_form" model="ir.ui.view">-->
+<!--        <field name="name">inherit.base.view.company.form</field>-->
+<!--        <field name="model">res.company</field>-->
+<!--        <field name="inherit_id" ref="base.view_company_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//notebook" position="inside">-->
+<!--                <page name="Configuration Sale Tracker" string="Configuration Sale Tracker">-->
+<!--                    <group>-->
+<!--                        <field name="sale_tracker_warehouse_fields"/>-->
+<!--                    </group>-->
+<!--                </page>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <!-- Inherit Form View to Modify it -->
+<!--    <record id="inherit_stock_view_warehouse" model="ir.ui.view">-->
+<!--        <field name="name">inherit.stock.view.warehouse</field>-->
+<!--        <field name="model">stock.warehouse</field>-->
+<!--        <field name="inherit_id" ref="stock.view_warehouse"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//field[@name='pbm_loc_id']" position="after">-->
+<!--                <field name="sale_tracker_report_code"/>-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+</odoo>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_purchaseorder_document" inherit_id="purchase_stock.report_purchaseorder_document">
+        <xpath expr="/t[1]/t[1]/t[4]/t[1]" position="replace">
+        </xpath>
+        <xpath expr="/t[1]/t[1]/t[2]/div[1]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='informations']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//t[@t-if='not line.display_type']/td[6]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//t[@t-set='layout_document_title']" position="replace">
+            <h2 class="text-center" style="color: black !important;">Purchase Order <span t-field="o.name" style="display: none"/></h2>
+            <div id="partner" class="row" style="background-color: #F8F5F7;">
+                <div class="col-7">
+                    <div >
+                        <strong t-field="o.partner_id.name"/>
+                        <div t-field="o.partner_id"
+                        t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                        <p t-if="o.partner_id.vat"><t t-esc="o.company_id.account_fiscal_country_id.vat_label or 'Tax ID'"/>: <span t-field="o.partner_id.vat"/></p>
+                    </div>
+                    <div>
+                        <span>Account Number :</span>
+                        <span t-field="o.partner_id.purchase_account_number"/>
+                    </div>
+                    <div>
+                        <span>Publisher :</span>
+                        <span t-field="o.publisher_id.name"/>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div t-if="o.shipping_location_id and o.shipping_location_id">
+                        <t t-if="not o.shipping_option_id.is_via_shipper">
+                            <strong>Ship To: </strong>
+                            <span t-field="o.shipping_location_id.name"/>
+                            <div t-field="o.shipping_location_id" t-options='{"widget": "contact", "fields": ["address", "phone"], "no_marker": True}'/>
+                        </t>
+                        <t t-if="o.shipping_option_id.is_via_shipper">
+                            <strong>Ship To: </strong><span t-field="o.carrier_id.street"/>
+                            <br/>
+                            <span t-field="o.carrier_id.street1"/>
+                            <br/>
+                            <span t-field="o.carrier_id.street2"/>
+                            <br/>
+                            <span t-field="o.carrier_id.city"/>,
+                            <span t-field="o.carrier_id.zip"/>,
+                            <span t-field="o.carrier_id.state_id"/>
+                            <br/>
+                            <span t-field="o.carrier_id.country_id"/>
+                            <br/>
+                            <strong>Tel: </strong><span t-field="o.carrier_id.telephone"/>
+                        </t>
+                    </div>
+                </div>
+            </div><br/><br/>
+            <div id="information" class="row">
+                <div t-if="o.date_order" class="col-4 bm-2">
+                    <strong>P.O. Date:</strong>
+                    <p t-field="o.date_order" class="m-0" t-options='{"widget": "date"}'/>
+                </div>
+                <div class="col-4 bm-2">
+                    <strong>Payments Term:</strong>
+                    <p t-field="o.payment_term_id.display_name" class="m-0"/>
+                </div>
+                <div t-if="o.date_planned" class="col-4 bm-2">
+                    <strong>Delivery Date:</strong>
+                    <p t-field="o.date_planned" class="m-0" t-options='{"widget": "date"}'/>
+                </div>
+            </div>
+            <div id="information" class="row">
+                <div t-if="o.name" class="col-4 bm-2">
+                    <strong>P.O. Number:</strong>
+                    <p t-field="o.name" class="m-0"/>
+                </div>
+                <div t-if="o.currency_id" class="col-4 bm-2">
+                    <strong>Currency:</strong>
+                    <p t-field="o.currency_id.name" class="m-0"/>
+                </div>
+                <div class="col-4 bm-2">
+                    <strong>Reference:</strong>
+                    <p t-field="o.partner_ref" class="m-0"/>
+                </div>
+            </div>
+            <div id="address"/>
+        </xpath>
+        <xpath expr="//t[@t-set='current_subtotal']" position="after">
+<!--            <td id="s_no" style="border:none">-->
+                <t t-set="count" t-value="0" />
+                <t t-set="qty_count" t-value="0" />
+<!--            </td>-->
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+<!--        <xpath expr="//th[@name='th_taxes']" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+<!--        <xpath expr="//th[@name='th_date_req']" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+        <xpath expr="//span[@t-field='line.product_qty']" position="replace">
+            <span t-field="line.po_qty" t-options="{'widget': 'float', 'precision': 0}"/>
+        </xpath>
+        <xpath expr="//span[@t-field='line.price_unit']" position="replace">
+            <span t-field="line.po_price"/>
+        </xpath>
+        <xpath expr="//span[@t-field='line.product_uom_id.name']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_price_unit']" position="attributes">
+            <span t-field="line.price_unit"/>
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <t t-set="display_discount" t-value="any(l.discount for l in o.order_line)"/>
+            <th name="th_listprice" class="text-right" t-if="display_discount"><strong>List Price</strong></th>
+        </xpath>
+        <xpath expr="//th[@name='th_price_unit']" position="after">
+<!--            <th name="th_price_unit" t-if="display_discount" class="text-right">-->
+<!--                <span><strong>Disc.%</strong></span>-->
+<!--            </th>-->
+            <th name="th_priceunit" class="text-right"><strong>Unit Price</strong></th>
+        </xpath>
+        <!-- <xpath expr="//span[@t-field='line.price_unit']'/.." position="after"> -->
+        <!-- <xpath expr="//span[@t-field='line.price_unit']/.." position="after">
+            <td t-if="display_discount" class="text-right">
+                <span class="text-nowrap" t-field="line.discount"/>
+            </td>
+        </xpath> -->
+        <xpath expr="//span[@t-field='line.po_qty']" position="after">
+            <td name="td_list_price" class="text-right" t-if="display_discount">
+                <span t-field="line.po_list_price"/>
+            </td>
+<!--            <td t-if="display_discount" class="text-right">-->
+<!--                <span class="text-nowrap" t-field="line.po_discount"/>-->
+<!--            </td>-->
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th name="th_sr"><strong>S No.</strong></th>
+            <th name="th_isbn"><strong>ISBN</strong></th>
+            <th name="th_description"><strong>Title</strong></th>
+        </xpath>
+        <xpath expr="//th[@name='th_subtotal']" position="replace">
+            <th name="th_amount" class="text-right"><strong>Total</strong></th>
+            <!-- <t t-if="o.partner_id.country_id.code == 'AE'">
+                <th name="th_vat_per" class="text-right"><strong>VAT</strong></th>
+            </t> -->
+            <th name="th_vat" class="text-right"><strong>VAT</strong></th>
+            <th name="th_vat" class="text-right"><strong>Net Total</strong></th>
+        </xpath>
+        <xpath expr="//td[@id='product']" position="before">
+            <td id="s_no">
+                <t t-set="count" t-value="count+1" />
+                <t t-esc="count"/>
+                <t t-set="qty_count" t-value="qty_count+line.po_qty" />
+            </td>
+            <td id="product_code">
+                <span t-field="line.product_id.default_code"/>
+            </td>
+            <td id="product_name">
+                <span t-field="line.product_id.name"/>
+            </td>
+        </xpath>
+        <xpath expr="//td[@id='product']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+<!--        <xpath expr="//td[@name='td_taxes']" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+<!--        <xpath expr="//t[@t-foreach='o.order_line']//td[hasclass('text-center')]" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+        <xpath expr="//t[@t-set='current_subtotal']" position="after">
+            <t t-set="subtotal_sum" t-value="0"/>
+            <t t-set="total_sum" t-value="0"/>
+        </xpath>
+        <xpath expr="//t[@t-if='not line.display_type']" position="inside">
+           <!--   <t t-if="o.partner_id.country_id.code == 'AE'">
+                <td name="vat_per" class="text-right">
+                    <span t-esc="', '.join(map(lambda x: (str(int(x.amount)) + '%'), line.taxes_id))" id="line_tax_ids"/>
+                </td>
+             </t> -->
+
+<!--            <t t-foreach="doc.line_ids" t-as="line">-->
+<!--                <t t-set="subtotal_sum" t-value="sum_row2+line.amount_2"/>-->
+<!--            </t>-->
+<!--            <t t-esc="subtotal_sum"/>-->
+             <td class="text-right">
+                 <span t-field="line.po_subtotal" t-options='{"widget": "float", "precision": 2}'/>
+                 <t t-set="subtotal_sum" t-value="subtotal_sum+line.po_subtotal"/>
+            </td>
+            <td name="vat_amount" class="text-right">
+                <t t-set="vat" t-value="float(line.price_total - line.price_subtotal)"/>
+                <span t-esc="vat" t-options='{"widget": "float", "precision": 2}' />
+            </td>
+            <td class="text-right o_price_total">
+                <t t-if="line.po_subtotal != 0">
+                    <span t-esc="float(line.po_subtotal + vat)" t-options='{"widget": "float", "precision": 2}'/>
+                </t>
+                <t t-else="">
+                    <span t-esc="float(line.po_subtotal)" t-options='{"widget": "float", "precision": 2}'/>
+                </t>
+                <t t-if="line.po_subtotal != 0">
+                    <t t-set="total_sum" t-value="total_sum+float(line.po_subtotal + vat)"/>
+                </t>
+                 <t t-else="">
+                    <t t-set="total_sum" t-value="total_sum+float(line.po_subtotal)"/>
+                </t>
+            </td>
+        </xpath>
+        <xpath expr="//div[@id='total']" position="replace">
+            <div id="total" class="row justify-content-end">
+                <!-- <t t-if="o.partner_id.country_id.code != 'AE'">
+                    <div style="margin-right:35px;width:60px;">
+                        <t t-esc="qty_count" t-options='{"widget": "float", "precision": 0}'/> -->
+                        <!-- <span t-field="line.product_uom" groups="uom.group_uom"/> -->
+<!--                     </div>
+                </t>
+                <t t-else="">
+                    <div style="margin-right:65px;width:60px;">
+                        <t t-esc="qty_count" t-options='{"widget": "float", "precision": 0}'/> -->
+                        <!-- <span t-field="line.product_uom" groups="uom.group_uom"/> -->
+<!--                     </div>
+                </t> -->
+                <!-- <div class="col-3 text-left" style="margin-right: -120px">
+                </div> -->
+                <div t-attf-class="{{ 'col-4' if display_discount else 'col-3' }}" >
+                    <table class="table table-sm">
+                        <tr class="border-black">
+                            <td name="td_subtotal_label">
+                                <strong style="color:#808080 !important;">Subtotal</strong>
+                            </td>
+                            <td class="text-right">
+                                <t t-esc="subtotal_sum" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td name="td_taxes_label">VAT</td>
+                            <td class="text-right">
+                                <span t-field="o.amount_tax"
+                                    t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
+                            </td>
+                        </tr>
+                        <tr class="border-black o_total">
+                            <td name="td_amount_total_label">
+                                <strong style="color:#808080 !important;">Total</strong>
+                            </td>
+                            <td class="text-right">
+                                <span t-esc="total_sum"
+                                    t-options='{"widget": "monetary", "display_currency": o.currency_id}' />
+                            </td>
+                        </tr>
+                        <tr class="border-black o_total">
+                            <td name="td_total_unit">
+                                <strong style="color:#808080 !important;">Total Units</strong>
+                            </td>
+                            <td class="text-right">
+                                <strong t-esc="qty_count" t-options="{'widget': 'float', 'precision': 0}"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+        <t t-set="o" position="after">
+            <t t-set="custom_footer">
+                <div class="text-center" style="border-top: 1px solid black; border-bottom: 1px solid black;">
+                    <ul class="list-inline mb4">
+                        <span style="color: #808080;"> <t t-esc="o.company_id.phone"/> | <t t-esc="o.company_id.email"/> | </span> <span style="color: #0E81FF;"> <t t-esc="o.company_id.website"/> </span> <span style="color: #808080;"> | VAT NO: <t t-esc="o.company_id.partner_id.vat"/></span>
+                    </ul>
+                </div>
+                <div class="text-muted text-center">
+                  Page: <span class="page"/> / <span class="topage"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

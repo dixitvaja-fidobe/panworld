@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!-- Specific List View for Kit Components -->
+    <record id="view_stock_move_kit_tree" model="ir.ui.view">
+        <field name="name">stock.move.kit.tree</field>
+        <field name="model">stock.move</field>
+        <field name="arch" type="xml">
+            <list string="Bundle Details" decoration-muted="state in ('cancel', 'done')" create="0" delete="0" edit="0" import="0">
+                <field name="product_id"/>
+                <field name="product_barcode" optional="hide"/>
+                <field name="product_uom_qty" string="Demand"/>
+                <field name="quantity" string="Done"/>
+                <field name="product_uom" groups="uom.group_uom"/>
+                <field name="state" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_stock_move_kit_search" model="ir.ui.view">
+        <field name="name">stock.move.kit.search</field>
+        <field name="model">stock.move</field>
+        <field name="arch" type="xml">
+            <search string="Kit Components">
+                <field name="product_id" string="Component"/>
+                <field name="bom_id" string="Main Bundle"/>
+                <group>
+                    <filter string="Bundle Wise" name="group_by_bom" context="{'group_by': 'bom_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action to open Kit Components -->
+    <record id="action_view_kit_components" model="ir.actions.act_window">
+        <field name="name">Kit Components</field>
+        <field name="res_model">stock.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_stock_move_kit_tree"/>
+        <field name="search_view_id" ref="view_stock_move_kit_search"/>
+        <field name="domain">[('picking_id', '=', active_id), ('bom_id', '!=', False)]</field>
+        <field name="context">{'default_picking_id': active_id, 'search_default_group_by_bom': 1}</field>
+    </record>
+
+    <record id="view_picking_form_inherit_kit" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.kit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <field name="kit_count" invisible="1"/>
+                <button name="%(action_view_kit_components)d" 
+                        type="action" 
+                        class="oe_stat_button" 
+                        icon="fa-cubes" 
+                        string="Bundle Details"
+                        invisible="kit_count == 0">
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

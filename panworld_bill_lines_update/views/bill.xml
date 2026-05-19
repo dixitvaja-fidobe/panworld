@@ -1,0 +1,23 @@
+<odoo>
+    <record id="view_move_form_tus" model="ir.ui.view">
+        <field name="name">account.move.form.tus</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_cancel']" position="before">
+                <button name="bill_lines_update" type="object" string="Update the Lines"
+                        invisible="state != 'draft'"
+                        context="{
+                            'default_model_name': 'account.move',
+                            'default_model_id': context.get('id'),
+                        }"
+                        groups="panworld_bill_lines_update.bill_line_update"
+                />
+                <button name="action_update_po_price" type="object" string="Update PO Price"
+                        invisible="move_type != 'in_invoice'"
+                        groups="panworld_bill_lines_update.bill_line_update"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

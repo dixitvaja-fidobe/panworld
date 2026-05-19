@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_create_rfq_wizard_form" model="ir.ui.view">
+        <field name="name">sale.order.create.rfq.wizard.form</field>
+        <field name="model">sale.order.create.rfq.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Purchase RFQ">
+                <sheet>
+                    <group>
+                        <field name="sale_order_id" invisible="1"/>
+                        <field name="vendor_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                    </group>
+                    <p class="text-muted">
+                        This will create a Purchase Quotation (RFQ) for the selected vendor using all lines from the current Sale Order.
+                    </p>
+                </sheet>
+                <footer>
+                    <button name="action_create_rfq" string="Create RFQ" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sale_order_create_rfq_wizard" model="ir.actions.act_window">
+        <field name="name">Create Purchase RFQ</field>
+        <field name="res_model">sale.order.create.rfq.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

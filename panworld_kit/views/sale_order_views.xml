@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_order_form_inherit_panworld_kit" model="ir.ui.view">
+        <field name="name"> sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='order_details']" position="inside">
+                <div name="bundle_info" style="font-weight: bold;color:#9a6b01;" invisible="product_bundle_lines_count == 0">
+                    <span><field name="bundle_total_qty" class="oe_inline"/></span>
+                    <span> bundle<span invisible="bundle_total_qty == 1">s</span> in </span>
+                    <span><field name="product_bundle_lines_count" class="oe_inline"/></span>
+                    <span> line<span invisible="product_bundle_lines_count == 1">s</span></span>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
+                <field name="is_bundle_product" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list" position="attributes">
+                <attribute name="decoration-warning">is_bundle_product</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

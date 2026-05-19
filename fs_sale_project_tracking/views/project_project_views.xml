@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Project Form View - Add Sale Tracking Field -->
+    <record id="project_project_view_form_sale_tracking" model="ir.ui.view">
+        <field name="name">project.project.form.sale.tracking</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <!-- Add Sale Tracking field -->
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="sale_tracking" 
+                       widget="boolean_toggle"
+                       help="Enable to use this project for tracking sale orders"/>
+            </xpath>           
+        </field>
+    </record>
+</odoo>
+

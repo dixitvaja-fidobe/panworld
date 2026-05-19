@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_inherit_email_contact" model="ir.ui.view">
+        <field name="name">mailing.contact.view.form</field>
+        <field name="model">mailing.contact</field>
+        <field name="inherit_id" ref="mass_mailing.mailing_contact_view_form" />
+        <field name="arch" type="xml">
+           <!-- <field name="title_id" position="after">
+                <field name="state_id_new"/>
+            </field> -->
+            <field name="tag_ids" position="after">
+                <group>
+                    <field name="title_name"/>
+                </group>
+            </field>
+             <field name="name" position="before">
+               
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="source_name"/>
+                <field name="department_name"/>
+                     
+            </field>
+            <field name="name" position="before">
+                <field name="school_name"/>
+                <field name="school_address_1"/>
+                <field name="school_address_2"/>
+                <field name="school_address_3"/>
+                <field name="post_code"/>
+                <field name="state_id_new"/>
+                
+            </field>
+            <xpath expr="//group/group[1]" position="after">
+                <group>
+                    <field name="region_name"/>
+                    <field name="school_type"/>
+                    <field name="school_group"/>
+                    <field name="business_history"/>
+                    <field name="vetted_name" widget="selection"/>
+                    <field name="product_offered"/>
+                    <field name="board_line_no"/>
+                    <field name="direct_line_no"/>
+                    <field name="mobile_no"/>
+                    <field name="school_website" widget="url"/>
+                    <field name="linkedin_profile" widget="url"/>
+                    <field name="other_ref_links" widget="url"/>
+                    <field name="label_name"/>
+                    <field name="interest"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_move_tree_inherit_email_contact" model="ir.ui.view">
+        <field name="name">mailing.contact.view.tree</field>
+        <field name="model">mailing.contact</field>
+        <field name="inherit_id" ref="mass_mailing.mailing_contact_view_tree" />
+        <field name="arch" type="xml">
+            <field name="create_date" position="replace">
+                <field name="source_name"/>
+            </field>
+            <field name="name" position="before">
+                <field name="title_name"/>
+            </field>
+            <field name="name" position="after">
+                <field name="first_name"/>
+                <field name="last_name"/>
+<!--                <field name="title_id"/>-->
+            </field>
+            <field name="company_name" position="replace">
+                <field name="department_name"/>
+            </field>
+            <field name="email" position="after">
+                <field name="department_name"/>
+                <field name="school_name"/>
+                <field name="school_address_1"/>
+                <field name="school_address_2"/>
+                <field name="school_address_3"/>
+                <field name="post_code"/>
+                <field name="state_id_new"/>
+                <field name="country_id"/>
+                <field name="region_name"/>
+                <field name="school_type"/>
+                <field name="school_group"/>
+                <field name="business_history"/>
+                <field name="vetted_name" widget="selection"/>
+                <field name="product_offered"/>
+                <field name="board_line_no"/>
+                <field name="direct_line_no"/>
+                <field name="mobile_no"/>
+                <field name="school_website" widget="url"/>
+                <field name="linkedin_profile" widget="url"/>
+                <field name="other_ref_links" widget="url"/>
+                <field name="label_name"/>
+                <field name="interest"/>
+            </field>
+             <!-- <field name="is_blacklisted" position="replace">
+                <field name="country_id"/>
+            </field> -->
+        </field>
+    </record>
+</odoo>

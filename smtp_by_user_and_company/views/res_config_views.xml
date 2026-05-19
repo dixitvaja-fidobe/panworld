@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_general_general_configuration" model="ir.ui.view">
+        <field name="name">General Settings New</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='companies']" position="after">
+                <div id="smtp_configuration">
+                    <block title="SMTP Configuration"
+                        name="smtp_configuration_setting_container">
+                        <setting id="smtp_by_company_configuration_settings">
+                            <field name="smtp_by_company" string="SMTP By Company"/>
+                        </setting>
+                        <setting id="smtp_by_user_configuration_settings">
+                            <field name="smtp_by_user" string="SMTP By User"/>
+                        </setting>
+                    </block>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

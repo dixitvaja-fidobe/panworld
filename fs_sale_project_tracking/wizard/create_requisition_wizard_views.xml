@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard Form View -->
+    <record id="view_fs_create_requisition_wizard_form" model="ir.ui.view">
+        <field name="name">fs.create.requisition.wizard.form</field>
+        <field name="model">fs.create.requisition.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Purchase Requisition">
+                <group>
+                    <group>
+                        <field name="task_id" readonly="1"/>
+                        <field name="sale_order_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="requisition_date"/>
+                    </group>
+                </group>
+                
+                <notebook>
+                    <page string="Sale Order Lines" name="lines">
+                        <field name="line_ids">
+                            <list editable="bottom">
+                                <field name="selected" widget="boolean_toggle"/>
+                                <field name="product_id" readonly="1"/>
+                                <field name="description" readonly="1"/>
+                                <field name="qty_ordered" readonly="1"/>
+                                <field name="qty_requisition" 
+                                       readonly="not selected"
+                                       decoration-warning="qty_requisition != qty_ordered"/>
+                                <field name="uom_id" readonly="1"/>
+                                <field name="sale_line_id" column_invisible="1"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Notes" name="notes">
+                        <field name="notes" placeholder="Add any notes or special instructions..."/>
+                    </page>
+                </notebook>
+                
+                <footer>
+                    <button string="Create Requisition" 
+                            name="action_create_requisition" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button string="Cancel" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
+

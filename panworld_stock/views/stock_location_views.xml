@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherited stock location Form -->
+    <record id="view_location_form_panworld_stock" model="ir.ui.view">
+        <field name="name">stock.location.form.panworld.stock</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='replenish_location']" position="after">
+                <field name="is_shipper_location" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

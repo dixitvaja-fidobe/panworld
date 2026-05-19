@@ -1,0 +1,21 @@
+<odoo>
+    <record id="view_picking_form_inherit_panworld" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.panworld</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_validate']" position="after">
+                <button
+                    name="%(panworld_import.import_data_action)d"
+                    string="Update Product Lines"
+                    type="action"
+                    invisible="state == 'done'"
+                    context="{
+                        'default_model_name': 'stock.picking',
+                        'default_model_id': id,
+                    }"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

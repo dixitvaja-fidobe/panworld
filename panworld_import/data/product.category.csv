@@ -1,0 +1,6 @@
+id,name,property_cost_method,property_valuation,parent_id
+product_category_media,Media,Standard Price,Manual,
+product_category_ebooks,E-Books,Average Cost (AVCO),Automated,Media
+product_category_printed,Printed,Average Cost (AVCO),Automated,Media
+product_category_subscription,Subscription,Standard Price,Manual,
+product_category_books,Books,Standard Price,Manual,

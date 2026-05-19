@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension" owl="1">
+        <!-- Force the content to be a column so ISBN and name are on separate lines -->
+        <xpath expr="//*[contains(@class, 'product-content')]" position="attributes">
+            <attribute name="class" add="flex-column" separator=" " />
+        </xpath>
+        <xpath expr="//*[contains(@class, 'product-name')]" position="before">
+            <div t-if="props.product and props.product.barcode" class="product-isbn text-muted lh-1 w-100" style="font-size: 0.7rem;">
+                <t t-esc="props.product.barcode"/>
+            </div>
+        </xpath>
+    </t>
+</templates>

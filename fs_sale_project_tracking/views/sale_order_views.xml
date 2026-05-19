@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sale Order Form View - Add Tracking Project -->
+    <record id="sale_order_view_form_tracking" model="ir.ui.view">
+        <field name="name">sale.order.form.tracking</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Tracking Project field -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="tracking_project_id" 
+                       options="{'no_create': True, 'no_open': True}"/>
+            </xpath>
+            
+            <!-- Add smart button -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tracking_task"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-tasks"
+                        invisible="tracking_task_id == False">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Tracking</span>
+                        <span class="o_stat_text">Task</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

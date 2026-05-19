@@ -1,0 +1,97 @@
+/* Presale Tracking List View Styling - Matching fs_sale_project_tracking reference */
+
+.o_presale_list {
+
+    /* Reset Odoo's default list view background/border to match strict table look */
+    &.o_list_view {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        border-radius: 0;
+    }
+
+    /* Table Styling */
+    .o_list_table {
+        border-collapse: collapse !important;
+        /* Enforce borders like reference */
+
+        /* Header Styling */
+        thead {
+            tr:first-child {
+                th {
+                    background-color: #875A7B !important;
+                    /* Odoo Purple */
+                    color: white !important;
+                    border: 1px solid #e5e7eb !important;
+                    border-bottom: 2px solid #7d5171 !important;
+                    font-weight: bold !important;
+                    text-transform: none;
+                    /* Reference doesn't enforce uppercase, usually */
+                    padding: 12px !important;
+                    vertical-align: middle;
+
+                    &:hover {
+                        background-color: #7d5171 !important;
+                    }
+                }
+            }
+        }
+
+        /* Body Styling */
+        tbody {
+            tr {
+                border-bottom: 1px solid #ddd;
+
+                &:hover {
+                    background-color: #f9fafb !important;
+                }
+
+                td {
+                    border: 1px solid #e5e7eb !important;
+                    padding: 8px 10px !important;
+                    vertical-align: middle;
+                    transition: background-color 0.2s ease;
+                }
+
+                /* Ensure input fields inside editable list blend in or look clean */
+                td.o_data_cell .o_field_widget {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        /* Footer Styling */
+        tfoot {
+            background-color: #f8f9fa;
+            border-top: 2px solid #ddd;
+
+            td {
+                background-color: #f8f9fa !important;
+                color: #212529 !important;
+                font-weight: bold;
+                border: 1px solid #ddd !important;
+            }
+        }
+
+        /* Column Width Adjustments */
+        th[data-name="isbn"],
+        td[data-name="isbn"] {
+            min-width: 140px !important;
+        }
+
+        th[data-name="qty"],
+        td[data-name="qty"] {
+            width: 70px !important;
+            max-width: 80px !important;
+            text-align: center;
+        }
+
+        /* Available column wrapping */
+        th[data-name="stock_availability"] {
+            white-space: normal !important;
+            /* Allow header text to wrap */
+            line-height: 1.2 !important;
+            min-width: 100px;
+            vertical-align: middle !important;
+        }
+    }
+}

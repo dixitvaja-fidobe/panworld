@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherited product template kanban view -->
+    <record id="product_template_kanban_stock_view" model="ir.ui.view">
+        <field name="name">product.template.kanban.stock.view.inherit.panworld.stock</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='is_favorite']" position="before">
+                    <field name="bom_count" invisible="1"/>
+                    <span class="badge badge-warning" invisible="bom_count == 0">Bundle</span>
+                </xpath>
+            </field>
+    </record>
+</odoo>

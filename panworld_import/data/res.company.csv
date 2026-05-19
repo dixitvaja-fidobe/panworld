@@ -1,0 +1,4 @@
+id,sequence,name,street,street2,city,state_id,country_id,zip,vat,phone,website,email
+res_company_panworld_edu_fzc,,Panworld Education FZC,,,Sharjah,Sharjah,United Arab Emirates,,,,,
+res_company_pinnacle_edu,10,Pinnacle Educational Supplies LLC,Sharjah,,Sharjah,Sharjah,United Arab Emirates,,,,,
+base.main_company,0,Panworld General Trading LLC,"Office 214, Al Jabri Building",Al Nahda,Sharjah,Sharjah,United Arab Emirates,61179,100429190000003,'+971 6 574 7179,http://www.panworldeducation.com,info@panworldedu.com

@@ -1,0 +1,49 @@
+<odoo>
+    <record id="view_move_form_inherit_panworld_smart_buttons" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.panworld.smart.buttons</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_invoice_lines" type="object" class="oe_stat_button" icon="fa-list" invisible="move_type == 'entry'">
+                    <field name="invoice_line_count" widget="statinfo" string="Lines"/>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record id="view_invoice_line_tree_panworld" model="ir.ui.view">
+        <field name="name">account.move.line.invoice.tree.panworld</field>
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <list string="Invoice Lines" create="false" multi_edit="1">
+                <field name="product_id"/>
+                <field name="name" string="Description"/>
+                <field name="quantity"/>
+                <field name="product_uom_id" groups="uom.group_uom"/>
+                <field name="price_unit" string="List Price"/>
+                <field name="list_price" string="Unit Price"/>
+                <field name="discount" groups="product.group_discount_per_so_line"/>
+                <field name="price_subtotal" sum="Total"/>
+                <field name="partner_id" optional="hide"/>
+                <field name="account_id" optional="hide"/>
+                <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" optional="hide"/>
+                <field name="tax_ids" widget="many2many_tags" optional="hide"/>
+                <field name="weight" optional="hide"/>
+                <field name="total_weight" optional="hide"/>
+                <field name="landed_cost" optional="hide"/>
+                <field name="marketplace_cost" optional="hide"/>
+                <field name="shipping_cost" optional="hide"/>
+                <field name="other_cost" optional="hide"/>
+                <field name="subtotal_cost" optional="hide"/>
+                <field name="gp_percentage" optional="hide"/>
+                <field name="course_id" optional="hide"/>
+                <field name="crn" optional="hide"/>
+                <field name="oos_cost" optional="hide"/>
+                <field name="be_number" optional="hide"/>
+                <field name="track_number" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+</odoo>

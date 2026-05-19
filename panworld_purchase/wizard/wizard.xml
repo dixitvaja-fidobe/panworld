@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="model_purchase_order_rfq_action_export" model="ir.actions.server">
+        <field name="name">Export Request for Quotation</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_rfq_export_xls()</field>
+    </record>
+
+    <record id="model_purchase_order_action_export" model="ir.actions.server">
+        <field name="name">Export Purchase Order</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_export_xls()</field>
+    </record>
+</odoo>

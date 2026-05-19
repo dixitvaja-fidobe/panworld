@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add mass mail campaign to the mail.compose.message form view -->
+    <record model="ir.ui.view" id="email_compose_form_mass_mailing_inherit">
+        <field name="name">mail.compose.message.form.mass_mailing</field>
+        <field name="model">mail.compose.message</field>
+        <field name="inherit_id" ref="mail.email_compose_message_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='email_from']" position="after">
+                <field name="selection_mail" invisible="0" required="1"/>
+                <field name="email_from" invisible="1" force_save="1"/>
+                <field name="user_id" invisible="1"/>
+                <!--                    <field name="dynamic_user_mail" invisible="0"/>-->
+
+            </xpath>
+        </field>
+    </record>
+
+
+      <!-- inherit account move send notification mail wizard view -->
+    <record model="ir.ui.view" id="email_compose_form_mass_mailing_inherit_invoice">
+        <field name="name">account.move.send.wizard.form</field>
+        <field name="model">account.move.send.wizard</field>
+        <field name="inherit_id" ref="account.account_move_send_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='mail_partner_ids']" position="before">
+<!--                <div>-->
+<!--                 <label for="selection_mail" string="Select From" groups="base.group_user"/>-->
+                <field name="selection_mail" invisible="0" required="1"/>
+<!--                </div>-->
+<!--                <div>-->
+<!--                 <label for="email_from" string="Email From" groups="base.group_user"/>-->
+<!--                <field name="email_from" invisible="1" force_save="1"/>-->
+<!--                </div>-->
+                <field name="user_id" invisible="1"/>
+
+            </xpath>
+        </field>
+    </record>
+
+
+
+</odoo>

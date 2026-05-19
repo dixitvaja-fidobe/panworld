@@ -1,0 +1,38 @@
+<odoo>
+    <record id="purchase_order_form_panworld" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='total_order_quantity']" position="after">
+                <field name="shipping_weight" string="Shipping Weight" invisible="1"/>
+                <div class='oe_inline' colspan='2'>
+                    <field name="delivery_set" invisible='1' />
+                    <field name="is_all_service" invisible='1' />
+                    <field name="recompute_delivery_price" invisible='1' />
+                    <button
+                        string="Add shipping"
+                        name="action_open_delivery_wizard"
+                        type="object"
+                        invisible="is_all_service == True or order_line == [] or delivery_set == True"
+                    />
+                    <button
+                        string="Update shipping cost"
+                        name="action_open_delivery_wizard"
+                        context="{'carrier_recompute':True}"
+                        type="object"
+                        class="text-warning btn-secondary"
+                        invisible = "is_all_service == True or recompute_delivery_price == False or delivery_set == False"
+                    />
+                    <button
+                        string="Update shipping cost"
+                        name="action_open_delivery_wizard"
+                        context="{'carrier_recompute':True}"
+                        type="object"
+                        invisible = "is_all_service == True or recompute_delivery_price == True or delivery_set == False"
+                    />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

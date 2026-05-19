@@ -1,0 +1,58 @@
+<odoo>
+    <record id="purchase_order_inherit_compare_lines" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.compare.lines</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook/page/field[@name='order_line']/list/field[@name='product_qty']"
+                   position="after">
+                    <field name="rfq_qty" width="80px" string="RFQ Qty"/>
+                    <field name="po_qty" width="80px" string="PO Qty"/>
+                    <field name="to_be_received_qty" string="ToBe Receivd Qty" width="80px"/>
+                    <field name="cancel_qty" width="80px"/>
+                    <field name="cancel_reason" width="80px" required="cancel_qty != 0"/>
+            </xpath>
+            <xpath expr="//sheet/notebook/page/field[@name='order_line']/list/field[@name='qty_invoiced']"
+                   position="after">
+                    <field name="po_price" width="80px"/>
+                    <field name="po_list_price" string="PO ListPrice" width="80px"/>
+                    <field name="po_discount" width="80px"/>
+                    <field name="po_subtotal" width="80px"/>
+            </xpath>
+            <!-- hide this for TASK-02919-->
+<!--            <xpath expr="//sheet/notebook/page/field[@name='order_line']/list/field[@name='product_qty']"-->
+<!--                   position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//sheet/notebook/page/field[@name='order_line']/list/field[@name='price_unit']"-->
+<!--                   position="before">-->
+<!--                    -->
+<!--            </xpath>-->
+            <xpath expr="//sheet/notebook/page/field[@name='order_line']/list/field[@name='price_unit']"
+                   position="after">
+                <field name="po_target_price" optional="hide"/>
+            </xpath>
+
+<!--            <xpath expr="//sheet/notebook/page/field[@name='order_line']/list/field[last()]"-->
+<!--                   position="after">-->
+<!--                    -->
+<!--            </xpath>-->
+
+        </field>
+    </record>
+
+    <!--    Purchase Order Confirm Button Access Right      -->
+    <record id="purchase_order_view_form_inherit_buttons_confirm" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit.buttons.confirm</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@id='bid_confirm']" position="attributes">
+                    <attribute name="groups">po_compare_cancel_line.po_confirm_access_right_group</attribute>
+                </xpath>
+                <xpath expr="//button[@id='draft_confirm']" position="attributes">
+                    <attribute name="groups">po_compare_cancel_line.po_confirm_access_right_group</attribute>
+                </xpath>
+            </field>
+    </record>
+</odoo>

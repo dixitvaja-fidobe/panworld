@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Purchase Order Form View Extension -->
+<!--    <record id="fs_purchase_order_form_view" model="ir.ui.view">-->
+<!--        <field name="name">purchase.order.form.fs.tracking</field>-->
+<!--        <field name="model">purchase.order</field>-->
+<!--        <field name="inherit_id" ref="purchase.purchase_order_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <field name="partner_ref" position="after">-->
+<!--                <field name="fs_sale_order_id" options="{'no_create': True}"/>-->
+<!--            </field>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <!-- Purchase Order List View Extension -->
+    <record id="fs_purchase_order_tree_view" model="ir.ui.view">
+        <field name="name">purchase.order.tree.fs.tracking</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="fs_sale_order_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>
+

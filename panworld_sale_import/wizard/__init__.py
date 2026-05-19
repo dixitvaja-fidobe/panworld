@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) Fidobe Solutions LLC.
+#
+#    For Module Support : dev3@fidobe.com
+#
+#############################################################################
+from . import import_sale_data_wizard
+from . import import_sale_order_wizard

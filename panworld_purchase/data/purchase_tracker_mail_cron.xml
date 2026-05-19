@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--    <record id="ir_cron_purchase_tracker_mail_crone" model="ir.cron">-->
+<!--        <field name="name">purchase Tracker; Sent mail to user having purchase and shipping tat-breach group when ralated fields tat breached</field>-->
+<!--        <field name="interval_number">1</field>-->
+<!--        <field name="interval_type">days</field>-->
+<!--        <field name="numbercall">-1</field>-->
+<!--        <field name="nextcall" eval="(datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:00:00')" />-->
+<!--        <field name="doall" eval="False"/>-->
+<!--        <field name="model_id" ref="model_purchase_tracker_report"/>-->
+<!--        <field name="code">model._trigger_purchase_and_shipping_tat_breach()</field>-->
+<!--        <field name="state">code</field>-->
+<!--    </record>-->
+</odoo>

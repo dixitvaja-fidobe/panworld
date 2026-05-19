@@ -1,0 +1,32 @@
+.o_priority {
+    .o_priority_star {
+        font-size: 1.2rem;
+        color: #e2e2e2; /* Default empty star color */
+        transition: all 0.2s ease;
+
+        &.fa-star {
+            color: #f1c40f; /* Premium Gold color */
+            text-shadow: 0 0 5px rgba(241, 196, 15, 0.3);
+        }
+
+        &:hover {
+            transform: scale(1.2);
+            color: #f39c12; /* Slightly darker gold on hover */
+        }
+    }
+
+    /* Adjust size in form view headers */
+    h1 .o_priority_star {
+        font-size: 2rem;
+    }
+}
+
+/* Ensure stars are visible in list views */
+.o_list_view .o_priority {
+    display: flex;
+    align-items: center;
+    .o_priority_star {
+        font-size: 1rem;
+        margin-right: 2px;
+    }
+}

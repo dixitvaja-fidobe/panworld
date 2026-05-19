@@ -1,0 +1,22 @@
+<odoo>
+    <record
+        id="views_import_sale_order_wizard_inherit_panworld_sale_import"
+        model="ir.ui.view"
+    >
+        <field name="name">import.sale.order.wizard.form</field>
+        <field name="model">import.sale.order.wizard</field>
+        <field
+            name="inherit_id"
+            ref="scs_import_sale_order.views_import_sale_order_wizard"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='file']" position="after">
+                <field name="is_use_marketplace_values" />
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.menu" id="scs_import_sale_order.menu_import_sale_order_wizard">
+        <field name="parent_id" ref="sale.sale_order_menu"/>
+        <field name="sequence">200</field>
+    </record>
+</odoo>

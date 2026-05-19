@@ -1,0 +1,26 @@
+<odoo>
+<!--    <record id="advance_payments" model="res.groups">-->
+<!--        <field name="name">Advance Payment</field>-->
+<!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+<!--    </record>-->
+
+     <record id="advance_payments_request" model="res.groups">
+        <field name="name">Request Advance Payment</field>
+<!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+    </record>
+
+     <record id="advance_payments_creator" model="res.groups">
+        <field name="name">Advance Payment Creator</field>
+<!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+    </record>
+
+<!--    <record id="manage_advance_payment" model="res.groups">-->
+<!--        <field name="name">Manage Advance Payment</field>-->
+<!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+<!--    </record>-->
+
+<!--    <record id="advance_payment_paid_status" model="res.groups">-->
+<!--        <field name="name">Advance Payment Paid Status</field>-->
+<!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+<!--    </record>-->
+</odoo>

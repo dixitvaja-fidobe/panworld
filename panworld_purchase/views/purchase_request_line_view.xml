@@ -1,0 +1,28 @@
+<odoo>
+    <record id="purchase_request_line_search" model="ir.ui.view">
+        <field name="name">purchase.request.line.search</field>
+        <field name="model">purchase.request.line</field>
+        <field name="inherit_id" ref="purchase_request.purchase_request_line_search" />
+        <field name="arch" type="xml">
+            <filter name="request" position="after">
+                <filter
+                    name="supplier"
+                    string="Preferred supplier"
+                    domain="[]"
+                    context="{'group_by':'supplier_id'}"
+                />
+            </filter>
+        </field>
+    </record>
+    <record id="view_purchase_request_line_make_purchase_order" model="ir.ui.view">
+        <field name="name">Purchase Request Line Make Purchase Order</field>
+        <field name="model">purchase.request.line.make.purchase.order</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <field name="purchase_order_id" position="attributes">
+                <attribute name="domain">[('partner_id', '=', supplier_id),
+                                ('state', 'not in', ['cancel', 'done'])]</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

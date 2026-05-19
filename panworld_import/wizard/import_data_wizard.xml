@@ -1,0 +1,114 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <record id="import_bill_invoice_data_wizard_view" model="ir.ui.view">
+            <field name="name">Import Data Wizard</field>
+            <field name="model">import.data.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="data_import_file" />
+                            <field name="without_isbn"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="model_id" invisible="1"/>
+                            <field name="show_export_button" invisible="1"/>
+                            <field name="show_rma_export_button" invisible="1"/>
+                        </group>
+                        <group>
+                            <button string="Download Sample" name="export_data" class="oe_highlight" type="object"
+                                    invisible="show_export_button == False" />
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Import" name="import_data" class="oe_highlight" type="object"/>
+                        <button
+                            string="Export RMA Lines"
+                            name="export_rma_lines"
+                            class="oe_highlight"
+                            type="object"
+                            invisible="show_rma_export_button == False"
+                        />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="import_data_wizard_view" model="ir.ui.view">
+            <field name="name">Import Data Wizard</field>
+            <field name="model">import.data.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="data_import_file" />
+                            <field name="model_name" invisible="1"/>
+                            <field name="model_id" invisible="1"/>
+                            <field name="show_export_button" invisible="1"/>
+                            <field name="show_rma_export_button" invisible="1"/>
+                        </group>
+                        <group>
+                            <field
+                                name="sample_file"
+                                filename="file_name"
+                                readonly="1"
+                                invisible="sample_file == False "
+                            />
+                            <field name="file_name" invisible="1" />
+                            <button invisible="show_po_export_button == False"
+                                string="RFQ &amp; PO Create"
+                                name="download_sample_file"
+                                class="oe_highlight"
+                                type="object"
+                            />
+                        </group>
+                    </group>
+                    <footer>
+                        <button
+                            string="Import"
+                            name="import_data"
+                            class="oe_highlight"
+                            type="object"
+                        />
+                           <button
+                             string="RFQ &amp; PO UPDATE"
+                             name="export_data_update"
+                             class="oe_highlight"
+                             type="object"
+                             invisible="show_po_export_button == False"
+                         />
+                        <button
+                            string="Download Sample"
+                            name="export_data"
+                            class="oe_highlight"
+                            type="object"
+                            invisible="show_export_button == False"
+                        />
+                        <button
+                                string="Bill Allocation"
+                                name="export_data_from_po_line"
+                                class="oe_highlight"
+                                type="object"
+                                invisible="show_po_export_button == False"
+                            />
+                        <button
+                            string="Export RMA Lines"
+                            name="export_rma_lines"
+                            class="oe_highlight"
+                            type="object"
+                            invisible="show_rma_export_button == False"
+                        />
+                      
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="import_data_action" model="ir.actions.act_window">
+            <field name="name">Import Data</field>
+            <field name="res_model">import.data.wizard</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="import_data_wizard_view" />
+            <field name="view_mode">form</field>
+        </record>
+    </data>
+</odoo>

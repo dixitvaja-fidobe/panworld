@@ -1,0 +1,230 @@
+<odoo>
+    <record id="history_report_view_tree" model="ir.ui.view">
+        <field name="name">history.report.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="date_order" optional="show"/>
+                <field name="order_reference" optional="show" column_invisible="1"/>
+                <field name="sale_order_id" widget="many2one_clickable" optional="show" string="Order Reference"/>
+                <field name="partner_id" optional="show"/>
+                <field name="customer_sales_order" optional="show" string="CSO Reference"/>
+                <field name="barcode" optional="show"/>
+                <field name="division_type_id" optional="show"/>
+                <field name="description" optional="show"/>
+                <field name="currency_id" optional="show"/>
+                <field name="price_unit" optional="show"/>
+                <field name="discount" optional="show"/>
+                <field name="list_price" optional="show"/>
+                <field name="so_quantity" optional="show"/>
+                <field name="qty_delivered" optional="show"/>
+                <field name="qty_invoiced" optional="show"/>
+                <field name="price_subtotal" optional="show"/>
+                <field name="company_id" optional="show"/>
+                <field name="state" optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="history_report_invoice_view_tree" model="ir.ui.view">
+        <field name="name">history.report.invoice.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="invoice_date" optional="show"/>
+                <field name="invoice_number" optional="show" column_invisible="1"/>
+                <field name="invoice_id" widget="many2one_clickable" optional="show" string="Invoice number"/>
+                <field name="partner_id" string="Invoice Partner Display Name" optional="show"/>
+                <field name="delivery_note" optional="show"/>
+                <field name="order_reference" string="Sales Order" optional="show"/>
+                <field name="cso_reference" optional="show"/>
+                <field name="barcode" optional="show"/>
+                <field name="description" string="Product Name" optional="show"/>
+                <field name="price_unit" optional="show"/>
+                <field name="discount" optional="show"/>
+                <field name="list_price" optional="show"/>
+                <field name="quantity" optional="show"/>
+                <field name="vat_amount" optional="show"/>
+                <field name="price_subtotal" optional="show"/>
+                <field name="company_id" optional="show"/>
+                <field name="invoice_state" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="history_report_purchase_view_tree" model="ir.ui.view">
+        <field name="name">history.report.purchase.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="date_order" optional="show"/>
+                <field name="purchase_order_id" widget="many2one_clickable" optional="show" string="Order Reference"/>
+                <field name="partner_id" optional="show" string="Vendor"/>
+                <field name="customer_name" optional="show"/>
+                <field name="customer_order_number" optional="show" string="Customer Order Number"/>
+                <field name="customer_sales_order" optional="show" string="Customer Sales Order"/>
+                <field name="barcode" optional="show"/>
+                <field name="description" optional="show"/>
+                <field name="currency_id" optional="show"/>
+                <field name="po_list_price" optional="show"/>
+                <field name="po_discount" optional="show" string="PO Discount (%)"/>
+                <field name="po_price" optional="show"/>
+                <field name="po_qty" optional="show"/>
+                <field name="qty_received" optional="show"/>
+                <field name="qty_invoiced" optional="show" string="Billed Qty"/>
+                <field name="price_subtotal" optional="show"/>
+                <field name="company_id" optional="show"/>
+                <field name="po_state" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="history_report_credit_note_view_tree" model="ir.ui.view">
+        <field name="name">history.report.credit.note.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="invoice_date" optional="show"/>
+                <field name="invoice_number" optional="show" column_invisible="1"/>
+                <field name="invoice_id" widget="many2one_clickable" optional="show" string="Invoice number"/>
+                <field name="partner_id" string="Invoice Partner Display Name" optional="show"/>
+                <field name="cso_reference" optional="show"/>
+                <field name="sale_order_id" string="Sales Order Reference" optional="show"/>
+                <field name="rma_id" optional="show"/>
+                <field name="barcode" optional="show"/>
+                <field name="description" string="Product Name" optional="show"/>
+                <field name="list_price" optional="show"/>
+                <field name="quantity" optional="show"/>
+                <field name="price_subtotal" optional="show"/>
+                <field name="company_id" optional="show"/>
+                <field name="invoice_state" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="history_report_bill_view_tree" model="ir.ui.view">
+        <field name="name">history.report.bill.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="invoice_date" optional="show" string="Invoice/Bill Date"/>
+                <field name="invoice_id" widget="many2one_clickable" optional="show" string="Number"/>
+                <field name="bill_ref" optional="show" string="Bill Reference"/>
+                <field name="partner_id" string="Invoice Partner Display Name" optional="show" />
+                <field name="po_ref" optional="show" string="PO Reference"/>
+                <field name="barcode" optional="show" string="ISBN"/>
+                <field name="description" string="Invoice lines/Product" optional="show" />
+                <field name="currency_id" optional="show" string="Currency"/>
+                <field name="list_price" optional="show" string="Invoice lines/Unit Price"/>
+                <field name="discount" optional="show" string="Discount"/>
+                <field name="price_unit" optional="show" string="List Price"/>
+                <field name="quantity" optional="show" string="Invoice lines/Quantity"/>
+                <field name="vat_amount" optional="show" string="VAT"/>
+                <field name="price_subtotal" optional="show" string="Invoice lines/Subtotal"/>
+                <field name="product_weight" optional="show" string="Product Weight"/>
+                <field name="tracking_number" optional="show" string="Tracking Number"/>
+                <field name="ship_number" optional="show" string="Ship No."/>
+                <field name="carrier_tracking" optional="show" string="Delivery Method"/>
+                <field name="his_total_ship_kgs" optional="show" string="Total Shipping Charges- Per Kgs"/>
+                <field name="his_cons_weight" optional="show" string="Consolidated Weight"/>
+                <field name="company_id" optional="show" string="Company"/>
+                <field name="invoice_state" optional="show" string="Status"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="history_report_delivery_note_view_tree" model="ir.ui.view">
+        <field name="name">history.report.delivery.note.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="scheduled_date" optional="show" string="Date"/>
+                <field name="delivery_reference" optional="show" column_invisible="1"/>
+                <field name="delivery_note_id" widget="many2one_clickable" optional="show" string="Reference"/>
+                <field name="order_reference" optional="show" string="Source"/>
+                <field name="partner_id" string="Contact" optional="show" />
+                <field name="carrier_tracking_ref" optional="show" />
+                <field name="barcode" optional="show" string="Barcode"/>
+                <field name="description" string="Product" optional="show"/>
+                <field name="location_id"  optional="show"/>
+                <field name="price_unit" optional="show" string="Sales Price"/>
+                <field name="quantity" optional="show" string="Quantity"/>
+                <field name="company_id" optional="show" string="Company"/>
+                <field name="picking_state" optional="show" string="Status"/>
+             </list>
+        </field>
+    </record>
+
+
+    <record id="history_report_vendor_credit_view_tree" model="ir.ui.view">
+        <field name="name">history.report.vendor.credit.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="invoice_date" optional="show" string="Date"/>
+<!--                <field name="invoice_number" optional="show" string="Number"/>-->
+                <field name="invoice_id" widget="many2one_clickable" optional="show" string="Number"/>
+                <field name="partner_id" string="Invoice Partner Display Name" optional="show"/>
+                <field name="bill_reference" optional="show" string="Bill Reference"/>
+                <field name="rma_id" optional="show" string="RMA No."/>
+                <field name="barcode" optional="show" string="ISBN"/>
+                <field name="description" string="Invoice lines/Product" optional="show"/>
+                <field name="price_unit" optional="show" string="Invoice lines/Unit Price"/>
+                <field name="quantity" optional="show" string="Invoice lines/Quantity"/>
+                <field name="price_subtotal" optional="show" string="Invoice lines/Subtotal"/>
+                <field name="company_id" optional="show" string="Company"/>
+                <field name="invoice_state" optional="show" string="Status"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="history_report_grn_view_tree" model="ir.ui.view">
+        <field name="name">history.report.grn.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="scheduled_date" optional="show" string="Date"/>
+                <field name="delivery_note_id" widget="many2one_clickable" optional="show" string="Reference"/>
+                <field name="order_reference" optional="show" string="Source"/>
+                <field name="partner_id" string="Contact" optional="show" />
+                <field name="customer_name" optional="show" />
+                <field name="customer_sales_order" optional="show" />
+                <field name="carrier_tracking_ref" optional="show" string="Tracking(AWB)" column_invisible="1"/>
+                <field name="grn_tracking_number_id"  optional="show" />
+                <field name="barcode" optional="show" string="Barcode"/>
+                <field name="description" string="Product" optional="show"/>
+                <field name="location_id"  optional="show" string="To Location"/>
+                <field name="landed_cost"  optional="show" />
+                <field name="quantity" optional="show" string="Done Qty"/>
+                <field name="company_id" optional="show" string="Company"/>
+                <field name="picking_state" optional="show" string="Status"/>
+             </list>
+        </field>
+    </record>
+
+    <record id="history_report_inventory_adjustment_view_tree" model="ir.ui.view">
+        <field name="name">history.report.inventory.adjustment.tree</field>
+        <field name="model">history.report</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="date" optional="show"/>
+                <field name="reference" optional="show"/>
+                <field name="value_adjustment" optional="show" string="Value Adjustment"/>
+                <field name="quantity" optional="show" string="Quantity Adjustment"/>
+                <field name="barcode" optional="show" string="Barcode"/>
+                <field name="description" optional="show" string="Product"/>
+                <field name="location_id" optional="show"/>
+                <field name="location_dest_id" optional="show"/>
+                <field name="cost" optional="show"/>
+                <field name="quantity" optional="show" string="Quantity"/>
+                <field name="company_id" optional="show"/>
+                <field name="stock_move_line_state" optional="show"/>
+                <field name="product_id" column_invisible="1" />
+            </list>
+        </field>
+    </record>
+
+</odoo>

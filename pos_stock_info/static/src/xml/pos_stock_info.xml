@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ProductInfoPopup"
+       t-inherit="point_of_sale.ProductInfoPopup" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('section-financials')]" position="before">
+             <div class="section-financials">
+                <div class="section-title">
+                    <span>Current Location Stock</span>
+                    <div class="section-title-line"></div>
+                </div>
+                <div class="section-inventory-body">
+                    <table class="mobile-table">
+                        <tr>
+                            <td><t t-esc="productInfo.location_name"/>:</td>
+                            <td><t t-esc="productInfo.qty_available"/>  <t t-esc="productInfo.uom_name"/> available</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

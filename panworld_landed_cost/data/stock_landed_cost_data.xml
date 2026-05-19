@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <data noupdate="1"> -->
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value
+                eval="[('name','=','seq_stock_landed_costs'),('module','=','stock_landed_costs')]"
+            />
+        </function>
+        <value eval=" {'noupdate': False} " />
+    </function>
+    <record id="stock_landed_costs.seq_stock_landed_costs" model="ir.sequence">
+        <field name="prefix">LCO%(y)s%(month)s</field>
+    </record>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value
+                eval="[('name','=','seq_stock_landed_costs'),('module','=','stock_landed_costs')]"
+            />
+        </function>
+        <value eval=" {'noupdate': True} " />
+    </function>
+</odoo>

@@ -1,0 +1,29 @@
+<odoo>
+    <data>
+        <record id="partner_ledger_send_mail_wizard" model="ir.ui.view">
+            <field name="name">partner_ledger.mail.wizard.view.form</field>
+            <field name="model">partner.ledger.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import User">
+                    <sheet>
+                        <group>
+                            <field name="user_email"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="send_mail_wiz" string="Send" type="object" class="oe_highlight"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="partner_ledger_send_mail_wizard_action" model="ir.actions.act_window">
+            <field name="name">Send Mail</field>
+            <field name="res_model">partner.ledger.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="panworld_email_configuration.partner_ledger_send_mail_wizard"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

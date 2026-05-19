@@ -1,0 +1,6 @@
+id,Sequence,Sales Team,Team Leader,Company
+sale_team_school,0,Schools,,
+sale_team_high_edu,1,Higher Education ,,
+sale_team_corporate,2,Corporate,,
+sale_team_wholesaler,3,Wholesaler,,
+sale_team_corporate_sale,4,Corporate Sales,,

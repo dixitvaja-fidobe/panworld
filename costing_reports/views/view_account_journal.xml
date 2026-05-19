@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_costing_form" model="ir.ui.view">
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='bank_account']/group/group" position="inside">
+                <field name="shipping_bill" invisible="type != 'purchase'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

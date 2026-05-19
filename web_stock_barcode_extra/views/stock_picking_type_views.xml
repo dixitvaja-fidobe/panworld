@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Update the Barcode Operations Dashboard action to group by Warehouse by default -->
+    <record id="stock_barcode.stock_picking_type_action_kanban" model="ir.actions.act_window">
+        <field name="context">{'search_default_groupby_warehouse_id': 1}</field>
+    </record>
+
+    <!-- Update the standard Inventory Overview action to group by Warehouse by default -->
+    <record id="stock.stock_picking_type_action" model="ir.actions.act_window">
+        <field name="context">{'search_default_groupby_warehouse_id': 1}</field>
+    </record>
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--    <record id="action_report_panworld_saudi_arabic" model="ir.actions.report">-->
+<!--        <field name="name">Saudi Arabia - Invoice</field>-->
+<!--        <field name="model">account.move</field>-->
+<!--        <field name="report_type">qweb-pdf</field>-->
+<!--        <field name="report_name">panworld_saudi_arabic_invoice.report_invoice_panworld_saudi</field>-->
+<!--        <field name="report_file">panworld_saudi_arabic_invoice.report_invoice_panworld_saudi</field>-->
+<!--        <field name="print_report_name">'Saudi Arabia_Invoice &amp; Credit Note%s' % (object.name)</field>-->
+<!--        <field name="binding_view_types">form</field>-->
+<!--        <field name="binding_model_id" ref="account.model_account_move"/>-->
+<!--    </record>-->
+</odoo>

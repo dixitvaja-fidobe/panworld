@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+panworld_history.access_res_history,access_res_history,panworld_history.model_res_history,base.group_user,1,1,0,0
+access_history_report,access_history_report,panworld_history.model_history_report,base.group_user,1,1,1,1
+access_res_history_report,access_res_history_report,panworld_history.model_res_history_report,base.group_user,1,1,1,1

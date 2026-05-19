@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_choose_delivery_carrier_view_form" model="ir.ui.view">
+        <field name="name">purchase.choose.delivery.carrier.form</field>
+        <field name="model">purchase.choose.delivery.carrier</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name='available_carrier_ids' invisible="1" />
+                <group>
+                    <group>
+                        <field
+                            name="carrier_id"
+                            domain="[('carrier_type','=','purchase'),
+                                    ('id', 'in', available_carrier_ids)]"
+                            readonly="0"
+                            force_save="1"
+                        />
+                        <field name="delivery_type" invisible="1" />
+                        <field name="purchase_currency_id" invisible="1" />
+                        <field name="purchase_order_id" invisible="1" />
+                        <field name='delivery_price' invisible="1" />
+                        <field name="consolidated_weight" force_save="1" />
+                        <field name="delivery_weight" readonly="1" force_save="1" />
+                        <label for="display_price" />
+                        <div class="o_row">
+                            <field
+                                name='display_price'
+                                widget="monetary"
+                                options="{'currency_field': 'purchase_currency_id'}"
+                                invisible="carrier_id == False"
+                                force_save="1"
+                            />
+                            <button
+                                name="update_price"
+                                type="object"
+                                invisible="delivery_type in ('fixed', 'base_on_rule')">
+                                <i class="fa fa-arrow-right mr-1" />Get rate
+                            </button>
+                        </div>
+                    </group>
+                </group>
+                <div
+                    role="alert"
+                    class="alert alert-warning"
+                    invisible="invoicing_message == ''">
+                    <field name="invoicing_message" nolabel="1" />
+                </div>
+                <div
+                    role="alert"
+                    class="alert alert-info"
+                    invisible="delivery_message == False"
+                >
+                    <field name="delivery_message" nolabel="1" />
+                </div>
+                <footer>
+                    <button
+                        name="button_confirm"
+                        invisible="not context.get('carrier_recompute')"
+                        type="object"
+                        string="Update"
+                        class="btn-primary"
+                        data-hotkey="q"
+                    />
+                    <button
+                        name="button_confirm"
+                        invisible="context.get('carrier_recompute')"
+                        type="object"
+                        string="Add"
+                        class="btn-primary"
+                        data-hotkey="q"
+                    />
+                    <button
+                        string="Discard"
+                        special="cancel"
+                        data-hotkey="z"
+                        class="btn-secondary"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

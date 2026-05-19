@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+panworld_products.access_product_sub_category,access_product_sub_category,panworld_products.model_product_sub_category,base.group_user,1,1,1,1
+access_product_subtitle,access.product.subtitle,model_product_subtitle,,1,1,1,1
+access_product_subject,access.product.subject,model_product_subject,,1,1,1,1
+access_product_grade,access.product.grade,model_product_grade,,1,1,1,1
+access_product_classification,access.product.classification,model_product_classification,,1,1,1,1

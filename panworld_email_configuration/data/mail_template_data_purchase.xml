@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data"  search="[('name', '=', 'email_template_edi_purchase'), ('module', '=', 'purchase')]"/>
+        <value eval="{
+            'noupdate': False,
+        }"/>
+    </function>
+
+    <record id="purchase.email_template_edi_purchase" model="mail.template">
+        <field name="report_template_ids" eval="[]"/>
+        <field name="name"></field>
+    </record>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data"  search="[('name', '=', 'email_template_edi_purchase'), ('module', '=', 'purchase')]"/>
+        <value eval="{
+            'noupdate': True,
+        }"/>
+    </function>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data"  search="[('name', '=', 'email_template_edi_purchase_done'), ('module', '=', 'sale')]"/>
+        <value eval="{
+            'noupdate': False,
+        }"/>
+    </function>
+
+    <record id="purchase.email_template_edi_purchase_done" model="mail.template">
+        <field name="report_template_ids" eval="[]"/>
+        <field name="name"></field>
+    </record>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data"  search="[('name', '=', 'email_template_edi_purchase_done'), ('module', '=', 'sale')]"/>
+        <value eval="{
+            'noupdate': True,
+        }"/>
+    </function>
+
+     <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('name', '=', 'email_template_edi_purchase_reminder'), ('module', '=', 'sale')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+
+    <record id="purchase.email_template_edi_purchase_reminder" model="mail.template">
+        <field name="report_template_ids" eval="[]"/>
+        <field name="name"></field>
+    </record>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('name', '=', 'email_template_edi_purchase_reminder'), ('module', '=', 'sale')]"/>
+        </function>
+        <value eval="{'noupdate': True}"/>
+    </function>
+</odoo>

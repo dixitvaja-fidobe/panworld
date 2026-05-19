@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">res.partner.panworld.sale.inherited</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_account_receivable_id']" position="before">
+                <field name="allow_ar_ap"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="res_partner_form_panworld_account_inherited" model="ir.ui.view">
+        <field name="name">res.partner.panworld.sale.inherited</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <field name="property_delivery_carrier_id" position="before">
+                <field name="journal_id"/>
+            </field>
+            <field name="property_delivery_carrier_id" position="after">
+                <field name="responsible_user"/>
+            </field>
+            <xpath expr="//page[@name='sales_purchases']//group[@name='purchase']" position="inside">
+                <field name="vendor_responsible_user"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="res_partner_view_form_panworld_account" model="ir.ui.view">
+        <field name="name">partner.view.form.panworld.account</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" type="object" name="action_show_def_expenses"
+                    icon="fa-money">
+                    <field string="Def.Expenses" name="def_expense_count" widget="statinfo"/>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

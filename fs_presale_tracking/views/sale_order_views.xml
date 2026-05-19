@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sale Order Form View Extension -->
+    <record id="sale_order_form_presale_tracking" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.presale.tracking</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_create_purchase_rfqs_intercom" string="Create Purchase RFQs" type="object"
+                        class="oe_highlight"
+                        invisible="not is_intercompany or rfq_exists or state == 'cancel'"
+                        groups="fs_presale_tracking.group_purchase_supervisor"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_presale_tracking"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-bullseye"
+                    invisible="not presale_tracking_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Presale Tracker</span>
+                    </div>
+                </button>
+            </xpath>
+            <field name="client_order_ref" position="after">
+                <field name="presale_tracking_id" readonly="1"/>
+                <field name="is_intercompany" invisible="1"/>
+                <field name="rfq_exists" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Sale Order List View Extension -->
+    <record id="sale_order_tree_presale_tracking" model="ir.ui.view">
+        <field name="name">sale.order.list.inherit.presale.tracking</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="client_order_ref" position="after">
+                <field name="presale_tracking_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="sale_order_view_form_presale_tracking" model="ir.ui.view">
+        <field name="name">sale.order.form.project.inherit.presale.tracking</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="fs_sale_project_tracking.sale_order_view_form_tracking"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tracking_project_id']" position="attributes">
+                <attribute name="required">presale_tracking_id != False</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Sample Sale Orders Action -->
+    <record id="action_sale_order_sample" model="ir.actions.act_window">
+        <field name="name">Sample SOs</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,calendar,pivot,graph,activity</field>
+        <field name="domain">[('is_sample_so', '=', True)]</field>
+        <field name="context">{'default_is_sample_so': True, 'from_sample_so_menu': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Sample Sale Order
+            </p>
+            <p>
+                Create sample orders without requiring a Presale Tracker.
+            </p>
+        </field>
+    </record>
+
+    <!-- Sample Sale Orders Menu -->
+    <menuitem id="menu_sale_order_sample"
+              name="Sample SOs"
+              parent="sale.sale_order_menu"
+              action="action_sale_order_sample"
+              groups="fs_presale_tracking.group_sample_so_user"
+              sequence="11"/>
+
+</odoo>
+

@@ -1,0 +1,5 @@
+<odoo>
+    <record model="res.groups" id="bill_line_update">
+        <field name="name">Bill/Invoice Line Update</field>
+    </record>
+</odoo>

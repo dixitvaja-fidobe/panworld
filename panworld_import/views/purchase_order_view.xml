@@ -1,0 +1,31 @@
+<odoo>
+    <record id="view_purchase_form_import_panworld" model="ir.ui.view">
+        <field name="name">purchase.form.import.panworld</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_confirm']" position="after">
+                <button
+                    name="%(panworld_import.import_data_action)d"
+                    string="Import Order Lines"
+                    type="action"
+                    invisible="state != 'draft'"
+                    context="{
+                        'default_model_name': context.get('active_model'),
+                        'default_model_id': context.get('id'),
+                    }"
+                />
+                <button
+                    name="%(panworld_import.import_data_action)d"
+                    string="Update Order Lines"
+                    type="action"
+                    context="{
+                        'default_model_name': context.get('active_model'),
+                        'default_model_id': context.get('id'),
+                    }"
+                    invisible="state not in ('sent', 'to approve', 'purchase')"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

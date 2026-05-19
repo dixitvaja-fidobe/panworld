@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--Form View: RMA Form view-->
+    <record id="exchange_rma_ret_mer_auth_form" model="ir.ui.view">
+        <field name="name">exchange.rma.ret.mer.auth.form</field>
+        <field name="model">rma.ret.mer.auth</field>
+        <field name="arch" type="xml">
+            <form string="RMA" class="o_sale_order">
+                <header>
+                    <button
+                        name="rma_submit"
+                        invisible="state != 'new'"
+                        string="Submit"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="create_receive_picking"
+                        invisible="state != 'verification'"
+                        string="Approve RMA"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="rma_approve"
+                        invisible="state != 'resolved' or type == 'exchange'"
+                        string="Approve"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="rma_close"
+                        invisible="state != 'approve'"
+                        string="Done"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="rma_set_draft"
+                        invisible="state in ['new', 'approve', 'close', 'cancelled']"
+                        string="Set To Draft"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="rma_cancel"
+                        string="Cancel"
+                        type="object"
+                        invisible="state == 'cancelled'"
+                    />
+                    <button
+                        name="create_so_lines"
+                        string="Create SO Line"
+                        type="object"
+                        invisible="state != 'close' or so_lines_created == True"
+                    />
+                    <button
+                        name="rma_lines_set_qty_zero"
+                        string="Reset Product Qty"
+                        type="object"
+                        confirm="The Return Qty will be reset to zero for all the products. Are you sure?"
+                        invisible="state != 'new'"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="new,verification,approve,close"
+                    />
+                </header>
+                <sheet string="RMA">
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            type="object"
+                            name="count_stock_picking"
+                            class="oe_stat_button"
+                            icon="fa-truck"
+                            invisible="state in ('new','verification')"
+                        >
+                            <field
+                                name="pick_count"
+                                widget="statinfo"
+                                string="Reverse Picking"
+                            />
+                        </button>
+                        <button
+                            type="object"
+                            name="count_invoice_ids"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            invisible="state in ('new','verification')"
+                        >
+                            <field
+                                name="inv_count"
+                                widget="statinfo"
+                                string="Invoices"
+                            />
+                        </button>
+                        <button
+                            type="object"
+                            name="action_get_sale_order"
+                            class="oe_stat_button"
+                            icon="fa-file-text"
+                            invisible="state not in ('close') or sale_order_id == False">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Linked SO</span>
+                            </div>
+                        </button>
+<!--                        <button-->
+<!--                            type="object"-->
+<!--                            name="action_get_linked_pickings"-->
+<!--                            class="oe_stat_button"-->
+<!--                            icon="fa-truck"-->
+<!--                            invisible="state not in ('close') or sale_order_id == False or so_lines_created == False">-->
+<!--                            <div class="o_stat_info">-->
+<!--                                <span class="o_stat_text">Pickings</span>-->
+<!--                            </div>-->
+<!--                        </button>-->
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" force_save="1" />
+                        </h1>
+                    </div>
+                    <group name="rma_header">
+                        <group name="rma_details">
+                            <field
+                                name="rma_type"
+                                widget="radio"
+                                readonly="state != 'new'"
+                            />
+                            <field
+                                name="partner_id"
+                                required="rma_type in  ('customer', 'sale_direct')"
+                                invisible="rma_type in ('supplier' , 'picking' ,'lot', 'invoice', 'direct')"
+                                readonly="state != 'new'"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="supplier_id"
+                                required="rma_type in  ('supplier', 'direct')"
+                                invisible="rma_type in ('customer' ,'picking','lot', 'sale_direct')"
+                                readonly="state != 'new'"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="picking_partner_id"
+                                required="rma_type == 'picking'"
+                                invisible="rma_type in ('customer' , 'supplier','lot', 'invoice', 'direct', 'sale_direct')"
+                                readonly="state != 'new'"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field name="currency_id" invisible="1" force_save="1" />
+                            <field name="company_id" invisible="1" />
+                            <field
+                                name="sale_order_id"
+                                domain="[('partner_id', '=',partner_id), ('state', '=','sale'), ('picking_ids.state', '=','done'), ('rma_done', '=', False)]"
+                                invisible="rma_type in ('picking','supplier','lot', 'invoice', 'direct', 'sale_direct')"
+                                required="rma_type == 'customer'"
+                                readonly="state != 'new'"
+                                options="{'no_create': True}"
+                            />
+                            <field
+                                name="purchase_order_id"
+                                domain="[('partner_id', '=',supplier_id), ('state', 'in',['purchase', 'done']), ('picking_ids.state', '=','done'), ('rma_done', '=', False)]"
+                                invisible="rma_type in ('customer','picking','lot', 'invoice', 'direct', 'sale_direct')"
+                                required="rma_type == 'supplier'"
+                                readonly="state != 'new'"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="picking_rma_id"
+                                domain="[
+                                ('state', '=', 'done'), ('partner_id', '=', picking_partner_id), ('rma_done', '=', False)
+                                ]"
+                                invisible="rma_type in ('customer','supplier','lot', 'invoice', 'direct', 'sale_direct')"
+                                required="rma_type == 'picking'"
+                                readonly="state != 'new'"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="lot_picking_id"
+                                domain="[('origin', 'ilike', 'RMA'),
+                                ('state', '=', 'done'), ('partner_id', '=', picking_partner_id), ('rma_done', '=', False)
+                                ]"
+                                invisible="rma_type in ('customer','supplier', 'picking', 'invoice', 'direct', 'sale_direct')"
+                                readonly="state != 'new'"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <label for="rma_lot" invisible="rma_type in ('customer' , 'supplier', 'picking', 'invoice', 'direct', 'sale_direct')"/>
+                            <div name="rma_lot_info" class="o_row">
+                                <div class="o_col-6"> <!-- Adjust size here -->
+                                    <field name="rma_lot"
+                                           required="rma_type == 'lot'"
+                                           invisible="rma_type in ('customer' , 'supplier', 'picking', 'invoice', 'direct', 'sale_direct')"
+                                           readonly="state != 'new'"/>
+                                </div>
+                                <div class="o_col-6">
+                                    <button
+                                        name="check_serial"
+                                        class="btn btn-primary"
+                                        string="Check Serial No"
+                                        type="object"
+                                        invisible="rma_type in ('customer' , 'supplier', 'picking', 'invoice', 'direct', 'sale_direct') or state != 'new'"
+                                        readonly="state != 'new'"
+                                    />
+                                </div>
+                            </div>
+                            <field name="picking_customer_id" invisible="1" />
+                            <field name="picking_supplier_id" invisible="1" />
+                        </group>
+                        <group name="order_details">
+                            <field
+                                name="rma_date"
+                                readonly="state != 'new'"
+                            />
+                            <field name="invoice_status" readonly="1" force_save="1" />
+                            <field name="so_lines_created" readonly="1" force_save="1" />
+                            <field name="type" invisible="1" />
+                            <field
+                                name="pick_origin"
+                                invisible="rma_type in ('customer','supplier','lot')"
+                                readonly="1"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!--Sale Order Lines-->
+                        <page string="Order Lines"
+                            name="order_lines"
+                            invisible="rma_type in ('supplier', 'picking', 'lot', 'invoice', 'direct', 'sale_direct')">
+                            <field name="rma_sale_lines_ids"
+                                nolabel="1"
+                                readonly="state not in ('new','verification')"
+                                context="{'rma_so_line': True}"
+                                default_focus="1">
+                                <list create="false">
+                                    <field
+                                        name="product_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="type" optional="hide"/>
+                                    <field
+                                        name="source_location_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="destination_location_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="analytic_account_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="order_quantity" />
+                                    <field name="delivered_quantity" />
+                                    <field name="refund_qty" required="1" />
+                                    <field name="price_unit" />
+                                    <field name="landed_cost" optional="hide"/>
+                                    <field name="marketplace_cost" optional="hide"/>
+                                    <field name="shipping_cost" optional="hide"/>
+                                    <field name="other_cost" optional="hide"/>
+                                    <field name="subtotal_cost" optional="hide"/>
+                                    <field
+                                        name="reason_id"
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="tax_id"
+                                        widget="many2many_tags"
+                                        domain="[('type_tax_use','=','sale')]"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="discount" string="Disc.%" />
+                                    <field name="price_tax" column_invisible="1" />
+                                    <field
+                                        name="refund_price"
+                                        required="1"
+                                        force_save="1"
+                                    />
+                                </list>
+                            </field>
+                            <group col="6" class="mt-2 mt-md-0">
+                            <group
+                                col="6"
+                                class="oe_subtotal_footer mt-2 mt-md-0"
+                                name="sale_total_rma"
+                            >
+                                <field
+                                    name="amount_untaxed"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                                <field name="amount_tax"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                                <div class="o_td_label">
+                                    <label for="amount_total" />
+                                </div>
+                                <field
+                                    name="amount_total"
+                                    nolabel="1"
+                                    class="oe_subtotal_footer"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                            </group>
+                            </group>
+                        </page>
+                        <!--Purchase Order Lines-->
+                        <page
+                            string="Purchase Lines"
+                            name="purchase_order_lines"
+                            invisible="rma_type in ('customer', 'picking', 'lot', 'invoice', 'direct', 'sale_direct')"
+                        >
+                            <field
+                                name="rma_purchase_lines_ids"
+                                nolabel="1"
+                                context="{'rma_purchase_line': True}"
+                                readonly="state not in ('new','verification')"
+                                default_focus="1"
+                            >
+
+                            </field>
+                            <group col="6" class="mt-2 mt-md-0">
+                            <group
+                                class="oe_subtotal_footer oe_right"
+                                col="6"
+                                name="purchase_total_rma"
+                            >
+                                <field
+                                    name="purchase_amount_untaxed"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                                <field
+                                    name="purchase_amount_tax"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                                <div
+                                    class="o_td_label"
+                                >
+                                    <label for="purchase_amount_total" />
+                                </div>
+                                <field
+                                    name="purchase_amount_total"
+                                    nolabel="1"
+                                    class="oe_subtotal_footer"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                            </group>
+                            </group>
+                        </page>
+                        <!--Sale Order Direct lines-->
+                        <page
+                            string="Order Lines"
+                            name="direct_sale_order_lines"
+                            invisible="rma_type in ('customer', 'picking', 'lot', 'supplier', 'invoice', 'direct')">
+                            <field
+                                name="rma_sale_direct_lines_ids"
+                                nolabel="1"
+                                context="{'rma_sale_direct_line': True}"
+                                readonly = "state not in ('new','verification')"
+                                default_focus="1"
+                            >
+                            </field>
+                            <group col="6" class="mt-2 mt-md-0">
+                            <group
+                                class="oe_subtotal_footer oe_right"
+                                col="6"
+                                name="sale_direct_total_rma"
+                            >
+                                <field
+                                    name="amount_untaxed"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                                <field
+                                    name="amount_tax"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                                <div class="o_td_label">
+                                    <label for="amount_total" />
+                                </div>
+                                <field
+                                    name="amount_total"
+                                    nolabel="1"
+                                    class="oe_subtotal_footer"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                            </group>
+                            </group>
+                        </page>
+                        <!--Purchase Direct Lines-->
+                        <page
+                            string="Order Lines"
+                            name="direct_order_lines"
+                            invisible="rma_type in ('customer', 'picking', 'lot', 'supplier', 'invoice', 'sale_direct')"
+                        >
+                            <field
+                                name="rma_direct_lines_ids"
+                                nolabel="1"
+                                context="{'rma_direct_line': True}"
+                                readonly="state not in ('new','verification')"
+                                default_focus="1"
+                            >
+                            </field>
+                            <group col="6" class="mt-2 mt-md-0">
+                            <group
+                                class="oe_subtotal_footer oe_right"
+                                colspan="2"
+                                name="purchase_total_rma"
+                            >
+                                <field
+                                    name="purchase_amount_untaxed"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                                <field
+                                    name="purchase_amount_tax"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                                <div class="o_td_label">
+                                    <label for="purchase_amount_total" />
+                                </div>
+                                <field
+                                    name="purchase_amount_total"
+                                    nolabel="1"
+                                    class="oe_subtotal_footer"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                            </group>
+                            </group>
+                        </page>
+                        <!--Invoice Lines-->
+                        <page
+                            string="Order Lines"
+                            name="inv_order_lines"
+                            invisible="rma_type in ('customer', 'picking', 'lot', 'supplier', 'direct', 'sale_direct')"
+                        >
+                            <field
+                                name="rma_inv_lines_ids"
+                                nolabel="1"
+                                context="{'rma_inv_line': True}"
+                                default_focus="1"
+                            >
+                                <list create="false">
+                                    <field name="product_id" required="True" />
+                                    <field name="type" />
+                                    <field
+                                        name="source_location_id"
+                                        required="True"
+                                        options="{'no_create': True}"
+                                    />
+                                    <field
+                                        name="destination_location_id"
+                                        required="True"
+                                        options="{'no_create': True}"
+                                    />
+                                    <field name="price_unit" />
+                                    <field name="order_quantity" />
+                                    <field name="delivered_quantity" />
+                                    <field name="refund_qty" required="1" />
+                                    <field name="reason_id" column_invisible="1" />
+                                    <field
+                                        name="tax_id"
+                                        widget="many2many_tags"
+                                        domain="[('type_tax_use','=','purchase')]"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="price_tax" column_invisible="1" />
+                                    <field name="refund_price" required="1" force_save="1" />
+                                </list>
+                                <form>
+                                    <sheet string="RMA Supplier">
+                                        <group>
+                                            <group>
+                                                <field name="product_id" />
+                                                <field name="tax_id" widget="many2many_tags" />
+                                                <field name="type" required="1" />
+                                                <field name="refund_qty" required="1" />
+                                                <field
+                                                    name="order_quantity"
+                                                    required="1"
+                                                />
+                                                <field
+                                                    name="delivered_quantity"
+                                                    required="1"
+                                                />
+                                            </group>
+                                            <group>
+                                                <field name="reason_id" />
+                                                <field name="source_location_id"/>
+                                                <field
+                                                    name="destination_location_id"
+                                                />
+                                            </group>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                            <group col="6" class="mt-2 mt-md-0">
+                            <group
+                                class="oe_subtotal_footer oe_right"
+                                colspan="2"
+                                name="purchase_total_rma"
+                            >
+                                <field
+                                    name="purchase_amount_untaxed"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                                <field
+                                    name="purchase_amount_tax"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                                <div class="o_td_label">
+                                    <label for="purchase_amount_total" />
+                                </div>
+                                <field
+                                    name="purchase_amount_total"
+                                    nolabel="1"
+                                    class="oe_subtotal_footer"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                            </group>
+                            </group>
+                        </page>
+                        <!--Picking Lines-->
+                        <page
+                            string="Order Lines"
+                            name="order_lines"
+                            invisible="rma_type in ('customer', 'supplier', 'invoice', 'direct', 'sale_direct')"
+                            autofocus="autofocus"
+                        >
+                            <field
+                                name="rma_picking_lines_ids"
+                                nolabel="1"
+                                readonly="state not in ('new','verification')"
+                                context="{'rma_picking_line': True}"
+                                default_focus="1"
+                            >
+                                <list create="false">
+                                    <field
+                                        name="product_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="type" optional="hide"/>
+                                    <field
+                                        name="source_location_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="destination_location_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="order_quantity" />
+                                    <field name="delivered_quantity" />
+                                    <field name="refund_qty" />
+                                    <field name="price_unit"/>
+                                    <field
+                                        name="reason_id"
+                                        column_invisible="1"
+                                    />
+                                    <field
+                                        name="tax_id"
+                                        widget="many2many_tags"
+                                        domain="[('type_tax_use','=','sale')]"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="discount" string="Disc.%" />
+                                    <field name="price_tax" column_invisible="1" />
+                                    <field
+                                        name="refund_price"
+                                        required="1"
+                                        force_save="1"
+                                    />
+                                </list>
+                            </field>
+                            <group col="6" class="mt-2 mt-md-0">
+                            <group
+                                class="oe_subtotal_footer oe_right"
+                                colspan="2"
+                                name="sale_total_rma"
+                            >
+                                <field
+                                    name="picking_amount_untaxed"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                                <field
+                                    name="picking_amount_tax"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                />
+                                <div
+                                    class="o_td_label"
+                                >
+                                    <label for="picking_amount_total" />
+                                </div>
+                                <field
+                                    name="picking_amount_total"
+                                    nolabel="1"
+                                    class="oe_subtotal_footer"
+                                    widget='monetary'
+                                    options="{'currency_field': 'currency_id'}"
+                                    force_save="1"
+                                />
+                            </group>
+                            </group>
+                        </page>
+                        <page
+                            string="Internal Notes"
+                            name="notes">
+                            <group >
+                                <field name="problem" placeholder="Internal notes..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <!--Tree View: RMA Tree view-->
+    <record id="exchange_rma_ret_mer_auth_tree" model="ir.ui.view">
+        <field name="name">exchange.rma.ret.mer.auth.tree</field>
+        <field name="model">rma.ret.mer.auth</field>
+        <field name="arch" type="xml">
+            <list string="RMA">
+                <field name="name" />
+                <field name="rma_date" />
+                <field name="picking_customer_id" />
+                <field name="picking_supplier_id" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state == 'close'"
+                    decoration-primary="state == 'approve'"
+                    decoration-warning="state == 'verification'"
+                    decoration-info="state == 'new' or state == 'resolved'"
+                />
+            </list>
+        </field>
+    </record>
+    <!--Search View: RMA search view-->
+    <record id="rma_ret_mer_auth_search" model="ir.ui.view">
+        <field name="name">rma.ret.mer.auth.search</field>
+        <field name="model">rma.ret.mer.auth</field>
+        <field name="arch" type="xml">
+            <search string="Search RMA">
+                <field name="name" />
+                <filter
+                    name="cancel_state"
+                    string="Done RMA"
+                    domain="[('state', '=', 'close')]"
+                />
+                <filter
+                    name="draft_state"
+                    string="New RMA"
+                    domain="[('state', '=', 'new')]"
+                />
+                <filter
+                    name="imported_rma"
+                    string="Ecommerce Sales Return"
+                    domain="[('is_imported', '=', True)]"
+                />
+                <group>
+                    <filter
+                        name="partner_id"
+                        string="Customer"
+                        domain="[]"
+                        context="{'group_by':'partner_id'}"
+                    />
+                    <filter
+                        name="state"
+                        string="State"
+                        domain="[]"
+                        context="{'group_by':'state'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <!--Action: Action For RMA-->
+    <record id="action_rma_ret_mer_auth_rma" model="ir.actions.act_window">
+        <field name="name">RMA</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rma.ret.mer.auth</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="exchange_rma_ret_mer_auth_tree" />
+    </record>
+    <!-- Menus -->
+    <menuitem id="menu_main_rma" name="RMA" />
+    <menuitem
+        id="menu_sub_rma"
+        action="action_rma_ret_mer_auth_rma"
+        parent="menu_main_rma"
+        name="RMA"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_rma_config"
+        parent="menu_main_rma"
+        name="Configuration"
+        sequence="2"
+    />
+</odoo>

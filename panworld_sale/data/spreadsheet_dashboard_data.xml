@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Update the default Sales Dashboard with extended JSON -->
+    <record id="spreadsheet_dashboard_sale.spreadsheet_dashboard_sales" model="spreadsheet.dashboard">
+        <field name="spreadsheet_binary_data" type="base64" file="panworld_sale/data/files/sales_dashboard_extended.json"/>
+    </record>
+</odoo>

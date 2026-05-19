@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <record id="purchase_price_history_views_panworld_purchase" model="ir.ui.view">
+            <field name="name">purchase.price.history</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <list string="Purchase Price History">
+                    <field name="date_order"/>
+                    <field name="order_id"/>
+                    <field name="partner_id" string="Vendor"/>
+                    <field name="invoice_ref"/>
+                    <field name="barcode"/>
+                    <field name="name" string="Title"/>
+                    <field name="currency_id"/>
+                    <field name="list_price"/>
+                    <field name="discount"/>
+                    <field name="price_unit"/>
+                    <field name="product_qty"/>
+                    <field name="qty_received"/>
+                    <field name="qty_invoiced"/>
+                    <field name="price_subtotal"/>
+                </list>
+            </field>
+        </record>
+        <record id="purchase_price_history_search_panworld_sale" model="ir.ui.view">
+            <field name="name">purchase.order.line.search</field>
+            <field name="model">purchase.order.line</field>
+            <field name="arch" type="xml">
+                <search string="Logs">
+                    <field name="barcode" string="Product ISBN"/>
+                    <field name="order_id" string="Purchase Order Number"/>
+                    <group>
+                        <filter string="Vendor" name="vendor" domain="[]" context="{'group_by':'partner_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_purchase_price_history_panworld_purchase" model="ir.actions.act_window">
+            <field name="name">Purchase Price History</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">purchase.order.line</field>
+            <field name="view_id" ref="purchase_price_history_views_panworld_purchase"/>
+            <field name="view_mode">list</field>
+            <field name="search_view_id" ref="purchase_price_history_search_panworld_sale"/>
+            <field name="context">{'delete': 0, 'edit': 0, 'create': 0}</field>
+        </record>
+        <menuitem id="menu_purchase_price_history_panworld_purchase"
+            action="action_purchase_price_history_panworld_purchase"
+            parent="purchase.menu_procurement_management"
+            sequence="6"
+        />
+    </data>
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_picking_wizard_form" model="ir.ui.view">
+        <field name="name">fs.stock.picking.loc.quant.update.wizard.form</field>
+        <field name="model">fs.stock.picking.loc.quant.update.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Stock Picking Wizard">
+                <sheet>
+                    <group>
+                        <field name="picking_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_apply" string="Apply" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fs_stock_picking_loc_quant_update_wizard" model="ir.actions.act_window">
+        <field name="name">FS GRN Shipper Quant Update Wizard</field>
+        <field name="res_model">fs.stock.picking.loc.quant.update.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_fs_stock_picking_loc_quant_update_wizard"
+              name="FS GRN Stock Quant Update Wizard"
+              action="action_fs_stock_picking_loc_quant_update_wizard"
+              parent="stock.menu_stock_warehouse_mgmt"
+              sequence="100"
+              groups="fs_group_allow_grn_stock_quant_update"/>
+</odoo>

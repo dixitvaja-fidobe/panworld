@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fs_create_requisition_wizard_user,access.fs.create.requisition.wizard.user,model_fs_create_requisition_wizard,base.group_user,1,1,1,1
+access_fs_create_requisition_wizard_line_user,access.fs.create.requisition.wizard.line.user,model_fs_create_requisition_wizard_line,base.group_user,1,1,1,1
+

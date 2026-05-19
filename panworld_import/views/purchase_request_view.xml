@@ -1,0 +1,30 @@
+<odoo>
+    <record id="view_po_request_form_import_panworld" model="ir.ui.view">
+        <field name="name">purchase.request.form.import.panworld</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_done']" position="after">
+                <button
+                    name="%(panworld_import.import_data_action)d"
+                    string="Import Request Lines"
+                    type="action"
+                    invisible="state in ('done','rejected')"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pricelist_import_panworld" model="ir.ui.view">
+        <field name="name">pricelist.import.panworld</field>
+        <field name="model">product.pricelist</field>
+        <field name="inherit_id" ref="product.product_pricelist_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="%(panworld_import.import_data_action)d" string="Import / Update Lines" type="action"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+</odoo>

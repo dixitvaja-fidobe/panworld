@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_picking_form_inherit_panworld_panworld_sale" model="ir.ui.view">
+        <field name="name">panworld.stock.picking.form.panworld_sale</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='weight']" position="after">
+                <field name="analytic_account_id"/>
+                <field name="division_type_id"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Inherited stock picking search -->
+    <record id="view_picking_internal_search_panworld_sale" model="ir.ui.view">
+        <field name="name">stock.picking.search</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <field name="picking_type_id" position="after">
+                <field name="division_type_id"/>
+            </field>
+            <filter name="picking_type" position="after">
+                <filter string="Division Type" name="division_type" context="{'group_by':'division_type_id'}"/>
+            </filter>
+        </field>
+    </record>
+    <!-- Inherited stock picking list -->
+    <record id="vpicktree_inherit_panworld_sale" model="ir.ui.view">
+            <field name="name">stock.picking.tree</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree" />
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="division_type_id"/>
+                </field>
+                <field name="name" position='attributes'>
+                    <attribute name="width">150px</attribute>
+                </field>
+            </field>
+        </record>
+</odoo>

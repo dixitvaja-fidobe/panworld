@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_export_sale_xls,access_export_sale_xls,panworld_report.model_export_sale_xls,base.group_user,1,1,1,1
+access_import_transfers_wizard,access_import_transfers_wizard,panworld_report.model_import_transfers_wizard,base.group_user,1,1,1,1
+access_sale_order_status_report,access_sale_order_status_report,panworld_report.model_sale_order_status_report,base.group_user,1,1,1,1
+access_sale_xls_wizard,access_sale_xls_wizard,panworld_report.model_sale_xls_wizard,base.group_user,1,1,1,1
+access_purchase_register_report_wizard,access_purchase_register_report_wizard,panworld_report.model_purchase_register_report_wizard,base.group_user,1,1,1,1

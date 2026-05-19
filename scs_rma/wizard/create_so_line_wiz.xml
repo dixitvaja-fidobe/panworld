@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+  <record id="view_create_so_line_form" model="ir.ui.view">
+    <field name="name">create.so.line.wiz.form</field>
+      <field name="model">create.so.line.wiz</field>
+       <field name="priority" eval="8"/>
+       <field name="arch" type="xml">
+           <form string="SO Line">
+               <group>
+                   <field name="rma_id"/>
+                   <field name="sale_id"/>
+               </group>
+               <field name="wiz_line_ids">
+                    <list editable="bottom">
+                        <field name="wiz_id" column_invisible="1"/>
+                        <field name="product_id"/>
+                        <field name="product_qty"/>
+                        <field name="price_unit"/>
+                    </list>
+                </field>
+               <footer>
+                   <button name="action_create_so_line" string="Create" type="object" class="btn btn-primary"/>
+                   <button name="cancel" string="Cancel" special="cancel"/>
+               </footer>
+           </form>
+       </field>
+   </record>
+</odoo>

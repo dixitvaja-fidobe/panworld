@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Multi Search field for Product  -->
+    <record id="product_template_multi_search_view_inherit" model="ir.ui.view">
+        <field name="name">product.template.search (in product_search_multi_value)</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view" />
+        <field name="arch" type="xml">
+            <field name="categ_id" position="after">
+                <field name="search_multi" />
+            </field>
+        </field>
+    </record>
+
+    <!-- Multi Search field for Sale Order   -->
+    <record id="sale_order_multi_search_view_inherit" model="ir.ui.view">
+        <field name="name">sale.order.search (in sale_order_search_multi_value)</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="search_multi"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Multi Search field for Stock transfer   -->
+    <record id="stock_picking_multi_search_view_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.search (in stock_picking_search_multi_value)</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="search_multi"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Multi Search field for Purchase Order   -->
+    <record id="purchase_order_multi_search_view_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.search (in purchase_order_search_multi_value)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="search_multi"/>
+                <!-- <field name="order_line" string="Related So" filter_domain="[('order_line.related_so', 'ilike', self)]"/> -->
+            </field>
+        </field>
+    </record>
+
+    <!-- Multi Search field for Purchase Order RFQ  -->
+    <record id="purchase_order_rfq_multi_search_view_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.rfq.search (in purchase_order_rfq_search_multi_value)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="search_multi"/>
+                <!-- <field name="order_line" string="Related So" filter_domain="[('order_line.related_so', 'ilike', self)]"/> -->
+            </field>
+        </field>
+    </record>
+
+    <!-- Multi Search field for Invoice   -->
+    <record id="account_move_multi_search_view_inherit" model="ir.ui.view">
+        <field name="name">account.move.inherit.search (in account_move_search_multi_value)</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="search_multi_invoice"/>
+            </field>
+        </field>
+    </record>
+
+
+
+</odoo>

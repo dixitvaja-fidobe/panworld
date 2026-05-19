@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_supplierinfo_tree_presale" model="ir.ui.view">
+        <field name="name">product.supplierinfo.tree.presale</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="arch" type="xml">
+            <list string="Vendor History" create="0" delete="0" edit="0" decoration-primary="1">
+                <field name="partner_id" decoration-bf="1" class="text-primary"/>
+                <field name="price" decoration-success="1" decoration-bf="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="discount" string="Disc %" widget="badge" decoration-warning="discount > 0"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="create_date" widget="date" decoration-muted="1"/>
+            </list>
+        </field>
+    </record>
+</odoo>

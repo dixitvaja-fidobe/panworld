@@ -1,0 +1,2 @@
+from . import fs_stock_picking_loc_quant_update_wizard
+from . import fs_stock_quant_xlsx_update_wizard

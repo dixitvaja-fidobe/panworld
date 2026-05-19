@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="grn_picking_validation_mail_template" model="mail.template">
+            <field name="name">GRN Receipt Picking Notification</field>
+            <field name="model_id" ref="panworld_purchase.model_stock_picking"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to" eval="False"/>
+            <field name="subject">Sales Order SOR2300001 | Customer Name | CSO Reference | {{ object.name}} | {{
+                object.purchase_id.partner_id.name}} |
+            </field>
+
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Dear,</p>
+                    <p>Please check the material received
+                        <br/>
+                        Sales Order SOR2300001 | Customer Name | CSO Reference | GRN Number | Vendor Name |
+                        <br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[]"/>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+
+        <record id="purchase_tracker_purchase_tat_breach_mail_template" model="mail.template">
+            <field name="name">Purchase Tracker Purchase TAT Breach Notification</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to" eval="False"/>
+            <field name="subject">{{ object.po_id.name }} - become Purchase TAT breached</field>
+            <field name="model_id" ref="panworld_purchase.model_purchase_tracker_report"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>
+                        <t t-out="object.po_id.name"/>
+                        - become Purchase TAT breached
+                    </p>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[]"/>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+
+        <record id="purchase_tracker_shipping_purchase_tat_breach_mail_template" model="mail.template">
+            <field name="name">Purchase Tracker Shipping TAT Breach Notification</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to" eval="False"/>
+            <field name="subject">{{ object.po_id.name }} - become Shipping TAT breached</field>
+            <field name="model_id" ref="panworld_purchase.model_purchase_tracker_report"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>
+                        <t t-out="object.po_id.name"/>
+                        - become Shipping TAT breached
+                    </p>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[]"/>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_sample_so_company" model="ir.ui.view">
+        <field name="name">res.users.form.sample.so.company</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='access_rights']" position="inside">
+                <field name="is_sample_so_user" invisible="1"/>
+                <group string="Sample SO Companies" invisible="not is_sample_so_user">
+                    <field name="sample_so_company_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

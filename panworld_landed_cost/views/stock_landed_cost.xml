@@ -1,0 +1,131 @@
+<odoo>
+    <record id="stock_landed_cost_form_inherit" model="ir.ui.view">
+        <field name="name">panworld.stock.landed.cost.form.inherit</field>
+        <field name="model">stock.landed.cost</field>
+        <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form" />
+        <field name="arch" type="xml">
+    <button name="button_cancel" position="after">
+                <button name="compute_landed_cost" string="Compute" type="object" invisible="state != 'draft'"/>
+                <button
+                    string="Reset To Draft"
+                    name="reset_to_draft"
+                    invisible="state not in ('done', 'cancel')"
+                    type="object"
+                    class="oe_stat_button"
+                />
+            </button>
+            <xpath expr="//group[@class='oe_subtotal_footer']//button[@name='compute_landed_cost']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="string">Total in AED</attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="amount_total_currency" string="Total" readonly="1" widget="monetary" options="{'currency_field': 'vendor_currency_id'}"/>
+            </xpath>
+            <xpath expr="//div[@class='oe_title']" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <field name="payment_ids" invisible="1"/>
+                    <field name="is_payment_paid" invisible="1"/>
+                    <button type="object"
+                        name="action_view_payments"
+                        class="oe_stat_button"
+                        icon="fa-money"
+                        invisible="payment_count == 0">
+                        <field name="payment_count" widget="statinfo" string="Payments"/>
+                    </button>
+                    <button type="object"
+                        name="action_view_pickings"
+                        class="oe_stat_button"
+                        icon="fa-truck"
+                        invisible="picking_count == 0">
+                        <field name="picking_count" widget="statinfo" string="GRNs"/>
+                    </button>
+                    <button type="object"
+                        name="action_view_account_move"
+                        class="oe_stat_button"
+                        icon="fa-list"
+                        invisible="not account_move_id"
+                        string="Journal Entry">
+                    </button>
+                </div>
+                <widget name="web_ribbon" title="Paid" bg_color="bg-success" invisible="not is_payment_paid"/>
+            </xpath>
+            <xpath expr="//field[@name='picking_ids']" position="before">
+                <field name="partner_id" />
+                <field name="grn_tracking_number_id" />
+                <field name="related_bill" widget="many2many_tags" domain="[('move_type', '=', 'in_invoice'), ('company_id', '=', company_id)]"/>
+            </xpath>
+            <xpath expr="//field[@name='picking_ids']" position="attributes">
+                <attribute name="domain">[('company_id', '=', company_id), ('picking_type_id.code', '=', 'incoming'), ('state', '=', 'done')]</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='vendor_bill_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='vendor_bill_id']" position="after">
+                <field name="invoice_ref" />
+                <field name="delivery_carrier_id" />
+                <field name="done_quantity" />
+                <field name="vendor_currency_id" />
+            </xpath>
+            <xpath expr="//field[@name='cost_lines']/list/field[@name='price_unit']" position="after">
+                <field name="consolidated_cost" string="Consolidated Cost" readonly="0" optional="hide"/>
+                <field name="vendor_currency_id" column_invisible="True" />
+                <field name="landed_cost" widget="monetary" options="{'currency_field': 'vendor_currency_id'}"/>
+            </xpath>
+            <xpath expr="//field[@name='cost_lines']/list/field[@name='price_unit']" position="attributes">
+                <attribute name="string">Cost(AED)</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_landed_cost_tree_inherit" model="ir.ui.view">
+        <field name="name">panworld.stock.landed.cost.tree.inherit</field>
+        <field name="model">stock.landed.cost</field>
+        <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_tree" />
+        <field name="arch" type="xml">
+            <field name="name" position="attributes">
+                <attribute name="width">150px</attribute>
+            </field>
+            <field name="name" position="after">
+                <field name="partner_id" width="300px"/>
+                <field name="invoice_ref" optional="show"/>
+                <field name="grn_tracking_number_id" optional="show"/>
+                <field name="related_bill" optional="hide" widget="many2many_tags"/>
+            </field>
+            <field name="company_id" position="after">
+                <field name="currency_id" invisible="1" optional="hide"/>
+                <field name="amount_total" optional="show" sum="Amount total" widget="monetary" decoration-bf="1"/>
+                <field name="vendor_currency_id" invisible="1" optional="hide"/>
+                <field name="amount_total_currency" optional="show" sum="Total" string="Amount in Currency" widget="monetary" decoration-bf="1"/>
+            </field>
+            <field name="state" position="after">
+                 <field name="payment_status" widget="badge" decoration-warning="payment_status == 'paid'" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="stock_landed_cost_search_inherit" model="ir.ui.view">
+        <field name="name">panworld.stock.landed.cost.search.inherit</field>
+        <field name="model">stock.landed.cost</field>
+        <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_search" />
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="invoice_ref" />
+            </field>
+        </field>
+    </record>
+
+    <record id="action_mass_post_landed_cost" model="ir.actions.server">
+        <field name="name">Validate Landed Cost</field>
+        <field name="model_id" ref="stock_landed_costs.model_stock_landed_cost"/>
+        <field name="binding_model_id" ref="stock_landed_costs.model_stock_landed_cost"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            records.action_mass_post()
+        </field>
+    </record>
+</odoo>
+

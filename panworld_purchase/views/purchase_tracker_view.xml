@@ -1,0 +1,79 @@
+<odoo>
+    <record id="purchase_tracker_view_tree" model="ir.ui.view">
+        <field name="name">purchase_tracker_view_tree</field>
+        <field name="model">purchase.tracker.report</field>
+        <field name="arch" type="xml">
+            <list string="purchase_tracker_tree" create="false" edit="false">
+                <field name="purchase_tat"/>
+                <field name="shipping_tat"/>
+                <field name="shipping_mode_id"/>
+                <field name="target_weight"/>
+                <field name="shipper_grn"/>
+                <field name="po_date"/>
+                <field name="purchase_tat_date" optional="hide"/>
+                <field name="shipping_tat_date" optional="hide"/>
+                <field name="po_id"/>
+                <field name="bill_date"/>
+                <field name="am_id"/>
+                <field name="tracking_details"/>
+                <field name="delivery_date"/>
+                <field name="order_status"/>
+                <field name="shipper_status"/>
+                <field name="awb_no"/>
+                <field name="company_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="purchase_tracker_report_search" model="ir.ui.view">
+       <field name="name">Purchase Tracker Report</field>
+       <field name="model">purchase.tracker.report</field>
+        <field name="arch" type="xml">
+            <search string="Purchase Tracker">
+                <field name="purchase_tat"/>
+                <field name="shipping_tat"/>
+                 <field name="shipping_mode_id"/>
+                <field name="target_weight"/>
+                 <field name="shipper_grn"/>
+                <field name="po_date"/>
+                 <field name="bill_date"/>
+                <field name="po_id"/>
+                 <field name="am_id"/>
+                <field name="tracking_details"/>
+                 <field name="delivery_date"/>
+                <field name="order_status"/>
+                <field name="shipper_status"/>
+                <field name="awb_no"/>
+                <field name="company_id"/>
+<!--                <filter name="filter_po_date" string="Current month" date="po_date" default_period="this_month"/>-->
+                <filter name="filter_po_date" string="Current month" date="po_date"/>
+        </search>
+       </field>
+    </record>
+
+
+
+<!--    <data>-->
+<!--        <record id="action_server_purchase_tracker" model="ir.actions.server">-->
+<!--            <field name="name">Purchase Tracker</field>-->
+<!--            <field name="type">ir.actions.server</field>-->
+<!--            <field name="model_id" ref="model_purchase_order"/>-->
+<!--            <field name="state">code</field>-->
+<!--            <field name="code">model.print_report()</field>-->
+<!--        </record>-->
+<!--    </data>-->
+
+
+
+    <record id="purchase_tracker_action" model="ir.actions.act_window">
+        <field name="name">Purchase Tracker</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.tracker.report</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_filter_po_date': 1}</field>
+    </record>
+
+    <!-- This Menu Item must have a parent and an action -->
+    <menuitem id="purchase_tracker" name="Purchase Tracker" parent="purchase.purchase_report_main" action="purchase_tracker_action" sequence="4"/>
+
+</odoo>
+

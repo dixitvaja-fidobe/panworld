@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_costing_reports_form" model="ir.ui.view">
+        <field name="name">costing.report.form</field>
+        <field name="model">costing.report</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="action_costing_average_report" string="Average-Cost based"
+                                    data-hotkey="v"
+                                    type="object" class="btn-primary"/>
+                    <button name="action_costing_purchase_report" string="Purchase-Price based"
+                            data-hotkey="v"
+                            type="object" class="btn-primary"/>
+                    <button name="action_all_filter_remove" string="Remove Filters"
+                                    data-hotkey="v"
+                                    type="object" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" invisible="1"/>
+                        <label for="date_from" string="Date"/>
+                        <div class="oe_inline">
+                            <field name="date_from" class="mr8 oe_inline" />
+                            <strong class="mr8 oe_inline">To</strong>
+                            <field name="date_to" class="oe_inline" />
+                        </div>
+                        <field name="division_ids" widget="many2many_tags"/>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                        <field name="cso_reference"/>
+                        <field name="sale_ids" widget="many2many_tags"/>
+                        <field name="invoice_ids" widget="many2many_tags"/>
+                        <field name="salesman_ids" widget="many2many_tags"  />
+                    </group>
+
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+
+    </record>
+
+<!--    <record id="costing_purchase_report_form_view" model="ir.ui.view">-->
+<!--        <field name="name">costing.report.form</field>-->
+<!--        <field name="model">costing.report</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form create="0">-->
+<!--                <sheet>-->
+<!--                    <group>-->
+<!--                        <field name="name" invisible="1"/>-->
+<!--                        <field name="report_type" invisible="1"/>-->
+<!--                        <label for="date_from" string="Date"/>-->
+<!--                        <div class="oe_inline">-->
+<!--                            <field name="date_from" class="mr8 oe_inline" />-->
+<!--                            <strong class="mr8 oe_inline">To</strong>-->
+<!--                            <field name="date_to" class="oe_inline" />-->
+<!--                        </div>-->
+<!--                        <field name="division_ids" widget="many2many_tags"/>-->
+<!--                        <field name="partner_ids" widget="many2many_tags"/>-->
+<!--                        <field name="cso_reference"/>-->
+<!--                        <field name="sale_ids" widget="many2many_tags"/>-->
+<!--                        <field name="invoice_ids" widget="many2many_tags"/>-->
+<!--                        <field name="salesman_ids" widget="many2many_tags"  />-->
+<!--&lt;!&ndash;                        <field name="company_id" invisible="0"/>&ndash;&gt;-->
+<!--                    </group>-->
+<!--                    <footer>-->
+<!--                        <button name="action_costing_purchase_report" string="Generate Excel " data-hotkey="v"-->
+<!--                                type="object" class="btn-primary"/>-->
+<!--                    </footer>-->
+<!--                </sheet>-->
+<!--                <div class="oe_chatter">-->
+<!--                    <field name="message_follower_ids"/>-->
+<!--                    <field name="activity_ids"/>-->
+<!--                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--        </field>-->
+
+<!--    </record>-->
+
+    <record id="action_costing_average_report_menu" model="ir.actions.act_window">
+        <field name="name">Costing Reports</field>
+        <field name="res_model">costing.report</field>
+        <field name="res_id" ref="costing_reports.costing_average_report_default_data"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_costing_reports_form"/>
+<!--        <field name="context">{'costing_average_report': True}</field>-->
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                   Generate Costing Reports
+            </p>
+        </field>
+    </record>
+<!--    <record id="action_costing_purchase_report" model="ir.actions.act_window">-->
+<!--        <field name="name">Costing Purchase Report</field>-->
+<!--        <field name="res_model">costing.report</field>-->
+<!--        <field name="res_id" ref="costing_reports.costing_purchase_report_default_data"/>-->
+<!--        <field name="view_mode">form</field>-->
+<!--        <field name="view_id" ref="costing_purchase_report_form_view"/>-->
+<!--        <field name="context">{'costing_purchase_report': True}</field>-->
+<!--        <field name="help" type="html">-->
+<!--            <p class="o_view_nocontent_smiling_face">-->
+<!--                Generate Costing Purchase Report-->
+<!--            </p>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <menuitem id="costing_reporting_menu_root"
+            name="Costing Reports"
+            sequence="2"/>
+    <menuitem id="menu_costing_average_report"
+         name="Costing Reports"
+         parent="costing_reporting_menu_root"
+         action="action_costing_average_report_menu"
+         sequence="0" />
+<!--    <menuitem id="menu_costing_purchase_report"-->
+<!--         name="Costing Purchase Report"-->
+<!--         parent="costing_reporting_menu_root"-->
+<!--         action="action_costing_purchase_report"-->
+<!--         sequence="1" />-->
+</odoo>

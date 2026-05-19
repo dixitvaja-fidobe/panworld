@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <record id="check_price_change_view" model="ir.ui.view">
+            <field name="name">Check Price Change Wizard</field>
+            <field name="model">check.price.change</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="data_check_file" />
+                        </group>
+                        <group><group>
+                            <button string="Download Format File" name="export_data" type="object"/>
+                        </group>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="check"  name="check_for_change" class="oe_highlight" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="check_price_change_action" model="ir.actions.act_window">
+            <field name="name">Check Price Change</field>
+            <field name="res_model">check.price.change</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="check_price_change_view" />
+            <field name="view_mode">form</field>
+        </record>
+    </data>
+</odoo>

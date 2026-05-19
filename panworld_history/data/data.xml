@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="res_history_default_data" model="res.history">
+        <field name="transaction_type">sale_order</field>
+    </record>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_marketplace_cost_line,access_marketplace_cost_line,panworld_sale.model_marketplace_cost_line,base.group_user,1,1,1,1
+panworld_sale.access_wiz_update_order_date,access_wiz_update_order_date,panworld_sale.model_wiz_update_order_date,base.group_user,1,1,1,1
+access_academic_year,access.academic.year,model_academic_year,base.group_user,1,1,1,1

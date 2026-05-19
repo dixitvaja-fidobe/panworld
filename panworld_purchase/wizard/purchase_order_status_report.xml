@@ -1,0 +1,51 @@
+<odoo>
+    <record id="purchase_order_status_report_view_form" model="ir.ui.view">
+        <field name="name">purchase.order.status.report.view.form</field>
+        <field name="model">purchase.order.status.report</field>
+        <field name="arch" type="xml">
+            <form string="purchase_order_status_report_form">
+                <sheet>
+                    <group>
+<!--                        <group>-->
+<!--                            <field name="start_date"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <field name="end_date"/>-->
+<!--                        </group>-->
+                        <group>
+                            <label for="start_date" string="Date"/>
+                            <div class="w-100">
+                                <div class="o_row">
+                                    <field name="start_date" widget="daterange"
+                                           options="{'related_end_date': 'end_date'}"/>
+                                    <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon"
+                                       title="Arrow"/>
+                                    <field name="end_date" widget="daterange"
+                                           options="{'related_start_date': 'start_date'}"/>
+                                </div>
+                            </div>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="po_ids" widget="many2many_tags"/>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="export_po__data" string="Export" class="oe_highlight" type="object"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="purchase_oreder_status_report_action" model="ir.actions.act_window">
+        <field name="name">Purchase Order Status Report</field>
+        <field name="res_model">purchase.order.status.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="purchase_order_status" name="Purchase Order Status" parent="purchase.purchase_report_main"
+              action="panworld_purchase.purchase_oreder_status_report_action" sequence="5"/>
+</odoo>

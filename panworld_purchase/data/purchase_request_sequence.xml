@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value
+                eval="[('name','=','seq_purchase_request'),('module','=','purchase_request')]"
+            />
+        </function>
+        <value eval=" {'noupdate': False} " />
+    </function>
+    <record id="purchase_request.seq_purchase_request" model="ir.sequence">
+        <field name="prefix">PRQ%(y)s%(month)s</field>
+        <field name="padding">6</field>
+    </record>
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value
+                eval="[('name','=','seq_purchase_request'),('module','=','purchase_request')]"
+            />
+        </function>
+        <value eval=" {'noupdate': True} " />
+    </function>
+
+</odoo>

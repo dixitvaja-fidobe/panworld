@@ -1,0 +1,26 @@
+<odoo>
+    <record id="res_partner_form_inherited" model="ir.ui.view">
+        <field name="name">res.partner.inherited</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_address_format')]" position="after">
+                <field name="division_type_id" required ='1' string="Division Type"/>
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="before">
+                <field name="acc_no"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_tree_inherited" model="ir.ui.view">
+        <field name="name">res.partner.tree.inherited</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='complete_name']" position="after">
+                <field name="acc_no"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

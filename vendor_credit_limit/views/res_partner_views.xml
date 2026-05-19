@@ -1,0 +1,15 @@
+<odoo>
+    <record id="res_partner_form_panworld" model="ir.ui.view">
+        <field name="name">res.partner.panworld</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="purchase.view_partner_property_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='property_purchase_currency_id']"
+                position="after"
+            >
+                <field name="credit_limit" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="views_import_sale_order_wizard" model="ir.ui.view">
+        <field name="name">import.sale.order.wizard.form</field>
+        <field name="model">import.sale.order.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Sale Order">
+                <group>
+                    <group>
+                        <field name="file" filename="name" />
+                    </group>
+                    <group>
+                        <field
+                            name="sample_file"
+                            filename="file_name"
+                            readonly="1"
+                            invisible="sample_file == False"
+                        />
+                        <field name="file_name" invisible="1" />
+                        <button
+                            string="Download Sample File"
+                            name="download_sample_file"
+                            class="oe_highlight"
+                            type="object"
+                        />
+                    </group>
+                </group>
+                <footer>
+                    <button
+                        name="import_sale"
+                        string="Import"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="actions_import_sale_order_wizard" model="ir.actions.act_window">
+        <field name="name">Import Sale Order</field>
+        <field name="res_model">import.sale.order.wizard</field>
+        <field name="view_id" ref="views_import_sale_order_wizard" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        id="menu_import_sale_order_wizard"
+        action="actions_import_sale_order_wizard"
+        parent="sale.menu_sales_config"
+        groups="sales_team.group_sale_salesman,sales_team.group_sale_manager"
+    />
+</odoo>

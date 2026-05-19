@@ -1,0 +1,43 @@
+<odoo>
+    <record id="view_sale_form_import_panworld" model="ir.ui.view">
+        <field name="name">sale.form.import.panworld</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_preview_sale_order']" position="before">
+                <button
+                    name="%(panworld_sale_import.import_sale_data_action)d"
+                    string="Import Order Lines"
+                    type="action"
+                    invisible="state not in ('draft', 'sent')"
+                    class="btn-primary"
+                    context="{
+                        'default_model_name': 'sale.order',
+                        'default_model_id': id,
+                    }"
+                />
+                <button
+                    name="%(panworld_sale_import.import_sale_data_action)d"
+                    string="Update Order Lines"
+                    type="action"
+                    invisible="state not in ('done', 'sale')"
+                    class="btn-primary"
+                    context="{
+                        'default_model_name': 'sale.order',
+                        'default_model_id': id,
+                    }"
+                />
+            </xpath>
+            <xpath expr="//page[@name='other_information']//group[@name='sale_shipping']//field[@name='commitment_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_uom_id']"
+                position="after">
+                <field name="is_compute_cost_from_sheet" column_invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="commitment_date" required="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

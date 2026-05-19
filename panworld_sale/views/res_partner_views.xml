@@ -1,0 +1,36 @@
+<odoo>
+    <record id="view_partner_form_inherit_panworld" model="ir.ui.view">
+        <field name="name">res.partner</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page
+                    name="marketplace_other_cost"
+                    string="Marketplace &amp; Other Cost">
+                    <field name="marketplace_cost_ids">
+                        <list editable="bottom">
+                            <field name="partner_id" column_invisible="1" />
+                            <field name="date" required="1" />
+                            <field name="marketplace_cost" />
+                            <field name="other_cost" />
+                            <field name="salesman_commission"/>
+                            <field name="other_commission"/>
+                        </list>
+                        <form string="Marketplace &amp; Other Cost">
+                            <group>
+                                <group>
+                                    <field name="date" required="1" />
+                                </group>
+                                <group>
+                                    <field name="marketplace_cost" />
+                                    <field name="other_cost" />
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_presale_create_rfq_wizard_form" model="ir.ui.view">
+        <field name="name">presale.create.rfq.wizard.form</field>
+        <field name="model">presale.create.rfq.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Purchase RFQs">
+                <field name="presale_tracking_id" invisible="1"/>
+                <div class="alert alert-info" role="alert">
+                    The following <b>Purchase Quotations (RFQs)</b> will be created properly grouped by Vendor and Currency.<br/>
+                    Please review the list below. If there are unexpected splits (e.g. same vendor appearing twice), please cancel and check your specific vendor configurations.
+                </div>
+                <field name="summary_ids" mode="kanban" readonly="1">
+                    <kanban class="o_kanban_mobile" create="0" delete="0">
+                        <field name="vendor_id"/>
+                        <field name="sourcing_vendor_id"/>
+                        <field name="currency_id"/>
+                        <field name="line_count"/>
+                        <field name="total_qty"/>
+                        <field name="amount_total"/>
+                        <templates>
+                            <t t-name="card">
+                                <div class="d-flex justify-content-between align-items-center p-2">
+                                    <div class="d-flex flex-column">
+                                        <div class="fw-bold fs-5 text-primary">
+                                            <field name="vendor_id"/>
+                                        </div>
+                                        <div class="badge text-bg-warning rounded-pill" t-if="record.sourcing_vendor_id.raw_value">
+                                            <i class="fa fa-truck me-1"/>
+                                            <field name="sourcing_vendor_id"/>
+                                        </div>
+                                        <div class="d-flex gap-2 mt-1">
+                                            <span class="badge text-bg-secondary rounded-pill">
+                                                <i class="fa fa-money me-1"/>
+                                                <field name="currency_id"/>
+                                            </span>
+                                            <span class="badge text-bg-info rounded-pill">
+                                                <i class="fa fa-list-ol me-1"/>
+                                                <field name="line_count"/> Titles
+                                            </span>
+                                            <span class="badge text-bg-info rounded-pill">
+                                                <i class="fa fa-cubes me-1"/>
+                                                <field name="total_qty"/> Quantities
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="h4 mb-0 text-success">
+                                            <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                        </div>
+                                        <small class="text-muted">Estimated Total</small>
+                                    </div>
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </field>
+                <footer>
+                    <button name="action_confirm_rfq_creation" string="Confirm &amp; Create RFQs" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

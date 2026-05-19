@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Project Task Form View - Add Tracking Dashboard -->
+    <record id="project_task_view_form_tracking" model="ir.ui.view">
+        <field name="name">project.task.form.tracking</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <!-- Add Sale Order field -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="fs_sale_order_id" readonly="1" invisible="fs_sale_order_id == False"/>
+            </xpath>
+            
+            <!-- Add Tracking Dashboard Tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Sale Order Tracking" 
+                      name="sale_tracking"
+                      invisible="fs_sale_order_id == False or not project_id.sale_tracking">
+                    <!-- Action Buttons -->
+                    <group>
+                        <group>
+                            <button name="action_create_purchase_requisition"
+                                    string="Create Purchase Requisition"
+                                    type="object"
+                                    class="btn-primary"
+                                    icon="fa-shopping-cart"/>
+                        </group>
+                        <group>
+                            <button name="action_download_tracking_status"
+                                    string="Download Status Report"
+                                    type="object"
+                                    class="btn-secondary"
+                                    icon="fa-download"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Tracking Status Table -->
+                    <group string="Tracking Status">
+                        <style>
+                            .o_tracking_status_table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin: 15px 0;
+                            }
+                            .o_tracking_status_table th {
+                                background-color: #875A7B;
+                                color: white;
+                                padding: 12px;
+                                text-align: left;
+                                font-weight: bold;
+                                border: 1px solid #ddd;
+                            }
+                            .o_tracking_status_table td {
+                                padding: 10px 12px;
+                                border: 1px solid #ddd;
+                            }
+                            .o_tracking_status_table tbody tr:hover {
+                                background-color: #f5f5f5;
+                            }
+                            .o_tracking_status_table .status_cell {
+                                font-weight: 500;
+                            }
+                            .o_tracking_status_table .action_cell {
+                                text-align: center;
+                            }
+                        </style>
+                        
+                        <div class="o_tracking_status_table_container">
+                            <table class="o_tracking_status_table">
+                                <thead>
+                                    <tr>
+                                        <th>Document Type</th>
+                                        <th>Status</th>
+                                        <th>Count</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Sale Order Row -->
+                                    <tr>
+                                        <td><i class="fa fa-file-text-o"/> Sale Order</td>
+                                        <td class="status_cell">
+                                            <field name="sale_order_state" readonly="1" widget="badge" 
+                                                   decoration-info="sale_order_state in ['draft', 'sent']"
+                                                   decoration-success="sale_order_state == 'sale'"
+                                                   decoration-muted="sale_order_state == 'cancel'"/>
+                                        </td>
+                                        <td>
+                                            <field name="sale_order_amount" readonly="1" widget="monetary"/>
+                                        </td>
+                                        <td class="action_cell">
+                                            <button name="action_view_sale_order"
+                                                    string="View"
+                                                    type="object"
+                                                    class="btn-sm btn-secondary"
+                                                    icon="fa-external-link"/>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Quantity Summary Rows -->
+                                    <tr style="background-color: #f8f9fa;">
+                                        <td><i class="fa fa-cubes text-primary"/> Total Qty Ordered</td>
+                                        <td class="status_cell">-</td>
+                                        <td>
+                                            <strong><field name="total_qty_ordered" readonly="1"/></strong> Units
+                                        </td>
+                                        <td class="action_cell">-</td>
+                                    </tr>
+                                    <tr style="background-color: #d4edda;">
+                                        <td><i class="fa fa-check-circle text-success"/> Qty Delivered</td>
+                                        <td class="status_cell">-</td>
+                                        <td>
+                                            <strong><field name="total_qty_delivered" readonly="1"/></strong> Units
+                                        </td>
+                                        <td class="action_cell">-</td>
+                                    </tr>
+                                    <tr style="background-color: #fff3cd;">
+                                        <td><i class="fa fa-clock-o text-warning"/> Qty Pending Delivery</td>
+                                        <td class="status_cell">-</td>
+                                        <td>
+                                            <strong><field name="total_qty_pending" readonly="1"/></strong> Units
+                                        </td>
+                                        <td class="action_cell">-</td>
+                                    </tr>
+                                    
+                                    <!-- Purchase Quantity Summary Rows -->
+                                    <tr style="background-color: #e7f1ff;">
+                                        <td><i class="fa fa-shopping-cart text-info"/> Total Qty Purchased</td>
+                                        <td class="status_cell">-</td>
+                                        <td>
+                                            <strong><field name="total_qty_purchased" readonly="1"/></strong> Units
+                                        </td>
+                                        <td class="action_cell">-</td>
+                                    </tr>
+                                    <tr style="background-color: #d4edda;">
+                                        <td><i class="fa fa-inbox text-success"/> Qty Received</td>
+                                        <td class="status_cell">-</td>
+                                        <td>
+                                            <strong><field name="total_qty_received" readonly="1"/></strong> Units
+                                        </td>
+                                        <td class="action_cell">-</td>
+                                    </tr>
+                                    <tr style="background-color: #fce4ec;">
+                                        <td><i class="fa fa-hourglass-half text-danger"/> Qty Pending Purchase</td>
+                                        <td class="status_cell">-</td>
+                                        <td>
+                                            <strong><field name="total_qty_pending_purchase" readonly="1"/></strong> Units
+                                        </td>
+                                        <td class="action_cell">-</td>
+                                    </tr>
+                                    
+                                    <!-- Delivery Order Row -->
+                                    <tr>
+                                        <td><i class="fa fa-truck"/> Delivery Orders</td>
+                                        <td class="status_cell">
+                                            <field name="delivery_status" readonly="1"/>
+                                        </td>
+                                        <td>
+                                            <field name="delivery_count" readonly="1"/> Delivery(ies)
+                                        </td>
+                                        <td class="action_cell">
+                                            <button name="action_view_deliveries"
+                                                    string="View"
+                                                    type="object"
+                                                    class="btn-sm btn-secondary"
+                                                    icon="fa-external-link"
+                                                    invisible="delivery_count == 0"/>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Purchase Requisition Row -->
+                                    <tr>
+                                        <td><i class="fa fa-clipboard"/> Purchase Requisitions</td>
+                                        <td class="status_cell">
+                                            <field name="requisition_status" readonly="1"/>
+                                        </td>
+                                        <td>
+                                            <field name="requisition_count" readonly="1"/> Requisition(s)
+                                        </td>
+                                        <td class="action_cell">
+                                            <button name="action_view_requisitions"
+                                                    string="View"
+                                                    type="object"
+                                                    class="btn-sm btn-secondary"
+                                                    icon="fa-external-link"
+                                                    invisible="requisition_count == 0"/>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Purchase Order Row -->
+                                    <tr>
+                                        <td><i class="fa fa-shopping-cart"/> Purchase Orders</td>
+                                        <td class="status_cell">
+                                            <field name="purchase_order_status" readonly="1"/>
+                                        </td>
+                                        <td>
+                                            <field name="purchase_order_count" readonly="1"/> PO(s)
+                                        </td>
+                                        <td class="action_cell">
+                                            <button name="action_view_purchase_orders"
+                                                    string="View"
+                                                    type="object"
+                                                    class="btn-sm btn-secondary"
+                                                    icon="fa-external-link"
+                                                    invisible="purchase_order_count == 0"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </group>
+                    
+                    <!-- Additional Info -->
+                    <group>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Project Task Tree View - Add Sale Order Column -->
+    <record id="project_task_view_tree_tracking" model="ir.ui.view">
+        <field name="name">project.task.tree.tracking</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="fs_sale_order_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

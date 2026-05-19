@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="history_record_form_view" model="ir.ui.view">
+        <field name="name">res.history.form.panworld</field>
+        <field name="model">res.history</field>
+        <field name="arch" type="xml">
+            <form string="History" create="0">
+                <sheet>
+                    <group>
+                        <field name="product_id" widget="many2many_tags" options="{'no_create': True, 'no_edit': True}"
+                               required="transaction_type == 'grn' and grn_ids == []
+                                         or transaction_type == 'delivery_note' and delivery_note_ids == []
+                                         or transaction_type == 'vendor_credit' and vendor_credit_ids == []
+                                         or transaction_type == 'bills' and bill_ids == []
+                                         or transaction_type == 'credit_note' and credit_note_ids == []
+                                         or transaction_type == 'purchase_order' and purchase_order_ids == []
+                                         or transaction_type == 'invoices' and invoice_ids == []
+                                         or transaction_type == 'sale_order' and sale_order_ids == []
+                                         or transaction_type not in ['sale_order','invoices','purchase_order','credit_note','bills','vendor_credit','delivery_note','grn','inventory_adjustment'] and document_num == False
+                                        "/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="contact_ids" widget="many2many_tags"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   invisible="transaction_type == 'inventory_adjustment'"/>
+
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="transaction_type"/>
+                        </group>
+                        <group>
+                            <button name="action_remove_doc_records" string="Remove Doc Num" type="object" class="btn-primary"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="document_num"
+                               options="{'no_create': True, 'no_edit': True}"
+                               required="product_id == [] and transaction_type not in ['sale_order','invoices','purchase_order','credit_note','bills', 'vendor_credit', 'delivery_note','grn', 'inventory_adjustment']"
+                               invisible="transaction_type in ['sale_order','invoices','purchase_order','credit_note','bills', 'vendor_credit', 'delivery_note','grn', 'inventory_adjustment']"/>
+                            <field name="sale_order_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'sale_order'"
+                                   required="product_id == [] and transaction_type == 'sale_order'"/>
+                            <field name="invoice_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'invoices'"
+                                   required="product_id == [] and transaction_type == 'invoices'"/>
+                            <field name="purchase_order_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'purchase_order'"
+                                   required="product_id == [] and transaction_type == 'purchase_order'"/>
+                            <field name="credit_note_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'credit_note'"
+                                   required="product_id == [] and transaction_type == 'credit_note'"/>
+                            <field name="bill_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'bills'"
+                                   required="product_id == [] and transaction_type == 'bills'"/>
+                            <field name="delivery_note_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'delivery_note'"
+                                   required="product_id == [] and transaction_type == 'delivery_note'"/>
+                            <field name="vendor_credit_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'vendor_credit'"
+                                   required="product_id == [] and transaction_type == 'vendor_credit'"/>
+                            <field name="grn_ids"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   widget="many2many_tags"
+                                   invisible="transaction_type != 'grn'"
+                                   required="product_id == [] and transaction_type == 'grn'"/>
+                    </group>
+                    <group>
+
+                    </group>
+                    <button name="action_view_record" string="View" data-hotkey="v"
+                                type="object" class="btn-primary"/>
+<!--                    <footer>-->
+<!--                        <button name="action_view_record" string="View" data-hotkey="v"-->
+<!--                                type="object" class="btn-primary"/>-->
+<!--&lt;!&ndash;                        <button name="action_remove_doc_records" string="Remove Doc Num" type="object" class="btn-primary" style="margin-left: 15px"/>&ndash;&gt;-->
+<!--                    </footer>-->
+
+                </sheet>
+                <chatter/>
+<!--                <div class="oe_chatter">-->
+<!--                    <field name="message_follower_ids"/>-->
+<!--                    <field name="activity_ids"/>-->
+<!--                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>-->
+<!--                </div>-->
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="history_record_action">
+        <field name="name">History</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.history</field>
+        <field name="res_id" ref="panworld_history.res_history_default_data" />
+        <field name="view_mode">form</field>
+    </record>
+
+
+    <menuitem id="menu_main_history" name="History"/>
+    <menuitem
+            id="menu_history_record"
+            parent="panworld_history.menu_main_history" sequence="1"
+            action="history_record_action"
+    />
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_sale_form_compare_panworld" model="ir.ui.view">
+        <field name="name">sale.form.compare.lines</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list" position="inside">
+                <field name="action" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+               <field name="so_qty" width="80px"/>
+               <field name="quote_cancel_qty" width="100px" readonly="state not in ['draft', 'sent']"/>
+                <field name="quote_cancel_reason" width="120px" required="quote_cancel_qty != 0"/>
+               <field name="so_quantity" width="80px" readonly="state not in ['draft', 'sent']"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
+                <field name="cancelled_qty" width="80px"/>
+                <field name="cancel_reason" width="120px" required="cancelled_qty != 0"/>
+
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="attributes">
+               <attribute name="string">Tobe Deliver Qty</attribute>
+               <attribute name="readonly">state not in ['draft', 'sent']</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+<!--            <xpath expr="//field[@name='order_line']/list/field[@name='qty_delivered']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+        </field>
+    </record>
+    
+</odoo>

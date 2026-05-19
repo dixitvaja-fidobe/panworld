@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_vendor_bills_service" model="ir.sequence">
+            <field name="name">Vendor Bills-Service</field>
+            <field name="prefix">VBS%(y)s%(month)s</field>
+            <field name="implementation">no_gap</field>
+            <field name="padding">6</field>
+        </record>
+        <record id="seq_vendor_bills_material" model="ir.sequence">
+            <field name="name">Vendor Bills-Material</field>
+            <field name="implementation">no_gap</field>
+            <field name="prefix">VCN%(y)s%(month)s</field>
+            <field name="padding">6</field>
+        </record>
+        <record id="out_of_scope" model="ir.sequence">
+            <field name="name">Out of Scope Invoice</field>
+            <field name="code">out.scope</field>
+            <field name="prefix">OOS25</field>
+            <field name="suffix">F</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+        </record>
+    </data>
+    <record id="model_account_move_update_sales_manager" model="ir.actions.server">
+        <field name="name">Update Sales Manager</field>
+        <field name="model_id" ref="panworld_account.model_account_move"/>
+        <field name="binding_model_id" ref="panworld_account.model_account_move"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_update_sales_manager()</field>
+    </record>
+    <record id="model_account_move_reset_to_draft_bulk" model="ir.actions.server">
+        <field name="name">Reset to Draft</field>
+        <field name="model_id" ref="panworld_account.model_account_move"/>
+        <field name="binding_model_id" ref="panworld_account.model_account_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_reset_to_draft()</field>
+    </record>
+    <record id="model_account_move_update_date_partner" model="ir.actions.server">
+        <field name="name">Update Partner and Invoice Date</field>
+        <field name="model_id" ref="panworld_account.model_account_move"/>
+        <field name="binding_model_id" ref="panworld_account.model_account_move"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_update_partner_date()</field>
+    </record>
+</odoo>

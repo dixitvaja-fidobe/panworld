@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <record id="hr_expense_form_view_inherit_panworld_expense" model="ir.ui.view">
+        <field name="name">hr.expense.form.inherit.panworld.expense</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <field name="employee_id" position='after'>
+                <field name='expense_partner_id' required='1'/>
+                <field name="division_type_id"/>
+                <field name="department_id"/>
+            </field>
+            <field name="date" position="attributes">
+                <attribute name="string">Accounting Date</attribute>
+            </field>
+            <field name="tax_ids" position="after">
+                <field name="reference"/>
+                <field name="bill_date" required="1"/>
+            </field>
+            <field name="bill_date" position="after">
+                <field name="date" position="move"/>
+            </field>
+        </field>
+    </record>
+</odoo>

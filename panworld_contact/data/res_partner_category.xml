@@ -1,0 +1,26 @@
+<odoo noupdate="1">
+    <record id="res_partner_category_wholesaler" model="res.partner.category">
+        <field name="name">Wholesaler</field>
+        <field name="color" eval="1" />
+    </record>
+    <record id="res_partner_category_publisher" model="res.partner.category">
+        <field name="name">Publisher</field>
+        <field name="color" eval="2" />
+    </record>
+    <record id="res_partner_category_master" model="res.partner.category">
+        <field name="name">Master Publisher</field>
+        <field name="color" eval="3" />
+    </record>
+    <record id="res_partner_category_author" model="res.partner.category">
+        <field name="name">Author</field>
+        <field name="color" eval="4" />
+    </record>
+    <record id="res_partner_category_uk_wholesaler" model="res.partner.category">
+        <field name="name">UK Wholesaler</field>
+        <field name="color" eval="5" />
+    </record>
+    <record id="res_partner_category_non_ukwholesaler" model="res.partner.category">
+        <field name="name">Non-uk wholesaler</field>
+        <field name="color" eval="6" />
+    </record>
+</odoo>

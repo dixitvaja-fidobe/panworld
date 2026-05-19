@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Paper Format -->
+        <record id="paperformat_sa_quotation_landscape_panworld" model="report.paperformat">
+            <field name="name">Panworld Quotation Landscape</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">25</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!-- PDF Quote Action (AED Only) -->
+        <record id="action_report_saleorder_aed" model="ir.actions.report">
+            <field name="name">PDF Quote</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sale.report_saleorder</field>
+            <field name="report_file">sale.report_saleorder</field>
+            <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name) or 'Order - %s' % (object.name))</field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="domain">[('company_id.currency_id.name', '=', 'AED')]</field>
+            <field name="paperformat_id" ref="paperformat_sa_quotation_landscape_panworld"/>
+        </record>
+
+        <!-- PRO-FORMA Invoice Action (AED and SAR) -->
+        <record id="action_report_pro_forma_invoice_custom" model="ir.actions.report">
+            <field name="name">PRO-FORMA Invoice</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sale.report_saleorder_pro_forma</field>
+            <field name="report_file">sale.report_saleorder_pro_forma</field>
+            <field name="print_report_name">'PRO-FORMA - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="domain">['|', ('company_id.currency_id.name', '=', 'AED'), ('company_id.currency_id.name', '=', 'SAR')]</field>
+        </record>
+
+        <!-- KSA Report Landscape Override -->
+        <record id="panworld_saudi_arabic_invoice.action_report_sa_quotation" model="ir.actions.report">
+            <field name="domain">[('company_id.currency_id.name', '=', 'SAR')]</field>
+            <field name="paperformat_id" ref="paperformat_sa_quotation_landscape_panworld"/>
+        </record>
+
+        <!-- Hide standard reports using non-matching domains as requested -->
+        <record id="sale.action_report_saleorder" model="ir.actions.report">
+            <field name="domain">[('id', '=', 0)]</field>
+        </record>
+
+        <record id="sale_pdf_quote_builder.action_report_saleorder_raw" model="ir.actions.report">
+            <field name="domain">[('id', '=', 0)]</field>
+        </record>
+
+        <record id="sale.action_report_pro_forma_invoice" model="ir.actions.report">
+            <field name="domain">[('id', '=', 0)]</field>
+        </record>
+
+    </data>
+</odoo>
