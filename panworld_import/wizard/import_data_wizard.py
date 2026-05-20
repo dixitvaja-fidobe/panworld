@@ -163,11 +163,12 @@ class ImportDataWizard(models.TransientModel):
         fp.write(binascii.a2b_base64(self.data_import_file))
         fp.seek(0)
         invoice_line_commands = []
+        workbook = None
         try:
-             # Try opening as xlsx with openpyxl
-            workbook = openpyxl.load_workbook(fp.name, data_only=True)
+             # Try opening as xlsx with openpyxl (read_only for large files)
+            workbook = openpyxl.load_workbook(fp.name, read_only=True, data_only=True)
             sheet = workbook.active
-            headers = [cell.value for cell in sheet[1]]
+            headers = next(sheet.iter_rows(min_row=1, max_row=1, values_only=True))
             is_xlsx = True
         except Exception:
             # Fallback to xlrd for xls
@@ -195,8 +196,6 @@ class ImportDataWizard(models.TransientModel):
                 for rownum in range(1, sheet.nrows): # Skip header
                     if sheet.ncols > isbn_index:
                         codes.append(str(sheet.cell_value(rownum, isbn_index)).split('.')[0])
-        res = False
-        res = False
         if not is_xlsx:
             # We already populated codes in xlrd block above
              pass
@@ -204,28 +203,9 @@ class ImportDataWizard(models.TransientModel):
 
         # --- ULTRA-FAST PRE-CHECK & CACHE ---
         msg = ""
-        product_cache = {}
+        product_cache = self._build_product_cache(codes) if codes else {}
         if codes:
-            found_codes = set()
-            # Search once for everything
-            domain = ['|', '|', ('barcode', 'in', codes), ('default_code', 'in', codes), ('name', 'in', codes)]
-            all_prods = self.env['product.product'].search(domain)
-            for p in all_prods:
-                for val in [p.barcode, p.default_code, p.name]:
-                    if val:
-                        found_codes.add(val)
-                        product_cache[val] = p
-            
-            # Templates if not found in variants
-            remaining = set(codes) - found_codes
-            if remaining:
-                all_tmpls = self.env['product.template'].search(['|', '|', ('barcode', 'in', list(remaining)), ('default_code', 'in', list(remaining)), ('name', 'in', list(remaining))])
-                for t in all_tmpls:
-                    for val in [t.barcode, t.default_code, t.name]:
-                        if val:
-                            found_codes.add(val)
-                            product_cache[val] = t
-            
+            found_codes = set(product_cache.keys())
             missing = [c for c in codes if c not in found_codes]
             if missing:
                 msg = ", ".join([f"[{c}]" for c in missing[:50]])
@@ -461,27 +441,32 @@ class ImportDataWizard(models.TransientModel):
             field_list_to_import = ["isbn", "source_location_id", "source_parent_id", "destination_location_id",
                                     "destination_parent_id", "order_quantity", "delivered_quantity", "refund_qty",
                                     "price_unit", "tax_id", "refund_price"]
+            codes_set = set(codes)
             if model_rec.rma_type == "direct":
                 for line in model_rec.rma_direct_lines_ids:
-                    if line.product_id.barcode not in codes and model_rec.state in ("new", "verification"):
+                    if line.product_id.barcode not in codes_set and model_rec.state in ("new", "verification"):
                         line.unlink()
             if model_rec.rma_type == "supplier":
                 for line in model_rec.rma_purchase_lines_ids:
-                    if line.product_id.barcode not in codes and model_rec.state in ("new", "verification"):
+                    if line.product_id.barcode not in codes_set and model_rec.state in ("new", "verification"):
                         line.unlink()
-        elif model_name == "rma.ret.mer.auth" and model_rec.rma_type in ("sale_direct", "customer"):
+        elif model_name == "rma.ret.mer.auth" and model_rec.rma_type == "sale_direct":
             field_list_to_import = ["isbn", "source_location_id", "source_parent_id", "destination_location_id",
                                     "destination_parent_id", "order_quantity", "delivered_quantity", "refund_qty",
                                     "price_unit", "tax_id", "refund_price",
                                     "lco", "mco", "sco", "oco", "tco"]
-            if model_rec.rma_type == "sale_direct":
-                for line in model_rec.rma_sale_direct_lines_ids:
-                    if line.product_id.barcode not in codes and model_rec.state in ("new", "verification"):
-                        line.unlink()
-            if model_rec.rma_type == "customer":
-                for line in model_rec.rma_sale_lines_ids:
-                    if line.product_id.barcode not in codes and model_rec.state in ("new", "verification"):
-                        line.unlink()
+            codes_set = set(codes)
+            for line in model_rec.rma_sale_direct_lines_ids:
+                if line.product_id.barcode not in codes_set and model_rec.state in ("new", "verification"):
+                    line.unlink()
+        elif model_name == "rma.ret.mer.auth" and model_rec.rma_type == "customer":
+            field_list_to_import = ["isbn", "source_location_id", "source_parent_id", "destination_location_id",
+                                    "destination_parent_id", "order_quantity", "delivered_quantity", "refund_qty",
+                                    "price_unit", "tax_id", "refund_price"]
+            codes_set = set(codes)
+            for line in model_rec.rma_sale_lines_ids:
+                if line.product_id.barcode not in codes_set and model_rec.state in ("new", "verification"):
+                    line.unlink()
         elif file_headers != field_list_to_import:
             raise UserError(
                 _("File headers must match the sample file's headers. \nExpected: %s \nFound: %s") % (field_list_to_import, file_headers))
@@ -500,6 +485,13 @@ class ImportDataWizard(models.TransientModel):
                     item_cache[item.product_tmpl_id.barcode] = item
                 if item.id:
                     item_cache[str(item.id)] = item
+
+        rma_import_caches = {}
+        rma_batch = None
+        imported_line_count = 0
+        if model_name == "rma.ret.mer.auth":
+            rma_import_caches = self._prepare_rma_import_caches(model_rec, context)
+            rma_batch = {'create': [], 'updates': []}
         
         if not model_name == "account.move":
             if is_xlsx:
@@ -513,12 +505,16 @@ class ImportDataWizard(models.TransientModel):
                          continue
 
                     code = self.validate_and_get_item_code(passing_dict)
-                    if code in list_records and not model_name in ('purchase.order', 'stock.picking') and not (model_name == 'rma.ret.mer.auth' and model_rec.rma_type == 'sale_direct'):
+                    if code in list_records and not model_name in ('purchase.order', 'stock.picking') and not (model_name == 'rma.ret.mer.auth' and model_rec.rma_type in ('sale_direct', 'customer', 'supplier')):
                         raise UserError(_(f"Duplicate isbn found: {code}"))
                     else:
                         list_records.add(code)
-                    res = self.create_update_line(
-                        passing_dict, model_rec, model_name, vals_list, row_no, product_cache=product_cache, item_cache=item_cache)
+                    self.create_update_line(
+                        passing_dict, model_rec, model_name, vals_list, row_no,
+                        product_cache=product_cache, item_cache=item_cache,
+                        rma_import_caches=rma_import_caches, rma_batch=rma_batch)
+                    if model_name == "rma.ret.mer.auth":
+                        imported_line_count += 1
                     # to_be_cancelled_value = passing_dict['to be cancelled'].strip() if passing_dict.get('to be cancelled') else 0
                     to_be_cancelled_value = passing_dict['to be cancelled'] if passing_dict.get(
                         'to be cancelled') is not None and not isinstance(passing_dict.get('to be cancelled'), str) else 0
@@ -542,12 +538,16 @@ class ImportDataWizard(models.TransientModel):
                         passing_dict = dict(
                             zip(field_list_to_import, sheet.row_values(row_no)))
                     code = self.validate_and_get_item_code(passing_dict)
-                    if code in list_records and not model_name in ('purchase.order', 'stock.picking') and not (model_name == 'rma.ret.mer.auth' and model_rec.rma_type == 'sale_direct'):
+                    if code in list_records and not model_name in ('purchase.order', 'stock.picking') and not (model_name == 'rma.ret.mer.auth' and model_rec.rma_type in ('sale_direct', 'customer', 'supplier')):
                         raise UserError(_(f"Duplicate isbn found: {code}"))
                     else:
                         list_records.add(code)
-                    res = self.create_update_line(
-                        passing_dict, model_rec, model_name, vals_list, row_no, product_cache=product_cache, item_cache=item_cache)
+                    self.create_update_line(
+                        passing_dict, model_rec, model_name, vals_list, row_no,
+                        product_cache=product_cache, item_cache=item_cache,
+                        rma_import_caches=rma_import_caches, rma_batch=rma_batch)
+                    if model_name == "rma.ret.mer.auth":
+                        imported_line_count += 1
                     # to_be_cancelled_value = passing_dict['to be cancelled'].strip() if passing_dict.get('to be cancelled') else 0
                     to_be_cancelled_value = passing_dict['to be cancelled'] if passing_dict.get(
                         'to be cancelled') is not None and not isinstance(passing_dict.get('to be cancelled'), str) else 0
@@ -583,7 +583,189 @@ class ImportDataWizard(models.TransientModel):
                 for v in create_vals: v.pop('_is_new') # Remove marker
                 if create_vals:
                     self.env['product.pricelist.item'].create(create_vals)
-        return res
+
+            if model_name == "rma.ret.mer.auth" and rma_batch:
+                self._flush_rma_batch(model_rec, rma_batch, rma_import_caches)
+
+        if is_xlsx and workbook:
+            workbook.close()
+        fp.close()
+        if os.path.exists(fp.name):
+            os.unlink(fp.name)
+
+        if model_name == "rma.ret.mer.auth" and imported_line_count:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Import Successful'),
+                    'message': _('Successfully imported %s RMA line(s).') % imported_line_count,
+                    'type': 'success',
+                    'sticky': False,
+                    'next': {'type': 'ir.actions.act_window_close'},
+                },
+            }
+        return True
+
+    def _chunked_in(self, items, chunk_size=2000):
+        """Yield chunks of a list for batched IN-domain searches."""
+        for idx in range(0, len(items), chunk_size):
+            yield items[idx:idx + chunk_size]
+
+    def _build_product_cache(self, codes):
+        """Build a product lookup cache from ISBN/codes in chunks."""
+        product_cache = {}
+        if not codes:
+            return product_cache
+        unique_codes = list(dict.fromkeys(codes))
+        for chunk in self._chunked_in(unique_codes):
+            domain = ['|', '|', ('barcode', 'in', chunk), ('default_code', 'in', chunk), ('name', 'in', chunk)]
+            for product in self.env['product.product'].search(domain):
+                for val in (product.barcode, product.default_code, product.name):
+                    if val:
+                        product_cache[val] = product
+        remaining = [c for c in unique_codes if c not in product_cache]
+        for chunk in self._chunked_in(remaining):
+            domain = ['|', '|', ('barcode', 'in', chunk), ('default_code', 'in', chunk), ('name', 'in', chunk)]
+            for tmpl in self.env['product.template'].search(domain):
+                for val in (tmpl.barcode, tmpl.default_code, tmpl.name):
+                    if val:
+                        product_cache[val] = tmpl
+        return product_cache
+
+    def _prepare_rma_import_caches(self, model_rec, context):
+        """Pre-fetch locations, taxes, order lines and existing RMA lines once."""
+        caches = {
+            'location_cache': {},
+            'tax_cache': {},
+            'po_line_cache': {},
+            'so_line_cache': {},
+            'rma_line_cache': {},
+            'onchange_done': False,
+            'context': context,
+        }
+        if model_rec.rma_type == 'supplier' and model_rec.purchase_order_id:
+            po_line_cache = {}
+            po_product_counts = defaultdict(int)
+            for line in model_rec.purchase_order_id.order_line:
+                po_product_counts[line.product_id.id] += 1
+                po_line_cache.setdefault(line.product_id.id, line)
+            caches['po_line_cache'] = po_line_cache
+            caches['po_duplicate_products'] = {
+                pid for pid, count in po_product_counts.items() if count > 1
+            }
+        if model_rec.rma_type == 'customer' and model_rec.sale_order_id:
+            so_line_cache = {}
+            so_product_counts = defaultdict(int)
+            for line in model_rec.sale_order_id.order_line:
+                so_product_counts[line.product_id.id] += 1
+                so_line_cache.setdefault(line.product_id.id, line)
+            caches['so_line_cache'] = so_line_cache
+            caches['so_duplicate_products'] = {
+                pid for pid, count in so_product_counts.items() if count > 1
+            }
+        if model_rec.rma_type == 'direct':
+            caches['rma_line_cache'] = {
+                (line.product_id.id, line.source_location_id.id): line
+                for line in model_rec.rma_direct_lines_ids
+            }
+        elif model_rec.rma_type == 'supplier':
+            caches['rma_line_cache'] = {
+                (line.product_id.id, line.source_location_id.id): line
+                for line in model_rec.rma_purchase_lines_ids
+            }
+        elif model_rec.rma_type == 'sale_direct':
+            caches['rma_line_cache'] = {
+                (line.product_id.id, line.destination_location_id.id): line
+                for line in model_rec.rma_sale_direct_lines_ids
+            }
+        elif model_rec.rma_type == 'customer':
+            caches['rma_line_cache'] = {
+                (line.product_id.id, line.destination_location_id.id): line
+                for line in model_rec.rma_sale_lines_ids
+            }
+        return caches
+
+    def _resolve_rma_locations(self, values, model_rec, location_cache):
+        """Resolve source/destination locations once per unique combination."""
+        cache_key = (
+            values.get('source_location_id'),
+            values.get('source_parent_id'),
+            values.get('destination_location_id'),
+            values.get('destination_parent_id'),
+        )
+        if cache_key in location_cache:
+            return location_cache[cache_key]
+
+        company_id = model_rec.company_id.id
+        company_domain = ['|', ('company_id', '=', company_id), ('company_id', '=', False)]
+        source_parent = self.env['stock.location'].search(
+            [('name', 'ilike', values.get('source_parent_id'))] + company_domain,
+            order='company_id desc', limit=1,
+        )
+        destination_parent = self.env['stock.location'].search(
+            [('name', 'ilike', values.get('destination_parent_id'))] + company_domain,
+            order='company_id desc', limit=1,
+        )
+        source_location = self.env['stock.location'].search(
+            [('name', 'ilike', values.get('source_location_id'))] + company_domain + [
+                '|', ('location_id', '=', source_parent.id), ('location_id', '=', False),
+            ],
+            order='company_id desc', limit=1,
+        )
+        dest_location = self.env['stock.location'].search(
+            [('name', 'ilike', values.get('destination_location_id'))] + company_domain + [
+                '|', ('location_id', '=', destination_parent.id), ('location_id', '=', False),
+            ],
+            order='company_id desc', limit=1,
+        )
+        if not source_location or not dest_location:
+            raise UserError(_(
+                "No location found for source '%s' or destination '%s'.",
+                values.get('source_location_id'),
+                values.get('destination_location_id'),
+            ))
+        location_cache[cache_key] = (source_location, dest_location)
+        return source_location, dest_location
+
+    def _get_tax_ids_from_cache(self, tax_value, tax_type, tax_cache):
+        """Resolve tax ids from a comma-separated tax string using cache."""
+        if not tax_value:
+            return []
+        tax_names = [tax.strip() for tax in str(tax_value).split(',') if tax.strip()]
+        tax_ids = []
+        for tax_name in tax_names:
+            cache_key = (tax_name.lower(), tax_type)
+            if cache_key not in tax_cache:
+                tax_rec = self.env['account.tax'].search([
+                    ('name', 'ilike', tax_name),
+                    ('type_tax_use', '=', tax_type),
+                ], limit=1)
+                tax_cache[cache_key] = tax_rec.ids
+            tax_ids.extend(tax_cache[cache_key])
+        return list(dict.fromkeys(tax_ids))
+
+    def _flush_rma_batch(self, model_rec, rma_batch, rma_import_caches):
+        """Batch-create and batch-update RMA lines to avoid per-row ORM overhead."""
+        ctx = dict(self.env.context, mail_notrack=True, tracking_disable=True)
+        rma_type = model_rec.rma_type
+        if rma_type == 'direct':
+            line_model = self.env['rma.direct.lines'].with_context(ctx)
+        elif rma_type == 'supplier':
+            line_model = self.env['rma.purchase.lines'].with_context(ctx)
+        elif rma_type == 'sale_direct':
+            line_model = self.env['rma.sale.direct.lines'].with_context(ctx)
+        elif rma_type == 'customer':
+            line_model = self.env['rma.sale.lines'].with_context(ctx)
+        else:
+            return
+
+        for line_rec, vals in rma_batch['updates']:
+            line_rec.with_context(ctx).write(vals)
+
+        create_vals = rma_batch['create']
+        for chunk_start in range(0, len(create_vals), 500):
+            line_model.create(create_vals[chunk_start:chunk_start + 500])
 
     def is_number(self, data):
         if data is None:
@@ -621,15 +803,18 @@ class ImportDataWizard(models.TransientModel):
             return float(done)
         return 0.0
 
-    def create_update_line(self, values, model_rec, model_name, vals_list=[], row_no=None, product_cache=None, item_cache=None):
+    def create_update_line(self, values, model_rec, model_name, vals_list=[], row_no=None,
+                          product_cache=None, item_cache=None, rma_import_caches=None, rma_batch=None):
         """Method to update the done qty of picking order"""
         if product_cache is None: product_cache = {}
         if item_cache is None: item_cache = {}
+        if rma_import_caches is None: rma_import_caches = {}
         prod_tmpl = values.get("product_tmpl")
         code = self.validate_and_get_item_code(values)
+        cache_code = str(code)
         
         # --- CACHED PRODUCT SEARCH ---
-        if code not in product_cache:
+        if cache_code not in product_cache:
             domain = [
                 '|', '|',
                 ('barcode', '=', code),
@@ -642,9 +827,9 @@ class ImportDataWizard(models.TransientModel):
                     product = self.env["product.product"].search(domain, limit=1)
             else:
                 product = self.env["product.product"].search(domain, limit=1)
-            product_cache[code] = product
+            product_cache[cache_code] = product
         
-        product = product_cache[code]
+        product = product_cache[cache_code]
         if not product:
             raise UserError(_(f"No product Found with isbn: {code}"))
         po_line_obj = self.env["purchase.order.line"]
@@ -838,126 +1023,94 @@ class ImportDataWizard(models.TransientModel):
             refund_price = values.get("refund_price")
             landed_cost = values.get("lco")
             subtotal_cost = values.get("tco")
-            source_parent = self.env["stock.location"].search([
-                ("name", "ilike", values.get('source_parent_id')),
-                '|',
-                ("company_id", "=", model_rec.company_id.id),
-                ("company_id", "=", False),
-            ], order='company_id', limit=1)
-            destination_parent = self.env["stock.location"].search([
-                ("name", "ilike", values.get('destination_parent_id')),
-                '|',
-                ("company_id", "=", model_rec.company_id.id),
-                ("company_id", "=", False),
-            ], order='company_id', limit=1)
-            source_location = self.env["stock.location"].search([
-                ("name", "ilike", values.get('source_location_id')),
-                '|',
-                ("company_id", "=", model_rec.company_id.id),
-                ("company_id", "=", False),
-                '|',
-                ("location_id", "=", source_parent.id),
-                ("location_id", "=", False),
-            ], order='company_id', limit=1)
-            dest_location = self.env["stock.location"].search([
-                ("name", "ilike", values.get('destination_location_id')),
-                '|',
-                ("company_id", "=", model_rec.company_id.id),
-                ("company_id", "=", False),
-                '|',
-                ("location_id", "=", destination_parent.id),
-                ("location_id", "=", False),
-            ], order='company_id', limit=1)
-            if not source_location or not dest_location:
-                raise UserError(_(f"No Location found with name: {source_location} or {dest_location}"))
+            source_location, dest_location = self._resolve_rma_locations(
+                values, model_rec, rma_import_caches.setdefault('location_cache', {}))
             if order_quantity and delivered_quantity and refund_qty:
                 if refund_qty > delivered_quantity or refund_qty > order_quantity:
                     raise UserError(
                         _("Return qty should not exceed to order qty or delivered qty!"))
+            if not rma_import_caches.get('onchange_done'):
+                model_rec._onchange_sale_purchase_type()
+                rma_import_caches['onchange_done'] = True
             tax_list = []
             # Direct PO Import
             if model_rec.rma_type in ("direct", "supplier") and not context.get("sale_direct"):
-                model_rec._onchange_sale_purchase_type()
-                if values.get("tax_id"):
-                    tax_rec = str(values.get("tax_id")).rsplit(",")
-                    for tax in tax_rec:
-                        t_id = self.env["account.tax"].search([("name", "ilike", tax),
-                                                               ("type_tax_use", "=", "purchase")], limit=1)
-                        if t_id:
-                            tax_list.append(t_id.id)
-                if model_rec.rma_type == 'supplier' and not order_quantity \
-                        or not delivered_quantity or not price_unit or not tax_list:
-                    po_line_rec = model_rec.purchase_order_id.order_line.filtered(
-                        lambda l: l.product_id.id == product.id)
-                    if len(po_line_rec) > 1:
+                tax_list = self._get_tax_ids_from_cache(
+                    values.get("tax_id"), 'purchase', rma_import_caches.setdefault('tax_cache', {}))
+                if model_rec.rma_type == 'supplier' and (
+                        not order_quantity or not delivered_quantity or not price_unit or not tax_list):
+                    if product.id in rma_import_caches.get('po_duplicate_products', set()):
                         raise UserError(
                             _("Duplicate product found for CSO Reference %s, can not import it, kindly create RMA manually")
-                        )
-                    if not order_quantity:
-                        order_quantity = po_line_rec.product_qty
-                    if not delivered_quantity:
-                        delivered_quantity = po_line_rec.qty_received
-                    if not price_unit:
-                        price_unit = po_line_rec.price_unit
-                    if not tax_list:
-                        tax_list = po_line_rec.tax_ids.ids
+                            % model_rec.name)
+                    po_line_rec = rma_import_caches.get('po_line_cache', {}).get(product.id)
+                    if po_line_rec:
+                        if not order_quantity:
+                            order_quantity = po_line_rec.product_qty
+                        if not delivered_quantity:
+                            delivered_quantity = po_line_rec.qty_received
+                        if not price_unit:
+                            price_unit = po_line_rec.price_unit
+                        if not tax_list:
+                            tax_list = po_line_rec.tax_ids.ids
+                if not order_quantity and refund_qty:
+                    order_quantity = refund_qty
+                if not delivered_quantity and refund_qty:
+                    delivered_quantity = refund_qty
                 rma_po_vals = {
                     "product_id": product and product.id,
-                    "source_location_id": source_location and source_location.id,
-                    "destination_location_id": dest_location and dest_location.id,
+                    "source_location_id": source_location.id,
+                    "destination_location_id": dest_location.id,
                     "order_quantity": order_quantity,
                     "delivered_quantity": delivered_quantity,
                     "refund_qty": refund_qty,
                     "price_unit": price_unit,
                     "tax_id": [(6, 0, tax_list)],
                     "refund_price": refund_price,
-                    "rma_id": model_rec and model_rec.id,
+                    "rma_id": model_rec.id,
                 }
-                rma_line_to_update = rma_line_obj.search([
-                    ("product_id", "=", product.id),
-                    ("source_location_id", "=", source_location.id),
-                    ("rma_id", "=", model_rec.id)
-                ])
-                if rma_line_to_update:
-                    rma_line_to_update.write(rma_po_vals)
+                line_key = (product.id, source_location.id)
+                existing_line = rma_import_caches.get('rma_line_cache', {}).get(line_key)
+                if rma_batch is not None:
+                    if existing_line:
+                        rma_batch['updates'].append((existing_line, rma_po_vals))
+                    else:
+                        rma_batch['create'].append(rma_po_vals)
+                        rma_import_caches.setdefault('rma_line_cache', {})[line_key] = True
+                elif existing_line and existing_line is not True:
+                    existing_line.write(rma_po_vals)
                 elif model_rec.rma_type == "direct":
-                    rma_line_obj.create(rma_po_vals)
+                    new_line = rma_line_obj.create(rma_po_vals)
+                    rma_import_caches.setdefault('rma_line_cache', {})[line_key] = new_line
                 elif model_rec.rma_type == "supplier":
-                    rma_po_line = rma_purchase_line_obj.search([
-                        ("product_id", "=", product.id),
-                        ("source_location_id", "=", source_location.id),
-                        ("rma_id", "=", model_rec.id)
-                    ])
-                    rma_po_line.write(rma_po_vals)
+                    rma_purchase_line_obj.create(rma_po_vals)
             # Direct SO Import
-            if model_rec.rma_type in ("sale_direct", "customer") or context.get("sale_direct"):
-                model_rec._onchange_sale_purchase_type()
-                if values.get("tax_id"):
-                    tax_rec = str(values.get("tax_id")).rsplit(",")
-                    for tax in tax_rec:
-                        t_id = self.env["account.tax"].search([("name", "ilike", tax),
-                                                               ("type_tax_use", "=", "sale")], limit=1)
-                        if t_id:
-                            tax_list.append(t_id.id)
-                if model_rec.rma_type == 'customer' and not order_quantity \
-                        or not delivered_quantity or not price_unit or not \
-                        tax_list or not landed_cost:
-                    so_line_rec = model_rec.sale_order_id.order_line.filtered(
-                        lambda l: l.product_id.id == product.id)
-                    if len(so_line_rec) > 1:
+            elif model_rec.rma_type in ("sale_direct", "customer") or context.get("sale_direct"):
+                tax_list = self._get_tax_ids_from_cache(
+                    values.get("tax_id"), 'sale', rma_import_caches.setdefault('tax_cache', {}))
+                if model_rec.rma_type == 'customer' and (
+                        not order_quantity or not delivered_quantity or not price_unit
+                        or not tax_list or not landed_cost):
+                    if product.id in rma_import_caches.get('so_duplicate_products', set()):
                         raise UserError(
                             _("Duplicate product found for CSO Reference %s, can not import it, kindly create RMA manually")
-                        )
-                    if not order_quantity:
-                        order_quantity = so_line_rec.product_uom_qty
-                    if not delivered_quantity:
-                        delivered_quantity = so_line_rec.qty_delivered
-                    if not price_unit:
-                        price_unit = so_line_rec.price_unit
-                    if not tax_list:
-                        tax_list = so_line_rec.tax_ids.ids
-                    if not landed_cost:
-                        landed_cost = so_line_rec.landed_cost
+                            % model_rec.name)
+                    so_line_rec = rma_import_caches.get('so_line_cache', {}).get(product.id)
+                    if so_line_rec:
+                        if not order_quantity:
+                            order_quantity = so_line_rec.product_uom_qty
+                        if not delivered_quantity:
+                            delivered_quantity = so_line_rec.qty_delivered
+                        if not price_unit:
+                            price_unit = so_line_rec.price_unit
+                        if not tax_list:
+                            tax_list = so_line_rec.tax_ids.ids
+                        if not landed_cost:
+                            landed_cost = so_line_rec.landed_cost
+                if not order_quantity and refund_qty:
+                    order_quantity = refund_qty
+                if not delivered_quantity and refund_qty:
+                    delivered_quantity = refund_qty
                 if not subtotal_cost:
                     mco_val = values.get("mco")
                     sco_val = values.get("sco")
@@ -965,41 +1118,38 @@ class ImportDataWizard(models.TransientModel):
                     mco = float(mco_val) if self.is_number(mco_val) else 0.0
                     sco = float(sco_val) if self.is_number(sco_val) else 0.0
                     oco = float(oco_val) if self.is_number(oco_val) else 0.0
-                    subtotal_cost = sum([landed_cost, mco, sco, oco])
+                    subtotal_cost = sum([landed_cost or 0, mco, sco, oco])
                 rma_so_vals = {
                     "product_id": product and product.id,
-                    "source_location_id": source_location and source_location.id,
-                    "destination_location_id": dest_location and dest_location.id,
+                    "source_location_id": source_location.id,
+                    "destination_location_id": dest_location.id,
                     "order_quantity": order_quantity,
                     "delivered_quantity": delivered_quantity,
                     "refund_qty": refund_qty,
                     "price_unit": price_unit,
                     "tax_id": [(6, 0, tax_list)],
                     "refund_price": refund_price,
-                    "rma_id": model_rec and model_rec.id,
+                    "rma_id": model_rec.id,
                     "landed_cost": landed_cost,
                     "marketplace_cost": values.get("mco"),
                     "shipping_cost": values.get("sco"),
                     "other_cost": values.get("oco"),
                     "subtotal_cost": subtotal_cost,
                 }
-                if model_rec.rma_type == "sale_direct":
+                line_key = (product.id, dest_location.id)
+                existing_line = rma_import_caches.get('rma_line_cache', {}).get(line_key)
+                if rma_batch is not None:
+                    if existing_line and existing_line is not True:
+                        rma_batch['updates'].append((existing_line, rma_so_vals))
+                    else:
+                        rma_batch['create'].append(rma_so_vals)
+                        rma_import_caches.setdefault('rma_line_cache', {})[line_key] = True
+                elif model_rec.rma_type == "sale_direct":
                     rma_sale_direct_obj.create(rma_so_vals)
-                else:
-                    rma_so_line = rma_sale_direct_obj.search([
-                        ("product_id", "=", product.id),
-                        ("destination_location_id", "=", dest_location.id),
-                        ("rma_id", "=", model_rec.id)
-                    ])
-                    if rma_so_line:
-                        rma_so_line.write(rma_so_vals)
-                    elif model_rec.rma_type == "customer":
-                        rma_so_line = rma_sale_line_obj.search([
-                            ("product_id", "=", product.id),
-                            ("destination_location_id", "=", dest_location.id),
-                            ("rma_id", "=", model_rec.id)
-                        ])
-                        rma_so_line.write(rma_so_vals)
+                elif existing_line and existing_line is not True:
+                    existing_line.write(rma_so_vals)
+                elif model_rec.rma_type == "customer":
+                    rma_sale_line_obj.create(rma_so_vals)
 
 
 
